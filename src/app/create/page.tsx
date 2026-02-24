@@ -1,19 +1,23 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { ChatWindow, type Message } from "@/components/chat/ChatWindow";
 import { CharacterSheet } from "@/components/character/CharacterSheet";
 import { DiceRoller } from "@/components/dice/DiceRoller";
 import { GameLayout } from "@/components/layout/GameLayout";
 import { parseGameState } from "@/lib/game/state-parser";
-import type { Character } from "@/lib/game/types";
+import type { Character, Campaign } from "@/lib/game/types";
 
 export default function CreateCharacterPage() {
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [streamingContent, setStreamingContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [character, setCharacter] = useState<Partial<Character>>({});
+  const [campaign, setCampaign] = useState<Partial<Campaign>>({});
   const [hasStarted, setHasStarted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -51,22 +55,48 @@ export default function CreateCharacterPage() {
         }
 
         // Parse gamestate updates from the response
-        const { narrative, updates } = parseGameState(fullResponse);
+        const { updates } = parseGameState(fullResponse);
 
-        // Apply character updates
         let updatedCharacter = { ...character };
+        let updatedCampaign = { ...campaign };
+        let characterComplete = false;
+
         for (const update of updates) {
           if (update.type === "characterUpdate") {
             updatedCharacter = { ...updatedCharacter, ...update.data };
           }
+          if (update.type === "campaignUpdate") {
+            updatedCampaign = { ...updatedCampaign, ...update.data };
+          }
           if (update.type === "notification" && update.data.type === "characterComplete") {
-            // TODO: Save character to DB and redirect to gameplay
+            characterComplete = true;
           }
         }
-        setCharacter(updatedCharacter);
 
+        setCharacter(updatedCharacter);
+        setCampaign(updatedCampaign);
         setMessages([...newMessages, { role: "assistant", content: fullResponse }]);
         setStreamingContent("");
+
+        if (characterComplete) {
+          setIsSaving(true);
+          try {
+            const res = await fetch("/api/character", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                character: updatedCharacter,
+                gmPersona: updatedCampaign.gmPersona ?? "",
+              }),
+            });
+            if (!res.ok) throw new Error("Failed to save character");
+            const { campaignId } = await res.json() as { campaignId: string };
+            router.push(`/play/${campaignId}`);
+          } catch (saveError) {
+            console.error("Failed to save character:", saveError);
+            setIsSaving(false);
+          }
+        }
       } catch (error) {
         console.error("Chat error:", error);
         setMessages([
@@ -78,7 +108,7 @@ export default function CreateCharacterPage() {
         setIsLoading(false);
       }
     },
-    [messages, character]
+    [messages, character, campaign, router]
   );
 
   // Auto-start the conversation
@@ -98,8 +128,8 @@ export default function CreateCharacterPage() {
           messages={messages}
           streamingContent={streamingContent}
           onSend={sendMessage}
-          isLoading={isLoading}
-          placeholder="Describe your choice..."
+          isLoading={isLoading || isSaving}
+          placeholder={isSaving ? "Saving your character..." : "Describe your choice..."}
         />
       }
       rightPanel={

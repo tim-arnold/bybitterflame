@@ -45,3 +45,6 @@ shadowdark-raw.txt
 
 # IDE
 .idea/
+
+# Wrangler local dev state (D1 SQLite, KV, etc.)
+.wrangler/

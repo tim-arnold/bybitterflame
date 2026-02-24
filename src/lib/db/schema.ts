@@ -3,6 +3,7 @@ import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 export const characters = sqliteTable("characters", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  pronouns: text("pronouns").notNull().default("they/them"),
   ancestry: text("ancestry").notNull(),
   class: text("class").notNull(),
   level: integer("level").notNull().default(1),
@@ -40,6 +41,7 @@ export const campaigns = sqliteTable("campaigns", {
   state: text("state", { enum: ["active", "completed", "abandoned"] })
     .notNull()
     .default("active"),
+  gmPersona: text("gm_persona").notNull().default(""),
   worldState: text("world_state").notNull().default("{}"),
   createdAt: text("created_at")
     .notNull()

@@ -111,10 +111,23 @@ export default function PlayPage() {
           }
         }
 
+        const finalMessages = [...newMessages, { role: "assistant" as const, content: fullResponse }];
         setCharacter(updatedCharacter);
         setCampaign(updatedCampaign);
-        setMessages([...newMessages, { role: "assistant", content: fullResponse }]);
+        setMessages(finalMessages);
         setStreamingContent("");
+
+        // Auto-save after every AI response
+        fetch(`/api/campaign/${campaignId}/save`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            character: updatedCharacter,
+            campaign: updatedCampaign,
+            messages: finalMessages,
+            sessionNumber,
+          }),
+        }).catch((err) => console.error("Auto-save failed:", err));
       } catch (error) {
         console.error("Chat error:", error);
         setMessages([

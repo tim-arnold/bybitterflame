@@ -87,8 +87,8 @@
         { "name": "Chat-driven creation with initializer agent", "pass": true },
         { "name": "Live character preview sidebar updates", "pass": true },
         { "name": "Pronouns asked and stored", "pass": true },
-        { "name": "All stats/choices persist to DB", "pass": false },
-        { "name": "Redirect to gameplay after completion", "pass": false }
+        { "name": "All stats/choices persist to DB", "pass": true },
+        { "name": "Redirect to gameplay after completion", "pass": true }
       ]
     },
     {
@@ -156,13 +156,13 @@
     {
       "id": "persistence",
       "name": "End-to-end data persistence",
-      "status": "pending",
-      "notes": "The big remaining blocker — DB wiring, character creation → campaign handoff, session save/load",
+      "status": "in-progress",
+      "notes": "D1 wired for character creation → campaign handoff and per-turn saves. Session resume (messages across browser close) not yet done.",
       "tests": [
-        { "name": "Character saved to D1 after creation", "pass": false },
-        { "name": "Campaign created and linked to character", "pass": false },
-        { "name": "Character creation redirects to /play/[campaignId]", "pass": false },
-        { "name": "Campaign state saved between turns", "pass": false },
+        { "name": "Character saved to D1 after creation", "pass": true },
+        { "name": "Campaign created and linked to character", "pass": true },
+        { "name": "Character creation redirects to /play/[campaignId]", "pass": true },
+        { "name": "Campaign state saved between turns", "pass": true },
         { "name": "Session resumable after browser close", "pass": false }
       ]
     }
