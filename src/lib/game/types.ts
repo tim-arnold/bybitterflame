@@ -99,6 +99,8 @@ export interface GameStateSnapshot {
 export interface Message {
   role: "user" | "assistant";
   content: string;
+  /** Hidden messages are included in API history (for turn alternation) but not rendered in the chat UI */
+  hidden?: boolean;
 }
 
 /** Context flags passed to the rules loader */

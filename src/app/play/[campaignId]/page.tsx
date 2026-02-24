@@ -29,20 +29,90 @@ export default function PlayPage() {
   const [combatRound, setCombatRound] = useState(1);
   const [torchExpired, setTorchExpired] = useState(false);
 
-  // Load character and campaign data
+  // Load character and campaign data. For new campaigns (no messages), auto-trigger
+  // the GM's opening scene using the freshly loaded data before state is set.
   useEffect(() => {
     async function loadData() {
       try {
         const res = await fetch(`/api/campaign/${campaignId}`);
-        if (res.ok) {
-          const data = await res.json();
-          setCharacter(data.character || {});
-          setCampaign(data.campaign || {});
-          setSessionNumber(data.sessionNumber || 1);
-          if (data.messages) setMessages(data.messages);
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const loadedCharacter = data.character || {};
+        const loadedCampaign = data.campaign || {};
+        const loadedSessionNumber: number = data.sessionNumber || 1;
+        const loadedMessages: Message[] = data.messages || [];
+
+        setCharacter(loadedCharacter);
+        setCampaign(loadedCampaign);
+        setSessionNumber(loadedSessionNumber);
+
+        if (loadedMessages.length > 0) {
+          setMessages(loadedMessages);
+          return;
         }
+
+        // New campaign — generate the opening scene immediately
+        const triggerMsg: Message = { role: "user", content: "[BEGIN ADVENTURE]", hidden: true };
+        setIsLoading(true);
+        setStreamingContent("");
+
+        const chatRes = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: [{ role: "user", content: "[BEGIN ADVENTURE]" }],
+            character: loadedCharacter,
+            campaign: loadedCampaign,
+            mode: "play",
+          }),
+        });
+
+        if (!chatRes.ok) { setIsLoading(false); return; }
+
+        const reader = chatRes.body?.getReader();
+        if (!reader) { setIsLoading(false); return; }
+
+        const decoder = new TextDecoder();
+        let fullResponse = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          fullResponse += decoder.decode(value, { stream: true });
+          setStreamingContent(fullResponse);
+        }
+
+        const { updates } = parseGameState(fullResponse);
+        let updatedCharacter = { ...loadedCharacter };
+        let updatedCampaign = { ...loadedCampaign };
+        for (const update of updates) {
+          if (update.type === "characterUpdate") updatedCharacter = { ...updatedCharacter, ...update.data };
+          if (update.type === "campaignUpdate") updatedCampaign = { ...updatedCampaign, ...update.data };
+        }
+
+        const openingMessages: Message[] = [
+          triggerMsg,
+          { role: "assistant", content: fullResponse },
+        ];
+
+        setCharacter(updatedCharacter);
+        setCampaign(updatedCampaign);
+        setMessages(openingMessages);
+        setStreamingContent("");
+        setIsLoading(false);
+
+        fetch(`/api/campaign/${campaignId}/save`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            character: updatedCharacter,
+            campaign: updatedCampaign,
+            messages: openingMessages,
+            sessionNumber: loadedSessionNumber,
+          }),
+        }).catch((err) => console.error("Opening save failed:", err));
       } catch {
-        // Campaign data will come from first interaction
+        setIsLoading(false);
       }
     }
     loadData();

@@ -63,16 +63,20 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Strip gamestate blocks from history — they're parsed client-side for UI
-    // and already reflected in the system prompt's character/world state blocks.
-    // Window to the last 20 messages to cap context growth permanently.
-    const trimmedMessages = messages
-      .slice(-20)
-      .map((m) =>
+    // Window to the last 20 messages, strip gamestate blocks (already in system prompt),
+    // strip hidden field (API only accepts role + content), and ensure first message
+    // is from user (Claude API requirement — windowing can otherwise cut to assistant-first).
+    let windowed = messages.slice(-20);
+    const firstUser = windowed.findIndex((m) => m.role === "user");
+    if (firstUser > 0) windowed = windowed.slice(firstUser);
+
+    const trimmedMessages = windowed.map((m) => ({
+      role: m.role,
+      content:
         m.role === "assistant"
-          ? { ...m, content: m.content.replace(/```gamestate[\s\S]*?```/g, "").trim() }
-          : m,
-      );
+          ? m.content.replace(/```gamestate[\s\S]*?```/g, "").trim()
+          : m.content,
+    }));
 
     const stream = createStreamingResponse(systemPrompt, trimmedMessages);
 

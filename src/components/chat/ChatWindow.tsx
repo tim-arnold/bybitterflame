@@ -7,6 +7,7 @@ import { ChatInput } from "./ChatInput";
 export interface Message {
   role: "user" | "assistant";
   content: string;
+  hidden?: boolean;
 }
 
 interface ChatWindowProps {
@@ -37,13 +38,14 @@ export function ChatWindow({
   // transition. This preserves state (diceComplete, revealed) and prevents
   // the jarring unmount/remount that caused text to flash then vanish.
   const displayMessages = useMemo(() => {
+    const visible = messages.filter((m) => !m.hidden);
     if (streamingContent) {
       return [
-        ...messages.map((m) => ({ ...m, isStreaming: false })),
+        ...visible.map((m) => ({ ...m, isStreaming: false })),
         { role: "assistant" as const, content: streamingContent, isStreaming: true },
       ];
     }
-    return messages.map((m) => ({ ...m, isStreaming: false }));
+    return visible.map((m) => ({ ...m, isStreaming: false }));
   }, [messages, streamingContent]);
 
   return (
