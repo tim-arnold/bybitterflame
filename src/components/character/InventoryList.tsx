@@ -6,6 +6,7 @@ import type { EquipmentItem } from "@/lib/game/types";
 interface InventoryListProps {
   items: (EquipmentItem | string)[];
   gold?: number;
+  maxSlots?: number;
 }
 
 function normalize(item: EquipmentItem | string): EquipmentItem {
@@ -97,7 +98,7 @@ function ItemRow({ item }: { item: EquipmentItem | string }) {
   );
 }
 
-export function InventoryList({ items, gold }: InventoryListProps) {
+export function InventoryList({ items, gold, maxSlots }: InventoryListProps) {
   return (
     <div>
       <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Equipment</h3>
@@ -109,7 +110,11 @@ export function InventoryList({ items, gold }: InventoryListProps) {
           <ItemRow key={i} item={item} />
         ))}
       </ul>
-      <p className="text-xs text-stone-600 mt-1">{items.length} gear slot{items.length !== 1 ? "s" : ""} used</p>
+      <p className="text-xs text-stone-600 mt-1">
+        {maxSlots !== undefined
+          ? `${items.length} of ${maxSlots} gear slots used`
+          : `${items.length} gear slot${items.length !== 1 ? "s" : ""} used`}
+      </p>
     </div>
   );
 }

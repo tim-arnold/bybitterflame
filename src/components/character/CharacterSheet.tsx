@@ -10,6 +10,13 @@ interface CharacterSheetProps {
   character: Partial<Character>;
 }
 
+/** Gear slots = STR score or 10, whichever is higher. Fighters get +2 (Hauler). */
+function calcMaxGearSlots(character: Partial<Character>): number {
+  const base = Math.max(character.str ?? 10, 10);
+  const hauler = character.class === "Fighter" ? 2 : 0;
+  return base + hauler;
+}
+
 export function CharacterSheet({ character }: CharacterSheetProps) {
   const stats = [
     { label: "Strength", abbreviated: "STR", value: character.str },
@@ -99,6 +106,7 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
         <InventoryList
           items={character.equipment}
           gold={character.gold}
+          maxSlots={calcMaxGearSlots(character)}
         />
       )}
 
