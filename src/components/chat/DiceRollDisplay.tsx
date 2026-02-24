@@ -50,32 +50,24 @@ function DieFace({ value, sides, delay }: { value: number; sides: number; delay:
 
   if (phase === "waiting") {
     return (
-      <span className="inline-flex items-center justify-center w-11 h-11 rounded-md text-stone-600 bg-stone-800/50">
-        {isD6 ? <span className="text-2xl opacity-30">{D6_FACES[0]}</span> : <span className="text-base font-bold">?</span>}
+      <span className="inline-flex items-center justify-center w-14 h-14 text-4xl leading-none rounded-md text-stone-600 bg-stone-800/50">
+        {isD6 ? <span className="opacity-30">{D6_FACES[0]}</span> : <span className="text-xl font-bold opacity-50">?</span>}
       </span>
     );
   }
 
   if (phase === "tumbling") {
     return (
-      <span className="inline-flex items-center justify-center w-11 h-11 rounded-md bg-stone-800 animate-dice-tumble">
-        {isD6 ? (
-          <span className="text-2xl text-stone-300">{D6_FACES[displayValue - 1]}</span>
-        ) : (
-          <span className="text-base font-bold text-stone-300">{displayValue}</span>
-        )}
+      <span className="inline-flex items-center justify-center w-14 h-14 text-4xl leading-none rounded-md bg-stone-800 animate-dice-tumble text-stone-300">
+        {isD6 ? D6_FACES[displayValue - 1] : <span className="text-xl font-bold">{displayValue}</span>}
       </span>
     );
   }
 
   // revealed
   return (
-    <span className="inline-flex items-center justify-center w-11 h-11 rounded-md bg-stone-900 transition-all duration-300 scale-110 animate-dice-land">
-      {isD6 ? (
-        <span className="text-2xl text-[var(--color-gold)]">{D6_FACES[value - 1]}</span>
-      ) : (
-        <span className="text-base font-bold text-[var(--color-gold)]">{value}</span>
-      )}
+    <span className="inline-flex items-center justify-center w-14 h-14 text-4xl leading-none rounded-md bg-stone-900 transition-all duration-300 scale-110 animate-dice-land text-[var(--color-gold)]">
+      {isD6 ? D6_FACES[value - 1] : <span className="text-xl font-bold">{value}</span>}
     </span>
   );
 }
@@ -92,9 +84,9 @@ function SingleRollDisplay({ roll, baseDelay }: { roll: DiceRoll; baseDelay: num
   }, [totalDelay]);
 
   return (
-    <div className="flex items-center gap-2.5 py-1.5">
+    <div className="flex items-baseline gap-2.5 py-1.5">
       {roll.name && (
-        <span className="text-xs font-medium text-stone-400 w-24 text-right shrink-0">
+        <span className="text-base font-medium text-stone-400 w-28 text-right shrink-0">
           {roll.name}
         </span>
       )}
@@ -104,7 +96,7 @@ function SingleRollDisplay({ roll, baseDelay }: { roll: DiceRoll; baseDelay: num
         ))}
       </div>
       <span
-        className={`text-sm font-bold ml-1 transition-all duration-500 ${
+        className={`text-base font-bold ml-1 transition-all duration-500 ${
           showTotal
             ? "text-[var(--color-gold)] opacity-100 translate-x-0"
             : "opacity-0 -translate-x-2"
