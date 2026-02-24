@@ -63,7 +63,18 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const stream = createStreamingResponse(systemPrompt, messages);
+    // Strip gamestate blocks from history — they're parsed client-side for UI
+    // and already reflected in the system prompt's character/world state blocks.
+    // Window to the last 20 messages to cap context growth permanently.
+    const trimmedMessages = messages
+      .slice(-20)
+      .map((m) =>
+        m.role === "assistant"
+          ? { ...m, content: m.content.replace(/```gamestate[\s\S]*?```/g, "").trim() }
+          : m,
+      );
+
+    const stream = createStreamingResponse(systemPrompt, trimmedMessages);
 
     return new Response(stream, {
       headers: {
