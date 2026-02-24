@@ -97,7 +97,7 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
       {/* Equipment */}
       {character.equipment && character.equipment.length > 0 && (
         <InventoryList
-          items={character.equipment.map((e) => typeof e === "string" ? e : e.name)}
+          items={character.equipment}
           gold={character.gold}
         />
       )}

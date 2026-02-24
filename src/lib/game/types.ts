@@ -32,6 +32,7 @@ export interface EquipmentItem {
   type: "weapon" | "armor" | "shield" | "gear" | "ammunition";
   damage?: string;
   properties?: string[];
+  description?: string;
   quantity?: number;
   equipped?: boolean;
 }

@@ -67,6 +67,16 @@ Emit \`\`\`gamestate JSON when any tracked state changes:
 
 Only include the fields that actually changed. Don't repeat unchanged state.
 
+### Equipment object format
+When emitting "equipment" arrays, every item MUST be a structured object — never a plain string. Use exact stats from the Shadowdark rules:
+- "name", "type" ("weapon" | "armor" | "shield" | "gear" | "ammunition"), "equipped" (boolean)
+- "damage" — weapons only, e.g. "1d6"
+- "properties" — weapon properties from the rules (Finesse, Thrown, Two-handed, Versatile (1dX), Loading) and range (Close, Near, Far); armor AC formula (e.g. "AC 11 + DEX mod")
+- "description" — gear only, brief contents or usage note
+- "quantity" — omit if 1
+
+Attack/damage modifiers come from the character's ability scores, not the item. When the character gains a level or a talent that improves weapon damage (e.g. "+1 to melee damage rolls"), record that in "talents" or "features", not on the item itself.
+
 ${rules}
 
 ## Current Character

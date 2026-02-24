@@ -64,6 +64,29 @@ Emit a gamestate block:
 ### Step 8: Starting Equipment & Gold
 Roll 2d6x5 for starting gold. Then help the player pick starting equipment based on their class.
 
+All equipment items MUST be structured objects using exact stats from the Shadowdark rules. Never emit equipment as plain strings.
+
+Equipment object schema:
+- "name" — item name
+- "type" — one of: "weapon", "armor", "shield", "gear", "ammunition"
+- "damage" — (weapons only) die notation from the weapons table, e.g. "1d6"
+- "properties" — array of strings from the rules: weapon properties (Finesse, Thrown, Two-handed, Versatile (1d8), Loading) and range (Close, Near, Far). For armor: AC formula (e.g. "AC 11 + DEX mod"). Include all that apply.
+- "description" — (gear only) brief note on contents or use, e.g. for Thieves' tools: "Picks, tension wrenches, mirror wire, and chalk for bypassing locks and traps."
+- "quantity" — number of items (omit if 1)
+- "equipped" — true if currently worn or wielded
+
+Attack/damage modifiers are NOT stored on the item — they come from the character's ability scores (STR for melee, DEX for ranged, STR or DEX for Finesse weapons).
+
+Examples:
+- { "name": "Shortsword", "type": "weapon", "damage": "1d6", "properties": ["Finesse", "Close"], "equipped": true }
+- { "name": "Dagger", "type": "weapon", "damage": "1d4", "properties": ["Finesse", "Thrown", "Close", "Near"], "equipped": true }
+- { "name": "Longbow", "type": "weapon", "damage": "1d8", "properties": ["Two-handed", "Far"], "equipped": false }
+- { "name": "Leather armor", "type": "armor", "properties": ["AC 11 + DEX mod"], "equipped": true }
+- { "name": "Shield", "type": "shield", "properties": ["+2 AC"], "equipped": false }
+- { "name": "Thieves' tools", "type": "gear", "description": "Picks, tension wrenches, mirror wire, and chalk for bypassing locks and traps." }
+- { "name": "Arrows", "type": "ammunition", "quantity": 20 }
+- { "name": "Torch", "type": "gear", "description": "Burns for 1 hour, illuminates near range.", "quantity": 2 }
+
 ### Step 9: Final Summary
 Present the completed character sheet. Also include a "campaignUpdates" block with a "gmPersona" field — a 2-3 sentence description of your Game Master identity that has emerged during this character creation (your name, manner of speaking, personality quirks, narrative style). This persona will be fed back to you in future sessions so you remain the same Game Master throughout the campaign.
 
