@@ -1,0 +1,58 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --color-gold: #d4a537;
+  --color-gold-dim: #a67c1a;
+  --color-blood: #8b1a1a;
+  --color-parchment: #d4c5a9;
+}
+
+body {
+  @apply bg-stone-950 text-stone-300 min-h-screen;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* GM narration text */
+.narrative {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  @apply text-stone-200 leading-relaxed;
+}
+
+/* Dice roll results */
+.dice-result {
+  @apply font-mono text-[var(--color-gold)] font-bold;
+}
+
+/* Dice animations */
+@keyframes dice-tumble {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-8deg) scale(1.05); }
+  50% { transform: rotate(6deg) scale(0.95); }
+  75% { transform: rotate(-4deg) scale(1.02); }
+}
+
+@keyframes dice-land {
+  0% { transform: scale(1.1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.animate-dice-tumble {
+  animation: dice-tumble 0.3s ease-in-out infinite;
+}
+
+.animate-dice-land {
+  animation: dice-land 0.3s ease-out forwards;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+::-webkit-scrollbar-track {
+  @apply bg-stone-900;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-stone-700 rounded-full;
+}

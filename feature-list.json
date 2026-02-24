@@ -1,0 +1,128 @@
+{
+  "project": "Shadowdark AI Game Master",
+  "features": [
+    {
+      "id": "rules-docs",
+      "name": "Curated rules markdown files",
+      "status": "in-progress",
+      "tests": [
+        { "name": "All 12 rules files exist in src/lib/rules/", "pass": false },
+        { "name": "Character creation rules are complete and accurate", "pass": false },
+        { "name": "Combat rules include all mechanics", "pass": false },
+        { "name": "Spell list is comprehensive with all descriptions", "pass": false }
+      ]
+    },
+    {
+      "id": "db-schema",
+      "name": "Database schema (characters, campaigns, sessions)",
+      "status": "in-progress",
+      "tests": [
+        { "name": "Drizzle schema compiles", "pass": false },
+        { "name": "Characters table has all required fields", "pass": false },
+        { "name": "Campaigns and sessions tables are linked", "pass": false }
+      ]
+    },
+    {
+      "id": "ai-client",
+      "name": "Claude API streaming integration",
+      "status": "in-progress",
+      "tests": [
+        { "name": "Streaming chat route returns valid responses", "pass": false },
+        { "name": "System prompt includes character and rules data", "pass": false },
+        { "name": "Error handling for API failures", "pass": false }
+      ]
+    },
+    {
+      "id": "rules-loader",
+      "name": "Selective rules loading based on game context",
+      "status": "in-progress",
+      "tests": [
+        { "name": "Combat rules loaded when inCombat flag set", "pass": false },
+        { "name": "Character creation rules loaded during creation", "pass": false },
+        { "name": "Token count stays manageable", "pass": false }
+      ]
+    },
+    {
+      "id": "gamestate-parser",
+      "name": "Parse gamestate JSON from AI responses",
+      "status": "in-progress",
+      "tests": [
+        { "name": "Extracts gamestate blocks from narrative", "pass": false },
+        { "name": "Parses character updates correctly", "pass": false },
+        { "name": "Handles missing or malformed blocks gracefully", "pass": false }
+      ]
+    },
+    {
+      "id": "dice-system",
+      "name": "Dice rolling (virtual + manual)",
+      "status": "in-progress",
+      "tests": [
+        { "name": "All die types work (d4-d20)", "pass": false },
+        { "name": "Advantage/disadvantage rolls correctly", "pass": false },
+        { "name": "Stat modifier calculation is accurate", "pass": false },
+        { "name": "Manual dice input mode works", "pass": false }
+      ]
+    },
+    {
+      "id": "character-creation",
+      "name": "Character creation flow (/create)",
+      "status": "pending",
+      "tests": [
+        { "name": "Chat-driven creation with initializer agent", "pass": false },
+        { "name": "Live character preview sidebar updates", "pass": false },
+        { "name": "All stats/choices persist to DB", "pass": false },
+        { "name": "Redirect to gameplay after completion", "pass": false }
+      ]
+    },
+    {
+      "id": "gameplay-loop",
+      "name": "Gameplay chat loop (/play/[campaignId])",
+      "status": "pending",
+      "tests": [
+        { "name": "Three-column layout renders", "pass": false },
+        { "name": "Streaming AI responses display correctly", "pass": false },
+        { "name": "Character sheet sidebar shows live data", "pass": false },
+        { "name": "State changes from AI update UI and DB", "pass": false }
+      ]
+    },
+    {
+      "id": "torch-timer",
+      "name": "Real-time torch timer",
+      "status": "pending",
+      "tests": [
+        { "name": "60-minute countdown works", "pass": false },
+        { "name": "Persists across page refreshes (localStorage)", "pass": false },
+        { "name": "AI notified when torch expires", "pass": false }
+      ]
+    },
+    {
+      "id": "session-management",
+      "name": "Session save/resume with AI summaries",
+      "status": "pending",
+      "tests": [
+        { "name": "End session triggers AI summary generation", "pass": false },
+        { "name": "Resume loads summaries into system prompt", "pass": false },
+        { "name": "AI references previous events on resume", "pass": false }
+      ]
+    },
+    {
+      "id": "combat-tracker",
+      "name": "Combat tracking UI",
+      "status": "pending",
+      "tests": [
+        { "name": "Initiative order displays", "pass": false },
+        { "name": "Turn indicators work", "pass": false }
+      ]
+    },
+    {
+      "id": "ui-theme",
+      "name": "Dark fantasy UI theme",
+      "status": "pending",
+      "tests": [
+        { "name": "Dark backgrounds with gold accents", "pass": false },
+        { "name": "Serif font for GM narration", "pass": false },
+        { "name": "Mobile responsive layout", "pass": false }
+      ]
+    }
+  ]
+}
