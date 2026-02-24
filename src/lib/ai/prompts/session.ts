@@ -70,12 +70,15 @@ Only include the fields that actually changed. Don't repeat unchanged state.
 ### Equipment object format
 When emitting "equipment" arrays, every item MUST be a structured object — never a plain string. Use exact stats from the Shadowdark rules:
 - "name", "type" ("weapon" | "armor" | "shield" | "gear" | "ammunition"), "equipped" (boolean)
+- "slots" — gear slots consumed. 0 = worn/trivially small (rings, amulets, pendants, holy symbol, backpack, flint & steel, chalk, garlic, mirror, sack). Omit if 1 (default). Use 2 for longbow, greataxe, greatsword, chainmail, tent; 3 for plate mail.
 - "damage" — weapons only, e.g. "1d6"
-- "properties" — weapon properties from the rules (Finesse, Thrown, Two-handed, Versatile (1dX), Loading) and range (Close, Near, Far); armor AC formula (e.g. "AC 11 + DEX mod")
+- "properties" — weapon properties (Finesse, Thrown, Two-handed, Versatile (1dX), Loading) and range (Close, Near, Far); armor AC formula
 - "description" — gear only, brief contents or usage note
 - "quantity" — omit if 1
 
-Attack/damage modifiers come from the character's ability scores, not the item. When the character gains a level or a talent that improves weapon damage (e.g. "+1 to melee damage rolls"), record that in "talents" or "features", not on the item itself.
+Gear slot enforcement: Before awarding any item with slots > 0, calculate current slot usage (sum all item slots, defaulting to 1 each) and check it against the character's max (STR or 10, whichever is higher; +2 for Fighters). If full, the character cannot carry the item — narrate this and offer alternatives (drop something, stash it, etc.).
+
+Attack/damage modifiers come from the character's ability scores, not the item. Level/talent damage bonuses go in "talents" or "features".
 
 ${rules}
 

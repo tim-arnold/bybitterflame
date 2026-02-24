@@ -40,6 +40,11 @@ function ItemRow({ item }: { item: EquipmentItem | string }) {
           {eq.quantity && eq.quantity > 1 ? `${eq.quantity}× ` : ""}
           {eq.name}
         </span>
+        {eq.slots !== undefined && eq.slots !== 1 && (
+          <span className="text-[10px] text-stone-600 shrink-0">
+            {eq.slots === 0 ? "worn" : `${eq.slots} slots`}
+          </span>
+        )}
         {hasDetails && (
           <svg
             className={`w-3.5 h-3.5 text-stone-500 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
@@ -99,22 +104,50 @@ function ItemRow({ item }: { item: EquipmentItem | string }) {
 }
 
 export function InventoryList({ items, gold, maxSlots }: InventoryListProps) {
+  const normalized = items.map(normalize);
+
+  // Items with slots === 0 are worn/small and don't occupy pack space.
+  // Items without a slots field default to 1 slot.
+  const slotted = normalized.filter((i) => (i.slots ?? 1) > 0);
+  const worn = normalized.filter((i) => i.slots === 0);
+  const slotsUsed = slotted.reduce((sum, i) => sum + (i.slots ?? 1), 0);
+
+  const slotLabel = maxSlots !== undefined
+    ? `${slotsUsed} of ${maxSlots} gear slots used`
+    : `${slotsUsed} gear slot${slotsUsed !== 1 ? "s" : ""} used`;
+
+  const overEncumbered = maxSlots !== undefined && slotsUsed > maxSlots;
+
   return (
-    <div>
-      <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Equipment</h3>
-      {gold !== undefined && gold > 0 && (
-        <div className="text-sm text-[var(--color-gold)] mb-2 font-mono">{gold} <span className="text-stone-500">gp</span></div>
+    <div className="space-y-3">
+      <div>
+        <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Equipment</h3>
+        {gold !== undefined && gold > 0 && (
+          <div className="text-sm text-[var(--color-gold)] mb-2 font-mono">
+            {gold} <span className="text-stone-500">gp</span>
+          </div>
+        )}
+        <ul className="space-y-1">
+          {slotted.map((item, i) => (
+            <ItemRow key={i} item={item} />
+          ))}
+        </ul>
+        <p className={`text-xs mt-1 ${overEncumbered ? "text-red-500" : "text-stone-600"}`}>
+          {slotLabel}
+          {overEncumbered && " — over encumbered!"}
+        </p>
+      </div>
+
+      {worn.length > 0 && (
+        <div>
+          <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Worn / No Slots</h3>
+          <ul className="space-y-1">
+            {worn.map((item, i) => (
+              <ItemRow key={i} item={item} />
+            ))}
+          </ul>
+        </div>
       )}
-      <ul className="space-y-1">
-        {items.map((item, i) => (
-          <ItemRow key={i} item={item} />
-        ))}
-      </ul>
-      <p className="text-xs text-stone-600 mt-1">
-        {maxSlots !== undefined
-          ? `${items.length} of ${maxSlots} gear slots used`
-          : `${items.length} gear slot${items.length !== 1 ? "s" : ""} used`}
-      </p>
     </div>
   );
 }

@@ -69,23 +69,33 @@ All equipment items MUST be structured objects using exact stats from the Shadow
 Equipment object schema:
 - "name" — item name
 - "type" — one of: "weapon", "armor", "shield", "gear", "ammunition"
+- "slots" — gear slots consumed. Use exact values from the rules tables. 0 = worn on the body or trivially small (no pack space used). Omit if 1 (the default). Use 2 for heavy items (greataxe, greatsword, longbow, chainmail, tent) and 3 for plate mail.
 - "damage" — (weapons only) die notation from the weapons table, e.g. "1d6"
-- "properties" — array of strings from the rules: weapon properties (Finesse, Thrown, Two-handed, Versatile (1d8), Loading) and range (Close, Near, Far). For armor: AC formula (e.g. "AC 11 + DEX mod"). Include all that apply.
-- "description" — (gear only) brief note on contents or use, e.g. for Thieves' tools: "Picks, tension wrenches, mirror wire, and chalk for bypassing locks and traps."
+- "properties" — array of strings: weapon properties (Finesse, Thrown, Two-handed, Versatile (1d8), Loading) and range (Close, Near, Far). For armor: AC formula (e.g. "AC 11 + DEX mod"). Include all that apply.
+- "description" — (gear only) brief note on contents or use
 - "quantity" — number of items (omit if 1)
 - "equipped" — true if currently worn or wielded
+
+Slot rules:
+- 0-slot items (worn on body or trivially small): rings, amulets, pendants, holy symbol, backpack (worn), flint and steel, chalk, garlic, mirror, sack
+- 1-slot items: most weapons, leather armor, shield, standard gear
+- 2-slot items: greataxe, greatsword, longbow, chainmail armor, tent
+- 3-slot items: plate mail armor
+- 20 arrows = 1 slot; always track as a single ammunition item with quantity
+
+IMPORTANT: Before adding any item with slots > 0, check that the character has available gear slots. Max slots = STR score or 10, whichever is higher (+2 if Fighter). If the character is already at capacity, they cannot carry the item.
 
 Attack/damage modifiers are NOT stored on the item — they come from the character's ability scores (STR for melee, DEX for ranged, STR or DEX for Finesse weapons).
 
 Examples:
 - { "name": "Shortsword", "type": "weapon", "damage": "1d6", "properties": ["Finesse", "Close"], "equipped": true }
 - { "name": "Dagger", "type": "weapon", "damage": "1d4", "properties": ["Finesse", "Thrown", "Close", "Near"], "equipped": true }
-- { "name": "Longbow", "type": "weapon", "damage": "1d8", "properties": ["Two-handed", "Far"], "equipped": false }
+- { "name": "Longbow", "type": "weapon", "damage": "1d8", "properties": ["Two-handed", "Far"], "slots": 2, "equipped": false }
 - { "name": "Leather armor", "type": "armor", "properties": ["AC 11 + DEX mod"], "equipped": true }
-- { "name": "Shield", "type": "shield", "properties": ["+2 AC"], "equipped": false }
 - { "name": "Thieves' tools", "type": "gear", "description": "Picks, tension wrenches, mirror wire, and chalk for bypassing locks and traps." }
 - { "name": "Arrows", "type": "ammunition", "quantity": 20 }
-- { "name": "Torch", "type": "gear", "description": "Burns for 1 hour, illuminates near range.", "quantity": 2 }
+- { "name": "Holy symbol", "type": "gear", "slots": 0, "description": "A sacred symbol of your deity. Worn; takes no gear slot." }
+- { "name": "Ring of Protection", "type": "gear", "slots": 0, "description": "Worn on the finger. Takes no gear slot." }
 
 ### Step 9: Final Summary
 Present the completed character sheet. Also include a "campaignUpdates" block with a "gmPersona" field — a 2-3 sentence description of your Game Master identity that has emerged during this character creation (your name, manner of speaking, personality quirks, narrative style). This persona will be fed back to you in future sessions so you remain the same Game Master throughout the campaign.

@@ -33,6 +33,7 @@ export interface EquipmentItem {
   damage?: string;
   properties?: string[];
   description?: string;
+  slots?: number;   // gear slots consumed; 0 = worn/small (no slot cost); defaults to 1
   quantity?: number;
   equipped?: boolean;
 }
