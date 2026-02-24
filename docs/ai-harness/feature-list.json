@@ -15,13 +15,12 @@
     {
       "id": "db-schema",
       "name": "Database schema (characters, campaigns, sessions)",
-      "status": "in-progress",
-      "notes": "Drizzle schema exists but DB not wired — campaign API routes return stub data",
+      "status": "done",
       "tests": [
         { "name": "Drizzle schema compiles", "pass": true },
         { "name": "Characters table has all required fields", "pass": true },
         { "name": "Campaigns and sessions tables are linked", "pass": true },
-        { "name": "API routes read/write from D1", "pass": false }
+        { "name": "API routes read/write from D1", "pass": true }
       ]
     },
     {
@@ -104,14 +103,14 @@
     {
       "id": "gameplay-loop",
       "name": "Gameplay chat loop (/play/[campaignId])",
-      "status": "in-progress",
-      "notes": "UI works but relies on stub data — needs DB wiring and character creation → gameplay handoff",
+      "status": "done",
+      "notes": "Opening scene auto-generated on first visit; autosave after every turn; session resume works.",
       "tests": [
         { "name": "Three-column layout renders", "pass": true },
         { "name": "Streaming AI responses display correctly", "pass": true },
         { "name": "Character sheet sidebar shows live data", "pass": true },
         { "name": "Chat input auto-focuses when AI finishes", "pass": true },
-        { "name": "State changes from AI update UI and DB", "pass": false }
+        { "name": "State changes from AI update UI and DB", "pass": true }
       ]
     },
     {
@@ -156,14 +155,14 @@
     {
       "id": "persistence",
       "name": "End-to-end data persistence",
-      "status": "in-progress",
-      "notes": "D1 wired for character creation → campaign handoff and per-turn saves. Session resume (messages across browser close) not yet done.",
+      "status": "done",
+      "notes": "Verified with Dryn's campaign: 167 gold, full gear, 70K bytes of message history. Close and return to URL — picks up exactly where left off.",
       "tests": [
         { "name": "Character saved to D1 after creation", "pass": true },
         { "name": "Campaign created and linked to character", "pass": true },
         { "name": "Character creation redirects to /play/[campaignId]", "pass": true },
         { "name": "Campaign state saved between turns", "pass": true },
-        { "name": "Session resumable after browser close", "pass": false }
+        { "name": "Session resumable after browser close", "pass": true }
       ]
     }
   ]
