@@ -50,19 +50,19 @@ function DieFace({ value, sides, delay }: { value: number; sides: number; delay:
 
   if (phase === "waiting") {
     return (
-      <span className="inline-flex items-center justify-center w-9 h-9 text-sm font-bold border rounded-md border-stone-700 text-stone-600 bg-stone-800/50">
-        {isD6 ? <span className="text-xl opacity-30">{D6_FACES[0]}</span> : "?"}
+      <span className="inline-flex items-center justify-center w-11 h-11 rounded-md text-stone-600 bg-stone-800/50">
+        {isD6 ? <span className="text-2xl opacity-30">{D6_FACES[0]}</span> : <span className="text-base font-bold">?</span>}
       </span>
     );
   }
 
   if (phase === "tumbling") {
     return (
-      <span className="inline-flex items-center justify-center w-9 h-9 border rounded-md border-stone-500 bg-stone-800 animate-dice-tumble">
+      <span className="inline-flex items-center justify-center w-11 h-11 rounded-md bg-stone-800 animate-dice-tumble">
         {isD6 ? (
-          <span className="text-xl text-stone-300">{D6_FACES[displayValue - 1]}</span>
+          <span className="text-2xl text-stone-300">{D6_FACES[displayValue - 1]}</span>
         ) : (
-          <span className="text-sm font-bold text-stone-300">{displayValue}</span>
+          <span className="text-base font-bold text-stone-300">{displayValue}</span>
         )}
       </span>
     );
@@ -70,11 +70,11 @@ function DieFace({ value, sides, delay }: { value: number; sides: number; delay:
 
   // revealed
   return (
-    <span className="inline-flex items-center justify-center w-9 h-9 border rounded-md border-[var(--color-gold-dim)] bg-stone-900 transition-all duration-300 scale-110 animate-dice-land">
+    <span className="inline-flex items-center justify-center w-11 h-11 rounded-md bg-stone-900 transition-all duration-300 scale-110 animate-dice-land">
       {isD6 ? (
-        <span className="text-xl text-[var(--color-gold)]">{D6_FACES[value - 1]}</span>
+        <span className="text-2xl text-[var(--color-gold)]">{D6_FACES[value - 1]}</span>
       ) : (
-        <span className="text-sm font-bold text-[var(--color-gold)]">{value}</span>
+        <span className="text-base font-bold text-[var(--color-gold)]">{value}</span>
       )}
     </span>
   );
