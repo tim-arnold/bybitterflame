@@ -1,0 +1,170 @@
+{
+  "project": "Shadowdark AI Game Master",
+  "features": [
+    {
+      "id": "rules-docs",
+      "name": "Curated rules markdown files",
+      "status": "done",
+      "tests": [
+        { "name": "All 12 rules files exist in src/lib/rules/", "pass": true },
+        { "name": "Character creation rules are complete and accurate", "pass": true },
+        { "name": "Combat rules include all mechanics", "pass": true },
+        { "name": "Spell list is comprehensive with all descriptions", "pass": false }
+      ]
+    },
+    {
+      "id": "db-schema",
+      "name": "Database schema (characters, campaigns, sessions)",
+      "status": "in-progress",
+      "notes": "Drizzle schema exists but DB not wired — campaign API routes return stub data",
+      "tests": [
+        { "name": "Drizzle schema compiles", "pass": true },
+        { "name": "Characters table has all required fields", "pass": true },
+        { "name": "Campaigns and sessions tables are linked", "pass": true },
+        { "name": "API routes read/write from D1", "pass": false }
+      ]
+    },
+    {
+      "id": "ai-client",
+      "name": "Claude API streaming integration",
+      "status": "done",
+      "tests": [
+        { "name": "Streaming chat route returns valid responses", "pass": true },
+        { "name": "System prompt includes character and rules data", "pass": true },
+        { "name": "Error handling for API failures", "pass": true }
+      ]
+    },
+    {
+      "id": "rules-loader",
+      "name": "Selective rules loading based on game context",
+      "status": "done",
+      "tests": [
+        { "name": "Combat rules loaded when inCombat flag set", "pass": true },
+        { "name": "Character creation rules loaded during creation", "pass": true },
+        { "name": "Token count stays manageable", "pass": true }
+      ]
+    },
+    {
+      "id": "gamestate-parser",
+      "name": "Parse gamestate JSON from AI responses",
+      "status": "done",
+      "tests": [
+        { "name": "Extracts gamestate blocks from narrative", "pass": true },
+        { "name": "Parses character updates correctly", "pass": true },
+        { "name": "Handles missing or malformed blocks gracefully", "pass": true }
+      ]
+    },
+    {
+      "id": "dice-system",
+      "name": "Dice rolling (virtual + manual)",
+      "status": "done",
+      "tests": [
+        { "name": "All die types work (d4-d20)", "pass": true },
+        { "name": "Advantage/disadvantage rolls correctly", "pass": true },
+        { "name": "Stat modifier calculation is accurate", "pass": true },
+        { "name": "Manual dice input mode works", "pass": true }
+      ]
+    },
+    {
+      "id": "dice-ux",
+      "name": "Dice animation with phased narrative reveal",
+      "status": "done",
+      "notes": "Gamestate block must be first in AI response for streaming suppression. Narrative splits at --- for two-phase reveal with Continue button.",
+      "tests": [
+        { "name": "Dice tumble animation plays before any narrative", "pass": true },
+        { "name": "Narrative suppressed during streaming when gamestate detected", "pass": true },
+        { "name": "Flavor text fades in after dice complete", "pass": true },
+        { "name": "Continue button reveals scores and next question", "pass": true },
+        { "name": "Same component instance preserved across streaming → final", "pass": true }
+      ]
+    },
+    {
+      "id": "character-creation",
+      "name": "Character creation flow (/create)",
+      "status": "done",
+      "notes": "Steps: Ability Scores → Ancestry → Class → Alignment → Name & Pronouns → Background → Hit Points → Equipment & Gold → Final Summary",
+      "tests": [
+        { "name": "Chat-driven creation with initializer agent", "pass": true },
+        { "name": "Live character preview sidebar updates", "pass": true },
+        { "name": "Pronouns asked and stored", "pass": true },
+        { "name": "All stats/choices persist to DB", "pass": false },
+        { "name": "Redirect to gameplay after completion", "pass": false }
+      ]
+    },
+    {
+      "id": "gm-persona",
+      "name": "Persistent GM persona across sessions",
+      "status": "done",
+      "notes": "AI establishes persona during character creation, stored as campaign.gmPersona, injected into session prompt",
+      "tests": [
+        { "name": "GM persona emitted in final gamestate block", "pass": true },
+        { "name": "Session prompt includes persona when available", "pass": true }
+      ]
+    },
+    {
+      "id": "gameplay-loop",
+      "name": "Gameplay chat loop (/play/[campaignId])",
+      "status": "in-progress",
+      "notes": "UI works but relies on stub data — needs DB wiring and character creation → gameplay handoff",
+      "tests": [
+        { "name": "Three-column layout renders", "pass": true },
+        { "name": "Streaming AI responses display correctly", "pass": true },
+        { "name": "Character sheet sidebar shows live data", "pass": true },
+        { "name": "Chat input auto-focuses when AI finishes", "pass": true },
+        { "name": "State changes from AI update UI and DB", "pass": false }
+      ]
+    },
+    {
+      "id": "torch-timer",
+      "name": "Real-time torch timer",
+      "status": "pending",
+      "tests": [
+        { "name": "60-minute countdown works", "pass": false },
+        { "name": "Persists across page refreshes (localStorage)", "pass": false },
+        { "name": "AI notified when torch expires", "pass": false }
+      ]
+    },
+    {
+      "id": "session-management",
+      "name": "Session save/resume with AI summaries",
+      "status": "pending",
+      "tests": [
+        { "name": "End session triggers AI summary generation", "pass": false },
+        { "name": "Resume loads summaries into system prompt", "pass": false },
+        { "name": "AI references previous events on resume", "pass": false }
+      ]
+    },
+    {
+      "id": "combat-tracker",
+      "name": "Combat tracking UI",
+      "status": "pending",
+      "tests": [
+        { "name": "Initiative order displays", "pass": false },
+        { "name": "Turn indicators work", "pass": false }
+      ]
+    },
+    {
+      "id": "ui-theme",
+      "name": "Dark fantasy UI theme",
+      "status": "done",
+      "tests": [
+        { "name": "Dark backgrounds with gold accents", "pass": true },
+        { "name": "Serif font for GM narration", "pass": true },
+        { "name": "Mobile responsive layout", "pass": true }
+      ]
+    },
+    {
+      "id": "persistence",
+      "name": "End-to-end data persistence",
+      "status": "pending",
+      "notes": "The big remaining blocker — DB wiring, character creation → campaign handoff, session save/load",
+      "tests": [
+        { "name": "Character saved to D1 after creation", "pass": false },
+        { "name": "Campaign created and linked to character", "pass": false },
+        { "name": "Character creation redirects to /play/[campaignId]", "pass": false },
+        { "name": "Campaign state saved between turns", "pass": false },
+        { "name": "Session resumable after browser close", "pass": false }
+      ]
+    }
+  ]
+}

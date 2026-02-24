@@ -60,6 +60,46 @@ Three-column `GameLayout` on desktop (left sidebar: character sheet, center: cha
 
 - `ANTHROPIC_API_KEY` — required for Claude API access
 
+## Version Control Conventions
+- Do not include Claude attribution in commit messages
+- Provide detailed commit messages
+
+## AI-Assisted Development
+
+This project uses an AI agent harness for session continuity. The harness files live in `docs/ai-harness/`.
+
+### Harness Files
+
+| File | Purpose |
+|------|---------|
+| `docs/ai-harness/progress.md` | Current project state, what works, what doesn't, recent session logs |
+| `docs/ai-harness/feature-list.json` | Structured feature checklist with per-feature test criteria and pass/fail status |
+
+### Session Startup
+
+At the start of each session:
+1. Read `docs/ai-harness/progress.md` — current state and recent work
+2. Check `git log --oneline -10` — recent commits
+3. Review `docs/ai-harness/feature-list.json` — feature status and next priorities
+4. Run `npm run build` — verify the project compiles cleanly
+
+**Trigger phrases:** "start session", "get up to speed", "read the harness"
+
+### Session Closeout
+
+Before ending a session:
+1. Update `docs/ai-harness/progress.md` with work completed
+2. Update `docs/ai-harness/feature-list.json` if features or tests were completed
+3. Commit changes with descriptive messages
+
+**Trigger phrases:** "close session", "wrap up", "end session"
+
+### Key Principles
+
+- Work on **one feature at a time**. Complete and verify before moving on.
+- `feature-list.json` tests are the source of truth for "done". Mark tests as passing only after manual or build verification.
+- `progress.md` is for human-readable context. Keep it concise — what works, what doesn't, and a log entry per session.
+
 ## TODO / Not Yet Wired
 
 - Database (Cloudflare D1 via Drizzle) — schema exists at `src/lib/db/schema.ts` but campaign API routes return stub data
