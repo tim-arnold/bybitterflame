@@ -31,6 +31,8 @@ interface DeathData {
   causeOfDeath: string;
   legacyTalent?: string;
   killedByCompanionId?: string | null;
+  deathNarrative?: string;
+  companionsAtDeath?: Companion[];
 }
 
 export default function PlayPage() {
@@ -258,7 +260,7 @@ export default function PlayPage() {
         }
 
         // Parse gamestate updates
-        const { updates } = parseGameState(fullResponse);
+        const { narrative, updates } = parseGameState(fullResponse);
 
         let updatedCharacter = { ...character };
         let updatedCampaign = { ...campaign };
@@ -315,7 +317,11 @@ export default function PlayPage() {
           }
           if (update.type === "playerDied") {
             setIsDead(true);
-            setDeathData(update.data as unknown as DeathData);
+            setDeathData({
+              ...(update.data as unknown as DeathData),
+              deathNarrative: narrative,
+              companionsAtDeath: updatedCompanions,
+            });
           }
         }
 

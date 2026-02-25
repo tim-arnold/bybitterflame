@@ -8,6 +8,8 @@ interface DeathData {
   causeOfDeath: string;
   legacyTalent?: string;
   killedByCompanionId?: string | null;
+  deathNarrative?: string;
+  companionsAtDeath?: Companion[];
 }
 
 interface DeathScreenProps {
@@ -29,17 +31,18 @@ export function DeathScreen({
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fade in on mount
     const t = setTimeout(() => setVisible(true), 50);
     return () => clearTimeout(t);
   }, []);
 
-  const activeCompanions = companions.filter(
+  // Use companions captured at death time; fall back to live prop
+  const companionList = deathData.companionsAtDeath ?? companions;
+  const activeCompanions = companionList.filter(
     (c) => c.status === "active" || c.status === "incapacitated",
   );
 
   const forcedCompanion = deathData.killedByCompanionId
-    ? companions.find((c) => c.id === deathData.killedByCompanionId)
+    ? companionList.find((c) => c.id === deathData.killedByCompanionId)
     : null;
 
   function handleConfirm() {
@@ -66,21 +69,16 @@ export function DeathScreen({
     >
       {/* Background image */}
       <div className="absolute inset-0">
-        <Image
-          src="/cover.png"
-          alt="Death screen"
-          fill
-          className="object-cover"
-          priority
-        />
+        <Image src="/cover.png" alt="Death screen" fill className="object-cover" priority />
       </div>
 
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/85" />
 
-      {/* Content panel */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
-        <div className="w-full max-w-lg space-y-6">
+      {/* Scrollable content */}
+      <div className="relative z-10 min-h-screen overflow-y-auto px-4 py-12">
+        <div className="w-full max-w-lg mx-auto space-y-6">
+
           {/* Death header */}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold text-stone-100 tracking-widest uppercase">
@@ -88,6 +86,18 @@ export function DeathScreen({
             </h1>
             <p className="text-stone-400 italic text-sm">{deathData.causeOfDeath}</p>
           </div>
+
+          {/* Death narrative from the GM */}
+          {deathData.deathNarrative && (
+            <div className="bg-stone-950/70 border border-stone-700/50 rounded-lg px-5 py-4">
+              <p className="text-stone-300 text-sm leading-relaxed italic whitespace-pre-wrap">
+                {deathData.deathNarrative}
+              </p>
+            </div>
+          )}
+
+          {/* Divider */}
+          <div className="border-t border-stone-700/50" />
 
           {/* Forced inherit — killed by companion */}
           {forcedCompanion ? (
@@ -110,8 +120,8 @@ export function DeathScreen({
                 Continue as {forcedCompanion.name}
               </button>
             </div>
+
           ) : activeCompanions.length > 0 ? (
-            /* Choose a companion */
             <div className="space-y-4">
               <p className="text-center text-stone-300 text-sm">Choose who carries your legacy.</p>
 
@@ -122,7 +132,7 @@ export function DeathScreen({
                 </div>
               )}
 
-              <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+              <div className="space-y-2">
                 {activeCompanions.map((c) => (
                   <button
                     key={c.id}
@@ -135,9 +145,7 @@ export function DeathScreen({
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-stone-100 font-medium text-sm">{c.name}</span>
-                      <span
-                        className={`text-xs ${dispositionColor[c.personality.dispositionTowardPlayer] ?? "text-stone-400"}`}
-                      >
+                      <span className={`text-xs ${dispositionColor[c.personality.dispositionTowardPlayer] ?? "text-stone-400"}`}>
                         {c.personality.dispositionTowardPlayer}
                       </span>
                     </div>
@@ -158,8 +166,8 @@ export function DeathScreen({
                   : "Select a companion"}
               </button>
             </div>
+
           ) : (
-            /* No companions */
             <div className="text-center space-y-4">
               <p className="text-stone-400 text-sm italic">Your adventure ends here.</p>
               <button
@@ -170,6 +178,7 @@ export function DeathScreen({
               </button>
             </div>
           )}
+
         </div>
       </div>
     </div>
