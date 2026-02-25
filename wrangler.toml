@@ -7,4 +7,4 @@ compatibility_flags = ["nodejs_compat"]
 binding = "DB"
 database_name = "shadowdark"
 # Replace with real database_id after running: wrangler d1 create shadowdark
-database_id = "188b0899-9eae-43b2-9c47-48cc6a5e1092"
+database_id = "aae22728-e098-4c3e-811e-aa1c73d33fbb"
