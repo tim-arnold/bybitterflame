@@ -266,6 +266,7 @@ export default function PlayPage() {
         let updatedCharacter = { ...character };
         let updatedCampaign = { ...campaign };
         let updatedCompanions = [...companions];
+        let companionsChanged = false;
 
         for (const update of updates) {
           if (update.type === "characterUpdate") {
@@ -309,6 +310,7 @@ export default function PlayPage() {
                 id: crypto.randomUUID(),
                 joinedAt: new Date().toISOString(),
               }];
+              companionsChanged = true;
             }
           }
           if (update.type === "companionUpdate") {
@@ -316,6 +318,7 @@ export default function PlayPage() {
             updatedCompanions = updatedCompanions.map((c) =>
               c.id === patch.id ? { ...c, ...patch } : c
             );
+            companionsChanged = true;
           }
           if (update.type === "playerDied") {
             setIsDead(true);
@@ -327,19 +330,22 @@ export default function PlayPage() {
           }
         }
 
-        // Sync companions into campaign worldState
-        updatedCampaign = {
-          ...updatedCampaign,
-          worldState: {
-            ...updatedCampaign.worldState,
-            companions: updatedCompanions,
-          } as typeof updatedCampaign.worldState,
-        };
+        // Only sync companions if they actually changed this turn — avoids
+        // overwriting state set by handleCompanionInherit with a stale closure.
+        if (companionsChanged) {
+          updatedCampaign = {
+            ...updatedCampaign,
+            worldState: {
+              ...updatedCampaign.worldState,
+              companions: updatedCompanions,
+            } as typeof updatedCampaign.worldState,
+          };
+        }
 
         const finalMessages = [...newMessages, { role: "assistant" as const, content: fullResponse }];
         setCharacter(updatedCharacter);
         setCampaign(updatedCampaign);
-        setCompanions(updatedCompanions);
+        if (companionsChanged) setCompanions(updatedCompanions);
         setMessages(finalMessages);
         setStreamingContent("");
 
