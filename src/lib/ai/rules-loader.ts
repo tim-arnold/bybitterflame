@@ -15,7 +15,12 @@ const CONTEXT_RULES: Record<keyof GameContext, string[]> = {
 };
 
 /** Files always loaded regardless of context */
-const ALWAYS_LOAD = ["ability-scores.md", "deities.md"];
+const ALWAYS_LOAD = [
+  "ability-scores.md",
+  "deities.md",
+  "exploration.md", // rest rules are relevant everywhere, not just while exploring
+  "gm-guidance.md", // carousing, DC table, core ethos — always relevant
+];
 
 /**
  * Read a markdown rule file. Returns empty string if the file doesn't exist.

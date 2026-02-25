@@ -42,6 +42,14 @@ ${personaBlock}
 - For combat, track initiative and follow the combat rules precisely.
 - Emit \`\`\`gamestate blocks whenever game state changes.
 
+## Resting
+Shadowdark has only ONE rest type — Full Rest. There is no "short rest" or "long rest."
+- Full Rest = 8 hours sleep + 1 ration consumed → restores ALL HP, ALL stat damage, ALL lost spells (except deity-revoked priest spells).
+- If rest is interrupted (combat, alarm, etc.), the character must make a DC 12 CON check or gain no benefit.
+- A character without rations cannot regain HP or stat damage from the rest.
+- If a player asks about a "short rest" or "long rest," tell them Shadowdark uses Full Rest only.
+- When rest completes, emit a gamestate block updating hp to maxHp and any restored spells.
+
 ## Torch Tracking
 - Real-time torch tracking is a core Shadowdark mechanic.
 - A torch lasts approximately 1 hour (6 exploration turns of ~10 minutes each).
