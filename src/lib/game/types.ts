@@ -70,6 +70,55 @@ export interface JournalEntry {
   createdAt: string;
 }
 
+export interface CompanionPersonality {
+  voice: string;
+  dispositionTowardPlayer: "loyal" | "friendly" | "neutral" | "suspicious" | "hostile";
+  riskTolerance: "reckless" | "bold" | "cautious" | "cowardly";
+  followership: "leads" | "collaborates" | "follows" | "self-interested";
+  loyalty: number; // 1–10
+  motivation: string;
+  redLines: string;
+}
+
+export interface Companion {
+  id: string;
+  name: string;
+  pronouns: string;
+  ancestry: string;
+  class: string;
+  level: number;
+  alignment: string;
+  background: string;
+  deity?: string;
+  languages?: string[];
+  str: number;
+  dex: number;
+  con: number;
+  int: number;
+  wis: number;
+  cha: number;
+  hp: number;
+  maxHp: number;
+  ac: number;
+  equipment: EquipmentItem[];
+  spells: Spell[];
+  talents: string[];
+  personality: CompanionPersonality;
+  status: "active" | "incapacitated" | "dead" | "departed" | "hostile";
+  joinedAt: string;
+}
+
+export interface LegacyCharacter {
+  name: string;
+  ancestry: string;
+  class: string;
+  level: number;
+  causeOfDeath: string;
+  inheritedBy?: string;
+  legacyTalent?: string;
+  diedAt: string;
+}
+
 export interface WorldState {
   currentLocation: string;
   visitedLocations: string[];
@@ -77,6 +126,8 @@ export interface WorldState {
   quests: Quest[];
   flags: Record<string, boolean | string>;
   journalEntries?: JournalEntry[];
+  companions?: Companion[];
+  legacyCharacters?: LegacyCharacter[];
 }
 
 export interface NPC {
@@ -145,7 +196,10 @@ export interface GameStateUpdate {
     | "diceRoll"
     | "combatAction"
     | "notification"
-    | "journalUpdate";
+    | "journalUpdate"
+    | "companionJoined"
+    | "companionUpdate"
+    | "playerDied";
   data: Record<string, unknown>;
 }
 

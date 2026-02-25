@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { ChatWindow, type Message } from "@/components/chat/ChatWindow";
 import { CharacterSheet } from "@/components/character/CharacterSheet";
 import { DiceRoller } from "@/components/dice/DiceRoller";
@@ -9,11 +9,20 @@ import { TorchTimer } from "@/components/game/TorchTimer";
 import { CombatTracker } from "@/components/game/CombatTracker";
 import { SessionControls } from "@/components/game/SessionControls";
 import { TravelersJournal } from "@/components/game/TravelersJournal";
+import { CompanionPanel } from "@/components/game/CompanionPanel";
+import { DeathScreen } from "@/components/game/DeathScreen";
 import { GameLayout } from "@/components/layout/GameLayout";
 import { parseGameState } from "@/lib/game/state-parser";
-import type { Character, Campaign, JournalEntry } from "@/lib/game/types";
+import type { Character, Campaign, JournalEntry, Companion, LegacyCharacter } from "@/lib/game/types";
+
+interface DeathData {
+  causeOfDeath: string;
+  legacyTalent?: string;
+  killedByCompanionId?: string | null;
+}
 
 export default function PlayPage() {
+  const router = useRouter();
   const params = useParams();
   const campaignId = params.campaignId as string;
 
@@ -30,6 +39,9 @@ export default function PlayPage() {
   const [combatRound, setCombatRound] = useState(1);
   const [torchExpired, setTorchExpired] = useState(false);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [companions, setCompanions] = useState<Companion[]>([]);
+  const [isDead, setIsDead] = useState(false);
+  const [deathData, setDeathData] = useState<DeathData | null>(null);
 
   useEffect(() => {
     const parts = ["ShadowdarkAI"];
@@ -56,6 +68,7 @@ export default function PlayPage() {
         setCampaign(loadedCampaign);
         setSessionNumber(loadedSessionNumber);
         setJournalEntries(loadedCampaign.worldState?.journalEntries ?? []);
+        setCompanions(loadedCampaign.worldState?.companions ?? []);
 
         if (loadedMessages.length > 0) {
           setMessages(loadedMessages);
@@ -96,6 +109,8 @@ export default function PlayPage() {
         let updatedCharacter = { ...loadedCharacter };
         let updatedCampaign = { ...loadedCampaign };
         const newEntries: JournalEntry[] = [];
+        let updatedCompanions: Companion[] = loadedCampaign.worldState?.companions ?? [];
+
         for (const update of updates) {
           if (update.type === "characterUpdate") updatedCharacter = { ...updatedCharacter, ...update.data };
           if (update.type === "campaignUpdate") updatedCampaign = { ...updatedCampaign, ...update.data };
@@ -107,7 +122,26 @@ export default function PlayPage() {
             };
             newEntries.push(entry);
           }
+          if (update.type === "companionJoined") {
+            const companion: Companion = {
+              ...(update.data as Omit<Companion, "id" | "joinedAt">),
+              id: crypto.randomUUID(),
+              joinedAt: new Date().toISOString(),
+            };
+            updatedCompanions = [...updatedCompanions, companion];
+          }
+          if (update.type === "companionUpdate") {
+            const patch = update.data as Partial<Companion> & { id: string };
+            updatedCompanions = updatedCompanions.map((c) =>
+              c.id === patch.id ? { ...c, ...patch } : c
+            );
+          }
+          if (update.type === "playerDied") {
+            setIsDead(true);
+            setDeathData(update.data as unknown as DeathData);
+          }
         }
+
         if (newEntries.length > 0) {
           const combined = [...newEntries, ...(updatedCampaign.worldState?.journalEntries ?? [])];
           updatedCampaign = {
@@ -115,6 +149,17 @@ export default function PlayPage() {
             worldState: { ...updatedCampaign.worldState, journalEntries: combined } as typeof updatedCampaign.worldState,
           };
           setJournalEntries(combined);
+        }
+
+        if (updatedCompanions !== (loadedCampaign.worldState?.companions ?? [])) {
+          updatedCampaign = {
+            ...updatedCampaign,
+            worldState: {
+              ...updatedCampaign.worldState,
+              companions: updatedCompanions,
+            } as typeof updatedCampaign.worldState,
+          };
+          setCompanions(updatedCompanions);
         }
 
         const openingMessages: Message[] = [
@@ -189,10 +234,11 @@ export default function PlayPage() {
         }
 
         // Parse gamestate updates
-        const { narrative, updates } = parseGameState(fullResponse);
+        const { updates } = parseGameState(fullResponse);
 
         let updatedCharacter = { ...character };
         let updatedCampaign = { ...campaign };
+        let updatedCompanions = [...companions];
 
         for (const update of updates) {
           if (update.type === "characterUpdate") {
@@ -221,11 +267,39 @@ export default function PlayPage() {
               } as typeof updatedCampaign.worldState,
             };
           }
+          if (update.type === "companionJoined") {
+            const companion: Companion = {
+              ...(update.data as Omit<Companion, "id" | "joinedAt">),
+              id: crypto.randomUUID(),
+              joinedAt: new Date().toISOString(),
+            };
+            updatedCompanions = [...updatedCompanions, companion];
+          }
+          if (update.type === "companionUpdate") {
+            const patch = update.data as Partial<Companion> & { id: string };
+            updatedCompanions = updatedCompanions.map((c) =>
+              c.id === patch.id ? { ...c, ...patch } : c
+            );
+          }
+          if (update.type === "playerDied") {
+            setIsDead(true);
+            setDeathData(update.data as unknown as DeathData);
+          }
         }
+
+        // Sync companions into campaign worldState
+        updatedCampaign = {
+          ...updatedCampaign,
+          worldState: {
+            ...updatedCampaign.worldState,
+            companions: updatedCompanions,
+          } as typeof updatedCampaign.worldState,
+        };
 
         const finalMessages = [...newMessages, { role: "assistant" as const, content: fullResponse }];
         setCharacter(updatedCharacter);
         setCampaign(updatedCampaign);
+        setCompanions(updatedCompanions);
         setMessages(finalMessages);
         setStreamingContent("");
 
@@ -251,8 +325,115 @@ export default function PlayPage() {
         setIsLoading(false);
       }
     },
-    [messages, character, campaign, torchExpired]
+    [messages, character, campaign, companions, torchExpired, campaignId, sessionNumber]
   );
+
+  async function handleCompanionInherit(companionId: string) {
+    const companion = companions.find((c) => c.id === companionId);
+    if (!companion) return;
+
+    // Build legacy character record for the dead character
+    const legacyChar: LegacyCharacter = {
+      name: character.name ?? "Unknown",
+      ancestry: character.ancestry ?? "",
+      class: character.class ?? "",
+      level: character.level ?? 1,
+      causeOfDeath: deathData?.causeOfDeath ?? "Unknown",
+      inheritedBy: companion.name,
+      legacyTalent: deathData?.legacyTalent,
+      diedAt: new Date().toISOString(),
+    };
+
+    // Remove the companion from the companions list (they're now the player)
+    const remainingCompanions = companions.filter((c) => c.id !== companionId);
+
+    // Build updated world state
+    const updatedWorldState = {
+      ...(campaign.worldState ?? {}),
+      companions: remainingCompanions,
+      legacyCharacters: [
+        legacyChar,
+        ...(campaign.worldState?.legacyCharacters ?? []),
+      ],
+    };
+
+    try {
+      const res = await fetch(`/api/campaign/${campaignId}/inherit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companion,
+          legacyTalent: deathData?.legacyTalent,
+          deadCharacterName: character.name ?? "Unknown",
+          updatedWorldState,
+        }),
+      });
+
+      if (!res.ok) {
+        console.error("Inherit request failed");
+        return;
+      }
+
+      const { newCharacterId } = await res.json();
+
+      // Build new character from companion stats
+      const talents = deathData?.legacyTalent
+        ? [...companion.talents, deathData.legacyTalent]
+        : [...companion.talents];
+
+      const newCharacter: Partial<Character> = {
+        id: newCharacterId,
+        name: companion.name,
+        pronouns: companion.pronouns,
+        ancestry: companion.ancestry,
+        class: companion.class,
+        level: companion.level,
+        xp: 0,
+        alignment: companion.alignment,
+        background: companion.background,
+        deity: companion.deity,
+        languages: companion.languages,
+        str: companion.str,
+        dex: companion.dex,
+        con: companion.con,
+        int: companion.int,
+        wis: companion.wis,
+        cha: companion.cha,
+        hp: companion.hp,
+        maxHp: companion.maxHp,
+        ac: companion.ac,
+        equipment: companion.equipment,
+        spells: companion.spells,
+        talents,
+        features: [],
+        gold: 0,
+        silver: 0,
+        copper: 0,
+      };
+
+      const updatedCampaign = {
+        ...campaign,
+        characterId: newCharacterId,
+        worldState: updatedWorldState as typeof campaign.worldState,
+      };
+
+      setCharacter(newCharacter);
+      setCampaign(updatedCampaign);
+      setCompanions(remainingCompanions);
+      setIsDead(false);
+      setDeathData(null);
+
+      // Trigger GM transition narration
+      const sysMsg = `[SYSTEM: CHARACTER_TRANSFER: ${character.name ?? "The fallen hero"}'s soul has passed into ${companion.name}. ${deathData?.legacyTalent ? `They carry the legacy talent: ${deathData.legacyTalent}.` : ""} Narrate this dramatic moment. The remaining companions react per their personalities.]`;
+      sendMessage(sysMsg);
+    } catch (err) {
+      console.error("Inherit failed:", err);
+    }
+  }
+
+  function handleCampaignEnd() {
+    router.push("/");
+  }
 
   function handleAddJournalEntry(entryData: Omit<JournalEntry, "id" | "createdAt">) {
     const entry: JournalEntry = {
@@ -301,7 +482,6 @@ export default function PlayPage() {
   }
 
   function handleSaveSession() {
-    // Save current state to API
     fetch(`/api/campaign/${campaignId}/save`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -311,46 +491,58 @@ export default function PlayPage() {
 
   function handleTorchExpire() {
     setTorchExpired(true);
-    // Notify on next message
   }
 
   return (
-    <GameLayout
-      leftTitle="Character"
-      rightTitle="Tools"
-      leftPanel={<CharacterSheet character={character} />}
-      centerPanel={
-        <ChatWindow
-          messages={messages}
-          streamingContent={streamingContent}
-          onSend={sendMessage}
-          isLoading={isLoading}
-          placeholder="What do you do?"
-        />
-      }
-      rightPanel={
-        <>
-          <TorchTimer campaignId={campaignId} onExpire={handleTorchExpire} />
-          <CombatTracker
-            combatants={combatants}
-            round={combatRound}
-            isInCombat={isInCombat}
-          />
-          <TravelersJournal
-            entries={journalEntries}
-            onAddEntry={handleAddJournalEntry}
-            onEditEntry={handleEditJournalEntry}
-            onDeleteEntry={handleDeleteJournalEntry}
-          />
-          <DiceRoller />
-          <SessionControls
-            sessionNumber={sessionNumber}
-            onEndSession={handleEndSession}
-            onSaveSession={handleSaveSession}
+    <>
+      <GameLayout
+        leftTitle="Character"
+        rightTitle="Tools"
+        leftPanel={<CharacterSheet character={character} />}
+        centerPanel={
+          <ChatWindow
+            messages={messages}
+            streamingContent={streamingContent}
+            onSend={sendMessage}
             isLoading={isLoading}
+            placeholder="What do you do?"
           />
-        </>
-      }
-    />
+        }
+        rightPanel={
+          <>
+            <TorchTimer campaignId={campaignId} onExpire={handleTorchExpire} />
+            <CombatTracker
+              combatants={combatants}
+              round={combatRound}
+              isInCombat={isInCombat}
+            />
+            <CompanionPanel companions={companions} />
+            <TravelersJournal
+              entries={journalEntries}
+              onAddEntry={handleAddJournalEntry}
+              onEditEntry={handleEditJournalEntry}
+              onDeleteEntry={handleDeleteJournalEntry}
+            />
+            <DiceRoller />
+            <SessionControls
+              sessionNumber={sessionNumber}
+              onEndSession={handleEndSession}
+              onSaveSession={handleSaveSession}
+              isLoading={isLoading}
+            />
+          </>
+        }
+      />
+
+      {isDead && deathData && (
+        <DeathScreen
+          deadCharacter={character}
+          companions={companions}
+          deathData={deathData}
+          onInherit={handleCompanionInherit}
+          onCampaignEnd={handleCampaignEnd}
+        />
+      )}
+    </>
   );
 }

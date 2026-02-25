@@ -93,6 +93,27 @@ function extractUpdates(
       data: parsed.journalEntry as Record<string, unknown>,
     });
   }
+
+  if (parsed.companionJoined) {
+    updates.push({
+      type: "companionJoined",
+      data: parsed.companionJoined as Record<string, unknown>,
+    });
+  }
+
+  if (parsed.companionUpdate) {
+    updates.push({
+      type: "companionUpdate",
+      data: parsed.companionUpdate as Record<string, unknown>,
+    });
+  }
+
+  if (parsed.playerDied) {
+    updates.push({
+      type: "playerDied",
+      data: parsed.playerDied as Record<string, unknown>,
+    });
+  }
 }
 
 /**

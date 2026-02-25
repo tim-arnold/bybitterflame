@@ -143,6 +143,33 @@
       ]
     },
     {
+      "id": "companion-npcs",
+      "name": "Companion NPCs with full stat sheets and personalities",
+      "status": "done",
+      "notes": "GM-controlled companions with disposition, loyalty drift, death saves, hostile turn. All state stored in worldState.companions JSON blob.",
+      "tests": [
+        { "name": "companionJoined gamestate parsed and companion added to state", "pass": false },
+        { "name": "CompanionPanel renders in right sidebar when companions present", "pass": false },
+        { "name": "companionUpdate merges HP/loyalty/status correctly", "pass": false },
+        { "name": "Companions persist across page reload from worldState", "pass": false }
+      ]
+    },
+    {
+      "id": "soul-transfer",
+      "name": "Soul transfer on player death",
+      "status": "done",
+      "notes": "playerDied gamestate triggers DeathScreen overlay. Player selects companion; inherit API creates new character. Legacy talent appended. Adventure continues.",
+      "tests": [
+        { "name": "playerDied triggers DeathScreen overlay", "pass": false },
+        { "name": "DeathScreen shows companion selection cards", "pass": false },
+        { "name": "Inherit API creates new character and updates campaign.characterId", "pass": false },
+        { "name": "Character sheet swaps to new character after transfer", "pass": false },
+        { "name": "Legacy talent appears in new character's talents list", "pass": false },
+        { "name": "No-companion path shows campaign end option", "pass": false },
+        { "name": "Hostile-companion killer path auto-selects and forces inherit", "pass": false }
+      ]
+    },
+    {
       "id": "ui-theme",
       "name": "Dark fantasy UI theme",
       "status": "done",

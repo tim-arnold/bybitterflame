@@ -36,6 +36,21 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 
 ## Recent Work
 
+### Session 3 (2026-02-25)
+- Added `CompanionPersonality`, `Companion`, `LegacyCharacter` types to `types.ts`
+- Updated `WorldState` with optional `companions` and `legacyCharacters` arrays
+- Extended `GameStateUpdate.type` union: `companionJoined | companionUpdate | playerDied`
+- Updated `state-parser.ts` to extract all three new update types
+- Updated `session.ts` prompt:
+  - `buildCompanionBlock()` helper formats active companion stat blocks (with id) for GM context
+  - Companions section: GM controls all companions per personality; loyalty drift rules; hostile turn; death saves
+  - Soul Transfer section (GM-only): playerDied format, transfer flow, system message trigger
+- Created `CompanionPanel.tsx`: collapsible right-panel card, HP bar, stats grid, loyalty pips, disposition/risk chips
+- Created `DeathScreen.tsx`: fixed overlay with cover.png background; choice of companions; forced inherit for hostile-killer path; no-companion campaign end
+- Created `POST /api/campaign/[campaignId]/inherit/route.ts`: inserts new character from companion stats + legacyTalent, updates campaign.characterId and worldState
+- Updated `play/[campaignId]/page.tsx`: companions state; isDead + deathData state; companion update handling in both openingScene and sendMessage loops; handleCompanionInherit(); handleCampaignEnd(); CompanionPanel and DeathScreen rendered
+- Build: clean ✓
+
 ### Session 2 (2026-02-24)
 - Installed wrangler, @opennextjs/cloudflare, drizzle-kit, @cloudflare/workers-types
 - Created wrangler.toml with D1 binding

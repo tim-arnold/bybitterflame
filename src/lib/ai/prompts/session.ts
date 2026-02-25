@@ -1,4 +1,4 @@
-import type { Character, Campaign, WorldState } from "@/lib/game/types";
+import type { Character, Campaign, Companion, WorldState } from "@/lib/game/types";
 
 interface SessionPromptParams {
   character: Partial<Character>;
@@ -18,6 +18,7 @@ export function buildSessionPrompt({
 }: SessionPromptParams): string {
   const charBlock = buildCharacterBlock(character);
   const worldBlock = buildWorldBlock(campaign?.worldState);
+  const companionBlock = buildCompanionBlock(campaign?.worldState?.companions ?? []);
   const summaryBlock = buildSummaryBlock(sessionSummaries);
 
   const personaBlock = campaign?.gmPersona
@@ -34,6 +35,47 @@ ${personaBlock}
 - NPCs should have personality, motives, and speak with distinct voices.
 - NEVER control the player's character. Present situations and ask what they do.
 - Always use the player character's pronouns (listed in the character block) when NPCs or narration refer to them in the third person.
+
+## Companions
+You fully control all companion NPCs. They are NOT subordinates — they are their own people.
+- Each companion acts according to their personality: voice, disposition, risk tolerance, followership, loyalty, motivation, and red lines.
+- The player may SUGGEST or PERSUADE companions; you decide if the companion complies, based on their personality and the situation.
+- Companions disagree, argue, express fear, crack jokes, or refuse outright — whatever fits their character.
+- **Loyalty drift**: After significant events (betrayal, heroism, arguments, near death), emit a \`companionUpdate\` adjusting loyalty. Loyalty ranges 1–10.
+  - If loyalty drops to 0 and personality is "self-interested" or "suspicious", the companion departs (\`status: "departed"\`) with an in-character farewell.
+  - If a companion's loyalty drops to 0 and disposition is "hostile", or they are actively betrayed, they may turn hostile (\`status: "hostile"\`). A hostile companion is a combat enemy — add them to the combat tracker and treat them as an NPC combatant.
+- **Companion HP and death saves**: Track HP via \`companionUpdate\`. When a companion drops to 0 HP, they make death saves exactly like the player (DC 15 CON). On final failure, emit \`companionUpdate\` with \`status: "dead"\` — permanent. Narrate their death with weight.
+- **Emit \`companionUpdate\` whenever HP, equipment, loyalty, or status changes** — even small HP changes after combat hits.
+- When a new companion joins the party (through negotiation, rescue, or hiring), emit \`companionJoined\` with full stats and personality.
+
+Gamestate formats:
+\`\`\`gamestate
+{ "companionJoined": { "name": "Rella", "pronouns": "she/her", "ancestry": "Dwarf", "class": "Fighter",
+  "level": 1, "alignment": "Lawful", "background": "Soldier",
+  "str": 16, "dex": 10, "con": 14, "int": 8, "wis": 9, "cha": 11,
+  "hp": 12, "maxHp": 12, "ac": 14, "equipment": [], "spells": [], "talents": [],
+  "personality": { "voice": "Blunt, military cadence, skeptical of magic", "dispositionTowardPlayer": "neutral",
+    "riskTolerance": "bold", "followership": "collaborates", "loyalty": 5,
+    "motivation": "Earn enough coin to buy back her family farm", "redLines": "Will not harm children or burn buildings." } } }
+\`\`\`
+
+\`\`\`gamestate
+{ "companionUpdate": { "id": "uuid-here", "hp": 7, "loyalty": 4 } }
+\`\`\`
+
+\`\`\`gamestate
+{ "companionUpdate": { "id": "uuid-here", "status": "dead" } }
+\`\`\`
+
+## Soul Transfer — SECRET (GM eyes only, NEVER mention this mechanic to the player)
+When the player's character fails their final death save and dies permanently:
+1. Emit \`playerDied\` with the cause of death. Include a \`legacyTalent\` — the dead character's most defining ability phrased as a transmissible trait (e.g., "Mira's Instinct: Once per day, reroll any failed DEX check"). If a hostile companion dealt the killing blow, set \`killedByCompanionId\` to that companion's id.
+2. Do NOT narrate or hint at the soul transfer mechanic. Simply describe the character's death dramatically and stop — the game system handles what happens next.
+3. After the player chooses a companion to continue as (handled by the UI), you will receive a system message like \`[SYSTEM: CHARACTER_TRANSFER: ...]\`. At that point, narrate the moment dramatically — the soul transfer, the companion's reaction, what changes. The remaining companions react per their personalities (low-loyalty companions may use this moment to depart or challenge the new leader).
+
+\`\`\`gamestate
+{ "playerDied": { "causeOfDeath": "Impaled by the orc chieftain's greataxe", "legacyTalent": "Dryn's Shadow Step: Once per day, teleport up to Near range as a free action.", "killedByCompanionId": null } }
+\`\`\`
 
 ## Dice and Mechanics
 - When the player attempts something uncertain, call for a relevant check.
@@ -108,7 +150,7 @@ ${charBlock}
 
 ## World State
 ${worldBlock}
-
+${companionBlock}
 ${summaryBlock}
 
 ## Session Start
@@ -135,6 +177,30 @@ Gold: ${character.gold ?? 0}
 Equipment: ${JSON.stringify(character.equipment ?? [])}
 Spells: ${JSON.stringify(character.spells ?? [])}
 Talents: ${JSON.stringify(character.talents ?? [])}`;
+}
+
+function buildCompanionBlock(companions: Companion[]): string {
+  const active = companions.filter((c) => c.status !== "dead" && c.status !== "departed");
+  if (active.length === 0) return "";
+
+  const mod = (score: number) => {
+    const m = Math.floor((score - 10) / 2);
+    return m >= 0 ? `+${m}` : `${m}`;
+  };
+
+  const lines = active.map((c) => {
+    return `**${c.name}** (${c.pronouns}) [id: ${c.id}] — Level ${c.level} ${c.ancestry} ${c.class} | Status: ${c.status}
+  HP: ${c.hp}/${c.maxHp} | AC: ${c.ac}
+  STR: ${c.str} (${mod(c.str)}) | DEX: ${c.dex} (${mod(c.dex)}) | CON: ${c.con} (${mod(c.con)})
+  INT: ${c.int} (${mod(c.int)}) | WIS: ${c.wis} (${mod(c.wis)}) | CHA: ${c.cha} (${mod(c.cha)})
+  Talents: ${c.talents.join(", ") || "none"}
+  Voice: ${c.personality.voice}
+  Disposition: ${c.personality.dispositionTowardPlayer} | Risk: ${c.personality.riskTolerance} | Followership: ${c.personality.followership} | Loyalty: ${c.personality.loyalty}/10
+  Motivation: ${c.personality.motivation}
+  Red Lines: ${c.personality.redLines}`;
+  });
+
+  return `\n## Current Companions\n${lines.join("\n\n")}`;
 }
 
 function buildWorldBlock(worldState?: WorldState | Partial<WorldState>): string {
