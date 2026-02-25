@@ -15,6 +15,17 @@ import { GameLayout } from "@/components/layout/GameLayout";
 import { parseGameState } from "@/lib/game/state-parser";
 import type { Character, Campaign, JournalEntry, Companion, LegacyCharacter } from "@/lib/game/types";
 
+/** Keep only the first companion with each name (guards against GM re-emitting companionJoined) */
+function deduplicateCompanions(companions: Companion[]): Companion[] {
+  const seen = new Set<string>();
+  return companions.filter((c) => {
+    const key = c.name.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 interface DeathData {
   causeOfDeath: string;
   legacyTalent?: string;
@@ -68,7 +79,9 @@ export default function PlayPage() {
         setCampaign(loadedCampaign);
         setSessionNumber(loadedSessionNumber);
         setJournalEntries(loadedCampaign.worldState?.journalEntries ?? []);
-        setCompanions(loadedCampaign.worldState?.companions ?? []);
+        // Deduplicate companions by name on load (guards against re-emission bugs)
+        const dedupedCompanions = deduplicateCompanions(loadedCampaign.worldState?.companions ?? []);
+        setCompanions(dedupedCompanions);
 
         if (loadedMessages.length > 0) {
           setMessages(loadedMessages);
@@ -109,7 +122,7 @@ export default function PlayPage() {
         let updatedCharacter = { ...loadedCharacter };
         let updatedCampaign = { ...loadedCampaign };
         const newEntries: JournalEntry[] = [];
-        let updatedCompanions: Companion[] = loadedCampaign.worldState?.companions ?? [];
+        let updatedCompanions: Companion[] = dedupedCompanions;
 
         for (const update of updates) {
           if (update.type === "characterUpdate") updatedCharacter = { ...updatedCharacter, ...update.data };
@@ -123,12 +136,17 @@ export default function PlayPage() {
             newEntries.push(entry);
           }
           if (update.type === "companionJoined") {
-            const companion: Companion = {
-              ...(update.data as Omit<Companion, "id" | "joinedAt">),
-              id: crypto.randomUUID(),
-              joinedAt: new Date().toISOString(),
-            };
-            updatedCompanions = [...updatedCompanions, companion];
+            const data = update.data as Omit<Companion, "id" | "joinedAt">;
+            const alreadyExists = updatedCompanions.some(
+              (c) => c.name.toLowerCase() === (data.name ?? "").toLowerCase()
+            );
+            if (!alreadyExists) {
+              updatedCompanions = [...updatedCompanions, {
+                ...data,
+                id: crypto.randomUUID(),
+                joinedAt: new Date().toISOString(),
+              }];
+            }
           }
           if (update.type === "companionUpdate") {
             const patch = update.data as Partial<Companion> & { id: string };
@@ -268,12 +286,17 @@ export default function PlayPage() {
             };
           }
           if (update.type === "companionJoined") {
-            const companion: Companion = {
-              ...(update.data as Omit<Companion, "id" | "joinedAt">),
-              id: crypto.randomUUID(),
-              joinedAt: new Date().toISOString(),
-            };
-            updatedCompanions = [...updatedCompanions, companion];
+            const data = update.data as Omit<Companion, "id" | "joinedAt">;
+            const alreadyExists = updatedCompanions.some(
+              (c) => c.name.toLowerCase() === (data.name ?? "").toLowerCase()
+            );
+            if (!alreadyExists) {
+              updatedCompanions = [...updatedCompanions, {
+                ...data,
+                id: crypto.randomUUID(),
+                joinedAt: new Date().toISOString(),
+              }];
+            }
           }
           if (update.type === "companionUpdate") {
             const patch = update.data as Partial<Companion> & { id: string };

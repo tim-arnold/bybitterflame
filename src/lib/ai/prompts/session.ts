@@ -47,6 +47,7 @@ You fully control all companion NPCs. They are NOT subordinates — they are the
 - **Companion HP and death saves**: Track HP via \`companionUpdate\`. When a companion drops to 0 HP, they make death saves exactly like the player (DC 15 CON). On final failure, emit \`companionUpdate\` with \`status: "dead"\` — permanent. Narrate their death with weight.
 - **Emit \`companionUpdate\` whenever HP, equipment, loyalty, or status changes** — even small HP changes after combat hits.
 - When a new companion joins the party (through negotiation, rescue, or hiring), emit \`companionJoined\` with full stats and personality.
+- **IMPORTANT**: Companions already listed in "Current Companions" below are ALREADY registered. Do NOT emit \`companionJoined\` for them again — use \`companionUpdate\` for any changes to their state.
 
 Gamestate formats:
 \`\`\`gamestate
