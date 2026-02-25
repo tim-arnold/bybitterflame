@@ -215,7 +215,7 @@ export default function PlayPage() {
   }, [campaignId]);
 
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, { hidden = false }: { hidden?: boolean } = {}) => {
       // Inject torch context if expired
       let messageContent = content;
       if (torchExpired) {
@@ -223,7 +223,7 @@ export default function PlayPage() {
         setTorchExpired(false);
       }
 
-      const userMessage: Message = { role: "user", content: messageContent };
+      const userMessage: Message = { role: "user", content: messageContent, hidden };
       const newMessages = [...messages, userMessage];
       setMessages(newMessages);
       setIsLoading(true);
@@ -457,7 +457,7 @@ export default function PlayPage() {
 
       // Trigger GM transition narration
       const sysMsg = `[SYSTEM: CHARACTER_TRANSFER: ${character.name ?? "The fallen hero"}'s soul has passed into ${companion.name}. ${deathData?.legacyTalent ? `They carry the legacy talent: ${deathData.legacyTalent}.` : ""} Narrate this dramatic moment. The remaining companions react per their personalities.]`;
-      sendMessage(sysMsg);
+      sendMessage(sysMsg, { hidden: true });
     } catch (err) {
       console.error("Inherit failed:", err);
     }
@@ -510,7 +510,7 @@ export default function PlayPage() {
   }
 
   function handleEndSession() {
-    sendMessage("[SYSTEM: The player wants to end this session. Please provide a summary of what happened.]");
+    sendMessage("[SYSTEM: The player wants to end this session. Please provide a summary of what happened.]", { hidden: true });
   }
 
   function handleSaveSession() {
@@ -537,7 +537,9 @@ export default function PlayPage() {
       return updated;
     });
     if (isLighting) {
-      sendMessage("[SYSTEM: The player has just lit a torch. 60 minutes of real-world light begins now. Acknowledge this briefly in your narration — a flicker of warmth against the dark.]");
+      sendMessage("[SYSTEM: The player has just lit a torch. 60 minutes of real-world light begins now. Acknowledge this briefly in your narration.]", { hidden: true });
+    } else {
+      sendMessage("[SYSTEM: The player has extinguished their torch. Acknowledge this briefly — darkness closes in or they have another light source.]", { hidden: true });
     }
   }
 
