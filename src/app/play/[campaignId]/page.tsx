@@ -127,7 +127,12 @@ export default function PlayPage() {
 
         for (const update of updates) {
           if (update.type === "characterUpdate") updatedCharacter = { ...updatedCharacter, ...update.data };
-          if (update.type === "campaignUpdate") updatedCampaign = { ...updatedCampaign, ...update.data };
+          if (update.type === "campaignUpdate") {
+            updatedCampaign = {
+              ...updatedCampaign,
+              worldState: { ...updatedCampaign.worldState, ...update.data } as typeof updatedCampaign.worldState,
+            };
+          }
           if (update.type === "journalUpdate") {
             const entry: JournalEntry = {
               ...(update.data as Omit<JournalEntry, "id" | "createdAt">),
@@ -264,7 +269,10 @@ export default function PlayPage() {
             updatedCharacter = { ...updatedCharacter, ...update.data };
           }
           if (update.type === "campaignUpdate") {
-            updatedCampaign = { ...updatedCampaign, ...update.data };
+            updatedCampaign = {
+              ...updatedCampaign,
+              worldState: { ...updatedCampaign.worldState, ...update.data } as typeof updatedCampaign.worldState,
+            };
           }
           if (update.type === "combatAction") {
             if (update.data.active !== undefined) setIsInCombat(update.data.active as boolean);
