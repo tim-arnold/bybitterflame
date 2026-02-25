@@ -1,93 +1,80 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 interface TorchTimerProps {
+  /** ISO timestamp from worldState — source of truth across sessions */
+  torchExpiresAt?: string;
+  /** Called when torch is lit (expiresAt = ISO string) or goes out (null) */
+  onTorchStateChange?: (expiresAt: string | null) => void;
+  /** Called when the torch burns out naturally */
   onExpire?: () => void;
-  campaignId?: string;
 }
 
-const TORCH_DURATION = 60 * 60; // 60 minutes in seconds
+const TORCH_DURATION_MS = 60 * 60 * 1000; // 60 minutes
 
-function getStorageKey(campaignId?: string) {
-  return `torch-timer-${campaignId || "default"}`;
+function secondsRemaining(expiresAt: string): number {
+  return Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
 }
 
-export function TorchTimer({ onExpire, campaignId }: TorchTimerProps) {
-  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
-  const [isActive, setIsActive] = useState(false);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const key = getStorageKey(campaignId);
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      const data = JSON.parse(saved);
-      if (data.isActive && data.expiresAt) {
-        const remaining = Math.max(0, Math.floor((data.expiresAt - Date.now()) / 1000));
-        if (remaining > 0) {
-          setSecondsLeft(remaining);
-          setIsActive(true);
-        } else {
-          localStorage.removeItem(key);
-        }
-      }
+export function TorchTimer({ torchExpiresAt, onTorchStateChange, onExpire }: TorchTimerProps) {
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(() => {
+    if (torchExpiresAt) {
+      const secs = secondsRemaining(torchExpiresAt);
+      return secs > 0 ? secs : null;
     }
-  }, [campaignId]);
+    return null;
+  });
 
-  // Persist to localStorage
-  const persist = useCallback(
-    (active: boolean, seconds: number | null) => {
-      const key = getStorageKey(campaignId);
-      if (active && seconds !== null && seconds > 0) {
-        localStorage.setItem(
-          key,
-          JSON.stringify({ isActive: true, expiresAt: Date.now() + seconds * 1000 })
-        );
-      } else {
-        localStorage.removeItem(key);
-      }
-    },
-    [campaignId]
-  );
-
-  // Countdown
+  // Sync when worldState loads (torchExpiresAt prop arrives after initial render)
   useEffect(() => {
-    if (!isActive || secondsLeft === null) return;
-
-    if (secondsLeft <= 0) {
-      setIsActive(false);
-      persist(false, null);
-      onExpire?.();
-      return;
+    if (torchExpiresAt) {
+      const secs = secondsRemaining(torchExpiresAt);
+      setSecondsLeft(secs > 0 ? secs : null);
+    } else {
+      setSecondsLeft(null);
     }
+  }, [torchExpiresAt]);
 
-    const timer = setInterval(() => {
+  // Countdown tick
+  useEffect(() => {
+    if (secondsLeft === null || secondsLeft <= 0) return;
+
+    const interval = setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev === null || prev <= 1) return 0;
         return prev - 1;
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [isActive, secondsLeft, onExpire, persist]);
+    return () => clearInterval(interval);
+  }, [secondsLeft !== null && secondsLeft > 0]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Detect natural expiry (reached zero)
+  useEffect(() => {
+    if (secondsLeft === 0 && torchExpiresAt) {
+      setSecondsLeft(null);
+      onExpire?.();
+      onTorchStateChange?.(null);
+    }
+  }, [secondsLeft]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function lightTorch() {
-    setSecondsLeft(TORCH_DURATION);
-    setIsActive(true);
-    persist(true, TORCH_DURATION);
+    const expiresAt = new Date(Date.now() + TORCH_DURATION_MS).toISOString();
+    setSecondsLeft(TORCH_DURATION_MS / 1000);
+    onTorchStateChange?.(expiresAt);
   }
 
   function extinguish() {
     setSecondsLeft(null);
-    setIsActive(false);
-    persist(false, null);
+    onTorchStateChange?.(null);
   }
 
-  const minutes = secondsLeft !== null ? Math.floor(secondsLeft / 60) : 0;
-  const seconds = secondsLeft !== null ? secondsLeft % 60 : 0;
-
-  const pct = secondsLeft !== null ? (secondsLeft / TORCH_DURATION) * 100 : 0;
+  const isActive = secondsLeft !== null && secondsLeft > 0;
+  const totalSecs = TORCH_DURATION_MS / 1000;
+  const pct = isActive ? (secondsLeft! / totalSecs) * 100 : 0;
+  const minutes = isActive ? Math.floor(secondsLeft! / 60) : 0;
+  const seconds = isActive ? secondsLeft! % 60 : 0;
 
   let urgency = "text-[var(--color-gold)]";
   if (pct <= 10) urgency = "text-red-500 animate-pulse";
@@ -115,7 +102,7 @@ export function TorchTimer({ onExpire, campaignId }: TorchTimerProps) {
         )}
       </div>
 
-      {isActive && secondsLeft !== null ? (
+      {isActive ? (
         <>
           <div className={`text-center text-2xl font-mono font-bold ${urgency}`}>
             {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
@@ -130,9 +117,7 @@ export function TorchTimer({ onExpire, campaignId }: TorchTimerProps) {
           </div>
         </>
       ) : (
-        <div className="text-center text-stone-600 text-sm py-2">
-          No torch lit
-        </div>
+        <div className="text-center text-stone-600 text-sm py-2">No torch lit</div>
       )}
     </div>
   );

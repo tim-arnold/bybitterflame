@@ -521,6 +521,26 @@ export default function PlayPage() {
     });
   }
 
+  function handleTorchStateChange(expiresAt: string | null) {
+    const isLighting = expiresAt !== null;
+    setCampaign((prev) => {
+      const updated = {
+        ...prev,
+        worldState: { ...prev.worldState, torchExpiresAt: expiresAt ?? undefined } as typeof prev.worldState,
+      };
+      // Persist to DB
+      fetch(`/api/campaign/${campaignId}/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign: updated, sessionNumber }),
+      }).catch((err) => console.error("Torch save failed:", err));
+      return updated;
+    });
+    if (isLighting) {
+      sendMessage("[SYSTEM: The player has just lit a torch. 60 minutes of real-world light begins now. Acknowledge this briefly in your narration — a flicker of warmth against the dark.]");
+    }
+  }
+
   function handleTorchExpire() {
     setTorchExpired(true);
   }
@@ -543,7 +563,11 @@ export default function PlayPage() {
         rightPanel={
           <>
             <WorldConditions worldState={campaign.worldState} />
-            <TorchTimer campaignId={campaignId} onExpire={handleTorchExpire} />
+            <TorchTimer
+              torchExpiresAt={campaign.worldState?.torchExpiresAt}
+              onTorchStateChange={handleTorchStateChange}
+              onExpire={handleTorchExpire}
+            />
             <CombatTracker
               combatants={combatants}
               round={combatRound}
