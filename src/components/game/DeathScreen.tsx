@@ -64,20 +64,20 @@ export function DeathScreen({
 
   return (
     <div
-      className={`fixed inset-0 z-50 transition-opacity duration-700 ${
+      className={`fixed inset-0 z-50 overflow-y-auto transition-opacity duration-700 ${
         visible ? "opacity-100" : "opacity-0"
       }`}
     >
-      {/* Background image */}
-      <div className="absolute inset-0">
+      {/* Background image — fixed so it doesn't scroll with content */}
+      <div className="fixed inset-0">
         <Image src="/cover.png" alt="Death screen" fill className="object-cover" priority />
       </div>
 
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/85" />
+      {/* Dark overlay — fixed too */}
+      <div className="fixed inset-0 bg-black/85" />
 
-      {/* Scrollable content */}
-      <div className="relative z-10 min-h-screen overflow-y-auto px-4 py-12">
+      {/* Content — scrolls naturally */}
+      <div className="relative z-10 px-4 py-12">
         <div className="w-full max-w-lg mx-auto space-y-6">
 
           {/* Death header */}
