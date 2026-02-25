@@ -19,6 +19,35 @@ export default function CreateCharacterPage() {
   const [hasStarted, setHasStarted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  async function saveCharacter(char: Partial<Character>, camp: Partial<Campaign>) {
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/character", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          character: char,
+          gmPersona: camp.gmPersona ?? "",
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to save character");
+      const { campaignId } = await res.json() as { campaignId: string };
+      router.push(`/play/${campaignId}`);
+    } catch (saveError) {
+      console.error("Failed to save character:", saveError);
+      setIsSaving(false);
+    }
+  }
+
+  // True when all required fields are present for a valid character
+  const isCharacterComplete =
+    character.str !== undefined &&
+    !!character.ancestry &&
+    !!character.class &&
+    !!character.alignment &&
+    !!character.background &&
+    !!(character.equipment?.length);
+
   const sendMessage = useCallback(
     async (content: string) => {
       const userMessage: Message = { role: "user", content };
@@ -79,23 +108,7 @@ export default function CreateCharacterPage() {
         setStreamingContent("");
 
         if (characterComplete) {
-          setIsSaving(true);
-          try {
-            const res = await fetch("/api/character", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                character: updatedCharacter,
-                gmPersona: updatedCampaign.gmPersona ?? "",
-              }),
-            });
-            if (!res.ok) throw new Error("Failed to save character");
-            const { campaignId } = await res.json() as { campaignId: string };
-            router.push(`/play/${campaignId}`);
-          } catch (saveError) {
-            console.error("Failed to save character:", saveError);
-            setIsSaving(false);
-          }
+          await saveCharacter(updatedCharacter, updatedCampaign);
         }
       } catch (error) {
         console.error("Chat error:", error);
@@ -158,6 +171,16 @@ export default function CreateCharacterPage() {
               </li>
             </ol>
           </div>
+
+          {isCharacterComplete && (
+            <button
+              onClick={() => saveCharacter(character, campaign)}
+              disabled={isSaving}
+              className="w-full bg-[var(--color-gold)] hover:bg-[var(--color-gold-dim)] disabled:opacity-50 disabled:cursor-not-allowed text-stone-900 font-semibold text-sm px-4 py-3 rounded-lg transition-colors"
+            >
+              {isSaving ? "Saving..." : "Begin Adventure →"}
+            </button>
+          )}
         </>
       }
     />
