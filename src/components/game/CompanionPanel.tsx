@@ -127,6 +127,19 @@ function CompanionCard({ companion }: { companion: Companion }) {
             </div>
           )}
 
+          {/* Spells */}
+          {companion.spells.length > 0 && (
+            <div className="pt-1 border-t border-stone-700 space-y-0.5">
+              <div className="text-stone-500 text-[10px] uppercase tracking-wider mb-1">Spells</div>
+              {companion.spells.map((spell, i) => (
+                <div key={i} className="flex items-baseline justify-between gap-2">
+                  <span className="text-stone-300">{spell.name}</span>
+                  <span className="text-stone-500 font-mono shrink-0">T{spell.tier}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Personality */}
           <div className="space-y-1 pt-1 border-t border-stone-700">
             <div className="flex flex-wrap gap-1">
