@@ -128,6 +128,10 @@ export interface WorldState {
   journalEntries?: JournalEntry[];
   companions?: Companion[];
   legacyCharacters?: LegacyCharacter[];
+  timeOfDay?: string;       // "mid-morning", "late evening", underground blur, etc.
+  currentDate?: string;     // "Day 3 of the Frost Moon, Year 412"
+  weather?: string;         // "Clear and cold", "Heavy rain", null when underground
+  undergroundTurns?: number; // exploration turns spent underground (10 min each)
 }
 
 export interface NPC {

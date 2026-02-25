@@ -85,6 +85,48 @@ When the player's character fails their final death save and dies permanently:
 - For combat, track initiative and follow the combat rules precisely.
 - Emit \`\`\`gamestate blocks whenever game state changes.
 
+## Time & Weather
+
+### Time of Day
+Track the passage of time and emit \`campaignUpdates.timeOfDay\` whenever it changes meaningfully.
+
+Above ground, use these periods (in order): **dawn → morning → mid-morning → noon → afternoon → late afternoon → dusk → evening → late evening → midnight → deep night → dawn**
+
+Time costs (approximate):
+- Each dungeon room explored or encounter resolved: ~10 minutes (1 exploration turn)
+- Overland travel between locations: proportional (village to ruin = ~2 hours)
+- Negotiation / social scene: 10–30 minutes
+- Full Rest: 8 hours
+
+**Underground time blur**: Track \`undergroundTurns\` (increment by 1 per exploration turn underground). Emit it in \`campaignUpdates\`.
+- 0–12 turns (0–2 hrs): timeOfDay can still be estimated — "you reckon it's early afternoon above"
+- 13–36 turns (2–6 hrs): growing uncertainty — "hours have passed, but how many you can't say"
+- 37+ turns (6+ hrs): time is lost — use strings like "Lost to the deep..." or "Days may have passed above. You cannot know."
+- On emerging: describe disorientation proportional to time lost. Update timeOfDay to the actual above-ground time.
+
+### Calendar
+Use a moon-named dark fantasy calendar unless the campaign has established its own. Suggested months (28 days each, 13 months):
+*Frost Moon, Wolf Moon, Thaw Moon, Seed Moon, Bloom Moon, Midsummer Moon, Harvest Moon, Dying Moon, Blood Moon, Shadow Moon, Bone Moon, Dark Moon, Long Night*
+
+Emit \`currentDate\` when the date advances (after a full rest, or when the party surfaces after extended underground time). Format: "Day 14 of the Harvest Moon, Year 412 of the Age of Embers"
+
+### Weather
+Only meaningful above ground. Emit \`campaignUpdates.weather\` when weather is first established, and whenever it changes.
+
+**Weather affects gameplay — narrate it and apply mechanical consequences:**
+- *Heavy rain / blizzard*: ranged attacks at disadvantage, travel speed halved, fire sources extinguished
+- *Dense fog*: visibility reduced to Near range, easy to get lost
+- *Extreme cold*: characters without appropriate gear take 1d4 cold damage per hour of exposure
+- *High winds*: ranged attacks at disadvantage, unprotected flames snuffed out
+- *Clear skies*: no effect — but describe it; beauty matters in a dark world
+
+Change weather over days using a light hand — don't shift it every scene. When underground, set weather to null (unknown).
+
+Emit example:
+\`\`\`gamestate
+{ "campaignUpdates": { "timeOfDay": "late afternoon", "currentDate": "Day 7 of the Blood Moon, Year 412", "weather": "Overcast, bitter wind from the north", "undergroundTurns": 0 } }
+\`\`\`
+
 ## Resting
 Shadowdark has only ONE rest type — Full Rest. There is no "short rest" or "long rest."
 - Full Rest = 8 hours sleep + 1 ration consumed → restores ALL HP, ALL stat damage, ALL lost spells (except deity-revoked priest spells).
@@ -213,6 +255,17 @@ function buildWorldBlock(worldState?: WorldState | Partial<WorldState>): string 
   if (worldState.currentLocation) {
     parts.push(`Current Location: ${worldState.currentLocation}`);
   }
+
+  // Time, date, weather
+  const timeWeatherParts: string[] = [];
+  if (worldState.timeOfDay) timeWeatherParts.push(`Time: ${worldState.timeOfDay}`);
+  if (worldState.currentDate) timeWeatherParts.push(`Date: ${worldState.currentDate}`);
+  if (worldState.weather) timeWeatherParts.push(`Weather: ${worldState.weather}`);
+  if (worldState.undergroundTurns !== undefined && worldState.undergroundTurns > 0) {
+    timeWeatherParts.push(`Underground turns: ${worldState.undergroundTurns}`);
+  }
+  if (timeWeatherParts.length) parts.push(timeWeatherParts.join(" | "));
+
   if (worldState.visitedLocations?.length) {
     parts.push(`Visited: ${worldState.visitedLocations.join(", ")}`);
   }

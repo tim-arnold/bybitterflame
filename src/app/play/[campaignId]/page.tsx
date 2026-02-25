@@ -11,6 +11,7 @@ import { SessionControls } from "@/components/game/SessionControls";
 import { TravelersJournal } from "@/components/game/TravelersJournal";
 import { CompanionPanel } from "@/components/game/CompanionPanel";
 import { DeathScreen } from "@/components/game/DeathScreen";
+import { WorldConditions } from "@/components/game/WorldConditions";
 import { GameLayout } from "@/components/layout/GameLayout";
 import { parseGameState } from "@/lib/game/state-parser";
 import type { Character, Campaign, JournalEntry, Companion, LegacyCharacter } from "@/lib/game/types";
@@ -533,6 +534,7 @@ export default function PlayPage() {
         }
         rightPanel={
           <>
+            <WorldConditions worldState={campaign.worldState} />
             <TorchTimer campaignId={campaignId} onExpire={handleTorchExpire} />
             <CombatTracker
               combatants={combatants}
