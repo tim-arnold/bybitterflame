@@ -62,12 +62,21 @@ export interface Campaign {
   updatedAt: string;
 }
 
+export interface JournalEntry {
+  id: string;
+  title: string;
+  body: string;
+  category: "location" | "quest" | "npc" | "item" | "note";
+  createdAt: string;
+}
+
 export interface WorldState {
   currentLocation: string;
   visitedLocations: string[];
   npcs: NPC[];
   quests: Quest[];
   flags: Record<string, boolean | string>;
+  journalEntries?: JournalEntry[];
 }
 
 export interface NPC {
@@ -135,7 +144,8 @@ export interface GameStateUpdate {
     | "campaignUpdate"
     | "diceRoll"
     | "combatAction"
-    | "notification";
+    | "notification"
+    | "journalUpdate";
   data: Record<string, unknown>;
 }
 

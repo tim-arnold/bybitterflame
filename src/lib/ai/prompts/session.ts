@@ -75,6 +75,17 @@ Emit \`\`\`gamestate JSON when any tracked state changes. ALWAYS emit \`campaign
 
 Only include the fields that actually changed. Don't repeat unchanged state.
 
+### Traveler's Journal
+Emit a \`journalEntry\` gamestate block when:
+- The player says "add to my journal", "note that", "remember this", "write that down", or similar
+- A significant discovery is made: a new named location entered, a major NPC is met for the first time, a quest hook is revealed, or a notable item is found
+- Use a short title, 1–2 sentence body, and one of these categories: "location", "quest", "npc", "item", "note"
+
+Example:
+\`\`\`gamestate
+{ "journalEntry": { "title": "The Crossroads Inn", "body": "Run by old Marta. She hinted at ruins to the east.", "category": "location" } }
+\`\`\`
+
 Track all three currencies separately: "gold" (gp), "silver" (sp), "copper" (cp). Emit all three whenever currency changes. 10 sp = 1 gp, 100 cp = 1 gp. If the character learns a new language (from a talent or magic), update "languages" array. If their deity changes or is revealed, update "deity".
 
 ### Equipment object format

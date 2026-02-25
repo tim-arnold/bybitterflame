@@ -8,9 +8,10 @@ import { DiceRoller } from "@/components/dice/DiceRoller";
 import { TorchTimer } from "@/components/game/TorchTimer";
 import { CombatTracker } from "@/components/game/CombatTracker";
 import { SessionControls } from "@/components/game/SessionControls";
+import { TravelersJournal } from "@/components/game/TravelersJournal";
 import { GameLayout } from "@/components/layout/GameLayout";
 import { parseGameState } from "@/lib/game/state-parser";
-import type { Character, Campaign } from "@/lib/game/types";
+import type { Character, Campaign, JournalEntry } from "@/lib/game/types";
 
 export default function PlayPage() {
   const params = useParams();
@@ -28,6 +29,7 @@ export default function PlayPage() {
   >([]);
   const [combatRound, setCombatRound] = useState(1);
   const [torchExpired, setTorchExpired] = useState(false);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
 
   useEffect(() => {
     const parts = ["ShadowdarkAI"];
@@ -53,6 +55,7 @@ export default function PlayPage() {
         setCharacter(loadedCharacter);
         setCampaign(loadedCampaign);
         setSessionNumber(loadedSessionNumber);
+        setJournalEntries(loadedCampaign.worldState?.journalEntries ?? []);
 
         if (loadedMessages.length > 0) {
           setMessages(loadedMessages);
@@ -92,9 +95,26 @@ export default function PlayPage() {
         const { updates } = parseGameState(fullResponse);
         let updatedCharacter = { ...loadedCharacter };
         let updatedCampaign = { ...loadedCampaign };
+        const newEntries: JournalEntry[] = [];
         for (const update of updates) {
           if (update.type === "characterUpdate") updatedCharacter = { ...updatedCharacter, ...update.data };
           if (update.type === "campaignUpdate") updatedCampaign = { ...updatedCampaign, ...update.data };
+          if (update.type === "journalUpdate") {
+            const entry: JournalEntry = {
+              ...(update.data as Omit<JournalEntry, "id" | "createdAt">),
+              id: crypto.randomUUID(),
+              createdAt: new Date().toISOString(),
+            };
+            newEntries.push(entry);
+          }
+        }
+        if (newEntries.length > 0) {
+          const combined = [...newEntries, ...(updatedCampaign.worldState?.journalEntries ?? [])];
+          updatedCampaign = {
+            ...updatedCampaign,
+            worldState: { ...updatedCampaign.worldState, journalEntries: combined } as typeof updatedCampaign.worldState,
+          };
+          setJournalEntries(combined);
         }
 
         const openingMessages: Message[] = [
@@ -186,6 +206,21 @@ export default function PlayPage() {
             if (update.data.combatants) setCombatants(update.data.combatants as typeof combatants);
             if (update.data.round) setCombatRound(update.data.round as number);
           }
+          if (update.type === "journalUpdate") {
+            const entry: JournalEntry = {
+              ...(update.data as Omit<JournalEntry, "id" | "createdAt">),
+              id: crypto.randomUUID(),
+              createdAt: new Date().toISOString(),
+            };
+            setJournalEntries((prev) => [entry, ...prev]);
+            updatedCampaign = {
+              ...updatedCampaign,
+              worldState: {
+                ...updatedCampaign.worldState,
+                journalEntries: [entry, ...(updatedCampaign.worldState?.journalEntries ?? [])],
+              } as typeof updatedCampaign.worldState,
+            };
+          }
         }
 
         const finalMessages = [...newMessages, { role: "assistant" as const, content: fullResponse }];
@@ -218,6 +253,48 @@ export default function PlayPage() {
     },
     [messages, character, campaign, torchExpired]
   );
+
+  function handleAddJournalEntry(entryData: Omit<JournalEntry, "id" | "createdAt">) {
+    const entry: JournalEntry = {
+      ...entryData,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+    };
+    setJournalEntries((prev) => [entry, ...prev]);
+    setCampaign((prev) => ({
+      ...prev,
+      worldState: {
+        ...prev.worldState,
+        journalEntries: [entry, ...(prev.worldState?.journalEntries ?? [])],
+      } as typeof prev.worldState,
+    }));
+  }
+
+  function handleEditJournalEntry(id: string, entryData: Omit<JournalEntry, "id" | "createdAt">) {
+    setJournalEntries((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, ...entryData } : e))
+    );
+    setCampaign((prev) => ({
+      ...prev,
+      worldState: {
+        ...prev.worldState,
+        journalEntries: (prev.worldState?.journalEntries ?? []).map((e) =>
+          e.id === id ? { ...e, ...entryData } : e
+        ),
+      } as typeof prev.worldState,
+    }));
+  }
+
+  function handleDeleteJournalEntry(id: string) {
+    setJournalEntries((prev) => prev.filter((e) => e.id !== id));
+    setCampaign((prev) => ({
+      ...prev,
+      worldState: {
+        ...prev.worldState,
+        journalEntries: (prev.worldState?.journalEntries ?? []).filter((e) => e.id !== id),
+      } as typeof prev.worldState,
+    }));
+  }
 
   function handleEndSession() {
     sendMessage("[SYSTEM: The player wants to end this session. Please provide a summary of what happened.]");
@@ -258,6 +335,12 @@ export default function PlayPage() {
             combatants={combatants}
             round={combatRound}
             isInCombat={isInCombat}
+          />
+          <TravelersJournal
+            entries={journalEntries}
+            onAddEntry={handleAddJournalEntry}
+            onEditEntry={handleEditJournalEntry}
+            onDeleteEntry={handleDeleteJournalEntry}
           />
           <DiceRoller />
           <SessionControls

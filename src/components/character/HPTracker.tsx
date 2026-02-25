@@ -14,7 +14,7 @@ export function HPTracker({ current, max }: HPTrackerProps) {
 
   return (
     <div className="flex flex-col items-center bg-stone-900 border border-stone-700 rounded-lg p-3 min-w-[100px]">
-      <span className="text-[10px] uppercase tracking-wider text-stone-500">Hit Points</span>
+      <span className="text-[10px] uppercase tracking-wider text-stone-500">HP</span>
       <span className="text-2xl font-bold text-stone-100">
         {current}<span className="text-sm text-stone-500">/{max}</span>
       </span>

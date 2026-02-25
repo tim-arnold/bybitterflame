@@ -86,6 +86,13 @@ function extractUpdates(
       data: { message: "Character creation complete", type: "characterComplete" },
     });
   }
+
+  if (parsed.journalEntry) {
+    updates.push({
+      type: "journalUpdate",
+      data: parsed.journalEntry as Record<string, unknown>,
+    });
+  }
 }
 
 /**
