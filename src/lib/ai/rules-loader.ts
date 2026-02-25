@@ -15,7 +15,7 @@ const CONTEXT_RULES: Record<keyof GameContext, string[]> = {
 };
 
 /** Files always loaded regardless of context */
-const ALWAYS_LOAD = ["ability-scores.md"];
+const ALWAYS_LOAD = ["ability-scores.md", "deities.md"];
 
 /**
  * Read a markdown rule file. Returns empty string if the file doesn't exist.

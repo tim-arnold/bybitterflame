@@ -39,7 +39,8 @@ Briefly describe each with their racial talent. Let the player choose.
 ### Step 3: Class
 Present the four classes: Fighter, Priest, Thief, Wizard.
 Describe each briefly with key abilities. Let the player choose.
-If the player chooses Priest, also ask them to choose a deity. The deity determines their alignment, weapon access, and spell list.
+
+After the player chooses their class, ask them to choose a patron deity. ALL characters have a patron deity — not just Priests. Use the deity descriptions from the rules to present the seven choosable gods (The Lost cannot be chosen). The deity should feel consistent with the character's alignment and nature. Priests draw their spells from their deity's power; for other classes the deity is a patron and source of narrative oaths and inspiration.
 
 ### Step 4: Alignment
 Present: Lawful, Neutral, Chaotic. Describe each in the context of Shadowdark's world.
