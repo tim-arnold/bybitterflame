@@ -176,7 +176,7 @@ export function CompanionPanel({ companions }: CompanionPanelProps) {
   const [collapsed, setCollapsed] = useState(false);
 
   const visible = companions.filter(
-    (c) => c.status !== "dead" && c.status !== "departed",
+    (c) => c.status !== "dead" && c.status !== "departed" && c.status !== "hostile",
   );
 
   if (visible.length === 0) return null;

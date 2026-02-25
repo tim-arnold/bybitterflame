@@ -151,6 +151,7 @@ export default function PlayPage() {
             if (!alreadyExists) {
               updatedCompanions = [...updatedCompanions, {
                 ...data,
+                status: data.status ?? "active",
                 id: crypto.randomUUID(),
                 joinedAt: new Date().toISOString(),
               }];
@@ -304,6 +305,7 @@ export default function PlayPage() {
             if (!alreadyExists) {
               updatedCompanions = [...updatedCompanions, {
                 ...data,
+                status: data.status ?? "active",
                 id: crypto.randomUUID(),
                 joinedAt: new Date().toISOString(),
               }];

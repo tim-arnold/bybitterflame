@@ -37,8 +37,9 @@ export function DeathScreen({
 
   // Use companions captured at death time; fall back to live prop
   const companionList = deathData.companionsAtDeath ?? companions;
+  // Treat missing/undefined status as active (companions registered before status field was added)
   const activeCompanions = companionList.filter(
-    (c) => c.status === "active" || c.status === "incapacitated",
+    (c) => !c.status || c.status === "active" || c.status === "incapacitated",
   );
 
   const forcedCompanion = deathData.killedByCompanionId

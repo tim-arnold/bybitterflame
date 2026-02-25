@@ -54,7 +54,7 @@ Gamestate formats:
 { "companionJoined": { "name": "Rella", "pronouns": "she/her", "ancestry": "Dwarf", "class": "Fighter",
   "level": 1, "alignment": "Lawful", "background": "Soldier",
   "str": 16, "dex": 10, "con": 14, "int": 8, "wis": 9, "cha": 11,
-  "hp": 12, "maxHp": 12, "ac": 14, "equipment": [], "spells": [], "talents": [],
+  "hp": 12, "maxHp": 12, "ac": 14, "status": "active", "equipment": [], "spells": [], "talents": [],
   "personality": { "voice": "Blunt, military cadence, skeptical of magic", "dispositionTowardPlayer": "neutral",
     "riskTolerance": "bold", "followership": "collaborates", "loyalty": 5,
     "motivation": "Earn enough coin to buy back her family farm", "redLines": "Will not harm children or burn buildings." } } }
