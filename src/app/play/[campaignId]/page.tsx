@@ -82,8 +82,14 @@ export default function PlayPage() {
         setCampaign(loadedCampaign);
         setSessionNumber(loadedSessionNumber);
         setJournalEntries(loadedCampaign.worldState?.journalEntries ?? []);
-        // Deduplicate companions by name on load (guards against re-emission bugs)
-        const dedupedCompanions = deduplicateCompanions(loadedCampaign.worldState?.companions ?? []);
+        // Deduplicate companions by name on load; also exclude current character
+        // (guards against stale DB state after soul transfer)
+        const rawCompanions = loadedCampaign.worldState?.companions ?? [];
+        const dedupedCompanions = deduplicateCompanions(
+          rawCompanions.filter(
+            (c: Companion) => c.name.toLowerCase() !== (loadedCharacter.name ?? "").toLowerCase()
+          )
+        );
         setCompanions(dedupedCompanions);
 
         if (loadedMessages.length > 0) {
@@ -218,7 +224,26 @@ export default function PlayPage() {
   }, [campaignId]);
 
   const sendMessage = useCallback(
-    async (content: string, { hidden = false }: { hidden?: boolean } = {}) => {
+    async (
+      content: string,
+      {
+        hidden = false,
+        initialCharacter,
+        initialCampaign,
+        initialCompanions,
+      }: {
+        hidden?: boolean;
+        initialCharacter?: Partial<Character>;
+        initialCampaign?: Partial<Campaign>;
+        initialCompanions?: Companion[];
+      } = {}
+    ) => {
+      // Use caller-supplied overrides when available (e.g. after soul transfer, before
+      // React state has re-rendered with the new values).
+      const activeCharacter = initialCharacter ?? character;
+      const activeCampaign = initialCampaign ?? campaign;
+      const activeCompanions = initialCompanions ?? companions;
+
       // Inject torch context if expired
       let messageContent = content;
       if (torchExpired) {
@@ -238,8 +263,8 @@ export default function PlayPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
-            character,
-            campaign,
+            character: activeCharacter,
+            campaign: activeCampaign,
             mode: "play",
           }),
         });
@@ -263,9 +288,9 @@ export default function PlayPage() {
         // Parse gamestate updates
         const { narrative, updates } = parseGameState(fullResponse);
 
-        let updatedCharacter = { ...character };
-        let updatedCampaign = { ...campaign };
-        let updatedCompanions = [...companions];
+        let updatedCharacter = { ...activeCharacter };
+        let updatedCampaign = { ...activeCampaign };
+        let updatedCompanions = [...activeCompanions];
         let companionsChanged = false;
 
         for (const update of updates) {
@@ -378,7 +403,7 @@ export default function PlayPage() {
     const companion = companions.find((c) => c.id === companionId);
     if (!companion) return;
 
-    // Build legacy character record for the dead character
+    // Build legacy character record for the dead character (preserving their gear on the corpse)
     const legacyChar: LegacyCharacter = {
       name: character.name ?? "Unknown",
       ancestry: character.ancestry ?? "",
@@ -388,6 +413,7 @@ export default function PlayPage() {
       inheritedBy: companion.name,
       legacyTalent: deathData?.legacyTalent,
       diedAt: new Date().toISOString(),
+      equipment: character.equipment ?? [],
     };
 
     // Remove the companion from the companions list (they're now the player)
@@ -411,6 +437,7 @@ export default function PlayPage() {
           companion,
           legacyTalent: deathData?.legacyTalent,
           deadCharacterName: character.name ?? "Unknown",
+          deadCharacterLanguages: character.languages ?? [],
           updatedWorldState,
         }),
       });
@@ -437,16 +464,24 @@ export default function PlayPage() {
         xp: 0,
         alignment: companion.alignment,
         background: companion.background,
+        // Deity: keep Kesh's own faith — soul transfer doesn't change religious allegiance
         deity: companion.deity,
-        languages: companion.languages,
+        // Languages: merge both — the soul carries its memories into the new body
+        languages: [
+          ...new Set([
+            ...(companion.languages ?? []),
+            ...(character.languages ?? []),
+          ]),
+        ],
         str: companion.str,
         dex: companion.dex,
         con: companion.con,
         int: companion.int,
         wis: companion.wis,
         cha: companion.cha,
-        hp: companion.hp,
-        maxHp: companion.maxHp,
+        // Use companion's current HP; fall back to maxHp if HP was never tracked (0)
+        hp: companion.hp > 0 ? companion.hp : (companion.maxHp || 1),
+        maxHp: companion.maxHp || 1,
         ac: companion.ac,
         equipment: companion.equipment,
         spells: companion.spells,
@@ -469,9 +504,28 @@ export default function PlayPage() {
       setIsDead(false);
       setDeathData(null);
 
-      // Trigger GM transition narration
+      // Immediately persist the correct new character to DB — this races ahead of
+      // sendMessage's auto-save, which runs after the GM responds (~5-10s later).
+      // Belt-and-suspenders alongside the initialCharacter override in sendMessage.
+      fetch(`/api/campaign/${campaignId}/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          character: newCharacter,
+          campaign: updatedCampaign,
+          sessionNumber,
+        }),
+      }).catch((err) => console.error("Post-inherit save failed:", err));
+
+      // Trigger GM transition narration — pass fresh state so sendMessage doesn't
+      // use stale closures (React state updates haven't flushed yet at call time).
       const sysMsg = `[SYSTEM: CHARACTER_TRANSFER: ${character.name ?? "The fallen hero"}'s soul has passed into ${companion.name}. ${deathData?.legacyTalent ? `They carry the legacy talent: ${deathData.legacyTalent}.` : ""} Narrate this dramatic moment. The remaining companions react per their personalities.]`;
-      sendMessage(sysMsg, { hidden: true });
+      sendMessage(sysMsg, {
+        hidden: true,
+        initialCharacter: newCharacter,
+        initialCampaign: updatedCampaign,
+        initialCompanions: remainingCompanions,
+      });
     } catch (err) {
       console.error("Inherit failed:", err);
     }

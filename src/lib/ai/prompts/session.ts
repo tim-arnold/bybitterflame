@@ -73,6 +73,7 @@ When the player's character fails their final death save and dies permanently:
 1. Emit \`playerDied\` with the cause of death. Include a \`legacyTalent\` — the dead character's most defining ability phrased as a transmissible trait (e.g., "Mira's Instinct: Once per day, reroll any failed DEX check"). If a hostile companion dealt the killing blow, set \`killedByCompanionId\` to that companion's id.
 2. Do NOT narrate or hint at the soul transfer mechanic. Simply describe the character's death dramatically and stop — the game system handles what happens next.
 3. After the player chooses a companion to continue as (handled by the UI), you will receive a system message like \`[SYSTEM: CHARACTER_TRANSFER: ...]\`. At that point, narrate the moment dramatically — the soul transfer, the companion's reaction, what changes. The remaining companions react per their personalities (low-loyalty companions may use this moment to depart or challenge the new leader).
+4. The dead character's body remains where they fell. Their gear (listed under "Fallen Heroes" in the world state) is on the corpse. Once the scene settles, offer the new character a chance to claim items from the body — they may keep any or all of it, subject to encumbrance. Magical items with a narrative bond (rings, pendants, heirlooms) may feel drawn to the new character and can be described as such.
 
 \`\`\`gamestate
 { "playerDied": { "causeOfDeath": "Impaled by the orc chieftain's greataxe", "legacyTalent": "Dryn's Shadow Step: Once per day, teleport up to Near range as a free action.", "killedByCompanionId": null } }
@@ -278,6 +279,16 @@ function buildWorldBlock(worldState?: WorldState | Partial<WorldState>): string 
     parts.push(
       `Quests:\n${worldState.quests.map((q) => `- [${q.status}] ${q.name}: ${q.description}`).join("\n")}`,
     );
+  }
+
+  if (worldState.legacyCharacters?.length) {
+    const legacyLines = worldState.legacyCharacters.map((lc) => {
+      const gearList = lc.equipment?.length
+        ? `\n  Gear on corpse: ${lc.equipment.map((e) => e.name).join(", ")}`
+        : "";
+      return `- ${lc.name} (Level ${lc.level} ${lc.ancestry} ${lc.class}) — died: ${lc.causeOfDeath}; soul passed to ${lc.inheritedBy ?? "unknown"}${gearList}`;
+    });
+    parts.push(`Fallen Heroes:\n${legacyLines.join("\n")}`);
   }
 
   return parts.length > 0 ? parts.join("\n") : "New adventure — no world state yet.";

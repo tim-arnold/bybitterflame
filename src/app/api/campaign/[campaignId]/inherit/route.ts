@@ -22,10 +22,16 @@ export async function POST(
       companion: Companion;
       legacyTalent?: string;
       deadCharacterName: string;
+      deadCharacterLanguages?: string[];
       updatedWorldState: WorldState;
     };
 
-    const { companion, legacyTalent, updatedWorldState } = body;
+    const { companion, legacyTalent, deadCharacterLanguages, updatedWorldState } = body;
+
+    // Merge languages from both characters; companion's deity is kept as-is
+    const mergedLanguages = [
+      ...new Set([...(companion.languages ?? []), ...(deadCharacterLanguages ?? [])]),
+    ];
 
     const { env } = await getCloudflareContext({ async: true });
     const db = getDb(env.DB);
@@ -53,11 +59,12 @@ export async function POST(
       int: companion.int,
       wis: companion.wis,
       cha: companion.cha,
-      hp: companion.hp,
-      maxHp: companion.maxHp,
+      // Fall back to maxHp if current HP was never tracked (0)
+      hp: companion.hp > 0 ? companion.hp : (companion.maxHp || 1),
+      maxHp: companion.maxHp || 1,
       ac: companion.ac,
       deity: companion.deity ?? "",
-      languages: JSON.stringify(companion.languages ?? []),
+      languages: JSON.stringify(mergedLanguages),
       equipment: JSON.stringify(companion.equipment ?? []),
       spells: JSON.stringify(companion.spells ?? []),
       talents: JSON.stringify(talents),

@@ -117,6 +117,7 @@ export interface LegacyCharacter {
   inheritedBy?: string;
   legacyTalent?: string;
   diedAt: string;
+  equipment?: EquipmentItem[]; // items on the corpse, available for the new character to take
 }
 
 export interface WorldState {
