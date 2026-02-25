@@ -6,6 +6,8 @@ import type { EquipmentItem } from "@/lib/game/types";
 interface InventoryListProps {
   items: (EquipmentItem | string)[];
   gold?: number;
+  silver?: number;
+  copper?: number;
   maxSlots?: number;
 }
 
@@ -103,7 +105,7 @@ function ItemRow({ item }: { item: EquipmentItem | string }) {
   );
 }
 
-export function InventoryList({ items, gold, maxSlots }: InventoryListProps) {
+export function InventoryList({ items, gold, silver, copper, maxSlots }: InventoryListProps) {
   const normalized = items.map(normalize);
 
   // Items with slots === 0 are worn/small and don't occupy pack space.
@@ -122,9 +124,17 @@ export function InventoryList({ items, gold, maxSlots }: InventoryListProps) {
     <div className="space-y-3">
       <div>
         <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Equipment</h3>
-        {gold !== undefined && gold > 0 && (
-          <div className="text-sm text-[var(--color-gold)] mb-2 font-mono">
-            {gold} <span className="text-stone-500">gp</span>
+        {(gold !== undefined || silver !== undefined || copper !== undefined) && (
+          <div className="flex gap-3 mb-2 font-mono text-sm">
+            {gold !== undefined && gold > 0 && (
+              <span><span className="text-[var(--color-gold)]">{gold}</span> <span className="text-stone-500">gp</span></span>
+            )}
+            {silver !== undefined && silver > 0 && (
+              <span><span className="text-stone-300">{silver}</span> <span className="text-stone-500">sp</span></span>
+            )}
+            {copper !== undefined && copper > 0 && (
+              <span><span className="text-orange-400">{copper}</span> <span className="text-stone-500">cp</span></span>
+            )}
           </div>
         )}
         <ul className="space-y-1">

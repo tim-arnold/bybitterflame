@@ -39,6 +39,7 @@ Briefly describe each with their racial talent. Let the player choose.
 ### Step 3: Class
 Present the four classes: Fighter, Priest, Thief, Wizard.
 Describe each briefly with key abilities. Let the player choose.
+If the player chooses Priest, also ask them to choose a deity. The deity determines their alignment, weapon access, and spell list.
 
 ### Step 4: Alignment
 Present: Lawful, Neutral, Chaotic. Describe each in the context of Shadowdark's world.
@@ -62,7 +63,7 @@ Emit a gamestate block:
 \`\`\`
 
 ### Step 8: Starting Equipment & Gold
-Roll 2d6x5 for starting gold. Then help the player pick starting equipment based on their class.
+Roll 2d6x5 for starting gold (tracked as "gold" in gp). Silver (sp) and copper (cp) start at 0 unless purchases require change. Track all three currencies separately.
 
 All equipment items MUST be structured objects using exact stats from the Shadowdark rules. Never emit equipment as plain strings.
 
@@ -114,11 +115,13 @@ Emit a full gamestate block:
     "background": "...",
     "str": N, "dex": N, "con": N, "int": N, "wis": N, "cha": N,
     "hp": N, "maxHp": N, "ac": N,
+    "deity": "...",
+    "languages": ["Common", "..."],
     "equipment": [...],
     "spells": [...],
     "talents": [...],
     "features": [...],
-    "gold": N
+    "gold": N, "silver": 0, "copper": 0
   },
   "campaignUpdates": {
     "gmPersona": "I am [name], a [description of personality, speaking style, and quirks]."

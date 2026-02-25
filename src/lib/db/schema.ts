@@ -19,11 +19,15 @@ export const characters = sqliteTable("characters", {
   hp: integer("hp").notNull(),
   maxHp: integer("max_hp").notNull(),
   ac: integer("ac").notNull(),
+  deity: text("deity").notNull().default(""),
+  languages: text("languages").notNull().default("[]"),
   equipment: text("equipment").notNull().default("[]"),
   spells: text("spells").notNull().default("[]"),
   talents: text("talents").notNull().default("[]"),
   features: text("features").notNull().default("[]"),
   gold: integer("gold").notNull().default(0),
+  silver: integer("silver").notNull().default(0),
+  copper: integer("copper").notNull().default(0),
   createdAt: text("created_at")
     .notNull()
     .$defaultFn(() => new Date().toISOString()),

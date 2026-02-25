@@ -57,7 +57,7 @@ Emit \`\`\`gamestate JSON when any tracked state changes:
 
 \`\`\`gamestate
 {
-  "characterUpdates": { "hp": N, "gold": N, "equipment": [...] },
+  "characterUpdates": { "hp": N, "gold": N, "silver": N, "copper": N, "deity": "...", "languages": [...], "equipment": [...] },
   "campaignUpdates": { "currentLocation": "...", "npcs": [...] },
   "diceRolls": [{ "name": "Attack", "notation": "1d20+3", "rolls": [15], "modifier": 3, "total": 18 }],
   "combatAction": { "type": "attack", "attacker": "...", "target": "...", "result": "hit", "damage": N },
@@ -66,6 +66,8 @@ Emit \`\`\`gamestate JSON when any tracked state changes:
 \`\`\`
 
 Only include the fields that actually changed. Don't repeat unchanged state.
+
+Track all three currencies separately: "gold" (gp), "silver" (sp), "copper" (cp). Emit all three whenever currency changes. 10 sp = 1 gp, 100 cp = 1 gp. If the character learns a new language (from a talent or magic), update "languages" array. If their deity changes or is revealed, update "deity".
 
 ### Equipment object format
 When emitting "equipment" arrays, every item MUST be a structured object — never a plain string. Use exact stats from the Shadowdark rules:

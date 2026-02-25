@@ -9,6 +9,8 @@ export interface Character {
   xp: number;
   alignment: string;
   background: string;
+  deity?: string;
+  languages?: string[];
   str: number;
   dex: number;
   con: number;
@@ -23,6 +25,8 @@ export interface Character {
   talents: string[];
   features: string[];
   gold: number;
+  silver?: number;
+  copper?: number;
   createdAt: string;
   updatedAt: string;
 }

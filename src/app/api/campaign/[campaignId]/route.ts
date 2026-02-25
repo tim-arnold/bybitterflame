@@ -50,6 +50,7 @@ export async function GET(
       campaignId,
       character: {
         ...character,
+        languages: JSON.parse(character.languages ?? "[]"),
         equipment: JSON.parse(character.equipment),
         spells: JSON.parse(character.spells),
         talents: JSON.parse(character.talents),

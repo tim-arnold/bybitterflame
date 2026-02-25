@@ -1,6 +1,7 @@
 "use client";
 
 import type { Character } from "@/lib/game/types";
+import { getCharacterTitle } from "@/lib/game/titles";
 import { AbilityScoreDisplay } from "./AbilityScoreDisplay";
 import { HPTracker } from "./HPTracker";
 import { InventoryList } from "./InventoryList";
@@ -55,9 +56,23 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
             </>
           )}
         </div>
-        {character.background && (
-          <p className="text-xs text-stone-500 mt-1">{character.background}</p>
-        )}
+        {(() => {
+          const title = getCharacterTitle(character.class, character.level, character.alignment);
+          return title ? <p className="text-xs text-[var(--color-gold-dim)] mt-0.5 italic">{title}</p> : null;
+        })()}
+        <div className="flex flex-col gap-0.5 mt-1">
+          {character.background && (
+            <p className="text-xs text-stone-500">{character.background}</p>
+          )}
+          {character.deity && (
+            <p className="text-xs text-stone-500">Deity: {character.deity}</p>
+          )}
+          {character.languages && character.languages.length > 0 && (
+            <p className="text-xs text-stone-500">
+              Languages: {character.languages.join(", ")}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* HP and AC */}
@@ -106,15 +121,15 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
         <InventoryList
           items={character.equipment}
           gold={character.gold}
+          silver={character.silver}
+          copper={character.copper}
           maxSlots={calcMaxGearSlots(character)}
         />
       )}
 
       {/* Spells */}
       {character.spells && character.spells.length > 0 && (
-        <SpellList
-          spells={character.spells.map((s) => typeof s === "string" ? s : s.name)}
-        />
+        <SpellList spells={character.spells} />
       )}
 
       {/* Talents */}

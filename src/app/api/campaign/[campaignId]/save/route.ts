@@ -51,6 +51,10 @@ export async function POST(
           xp: charData.xp,
           level: charData.level,
           gold: charData.gold,
+          silver: charData.silver,
+          copper: charData.copper,
+          deity: charData.deity,
+          languages: JSON.stringify(charData.languages ?? []),
           equipment: JSON.stringify(charData.equipment ?? []),
           updatedAt: now,
         })
