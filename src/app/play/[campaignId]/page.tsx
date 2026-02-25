@@ -29,6 +29,13 @@ export default function PlayPage() {
   const [combatRound, setCombatRound] = useState(1);
   const [torchExpired, setTorchExpired] = useState(false);
 
+  useEffect(() => {
+    const parts = ["ShadowdarkAI"];
+    if (character.name) parts.push(character.name);
+    if (campaign.worldState?.currentLocation) parts.push(campaign.worldState.currentLocation);
+    document.title = parts.join(" : ");
+  }, [character.name, campaign.worldState?.currentLocation]);
+
   // Load character and campaign data. For new campaigns (no messages), auto-trigger
   // the GM's opening scene using the freshly loaded data before state is set.
   useEffect(() => {

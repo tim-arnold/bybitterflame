@@ -61,7 +61,7 @@ Shadowdark has only ONE rest type — Full Rest. There is no "short rest" or "lo
 ## Gamestate Blocks
 CRITICAL: When a message includes dice rolls, the \`\`\`gamestate block MUST be the VERY FIRST thing in your response — before any narrative text. The app uses this to trigger a dice animation, and any text before it will flash and disappear.
 
-Emit \`\`\`gamestate JSON when any tracked state changes:
+Emit \`\`\`gamestate JSON when any tracked state changes. ALWAYS emit \`campaignUpdates.currentLocation\` whenever the party moves to a new location or the scene opens in a named place — even at session start.
 
 \`\`\`gamestate
 {

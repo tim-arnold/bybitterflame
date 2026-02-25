@@ -3,6 +3,27 @@ import type { Message } from "@/lib/game/types";
 
 const anthropic = new Anthropic();
 
+const OVERLOADED_MESSAGES = [
+  "*The arcane connection flickers and dies. The GM's voice fades into silence...*\n\n---\n\nThe threads of fate are stretched thin across the realm. Try again in a moment.",
+  "*A tremor runs through the weave of magic. Something vast stirs, disrupting the connection...*\n\n---\n\nThe spirits are restless and cannot be reached right now. Try again shortly.",
+  "*The torchlight dims as the link to the otherworld wavers and snaps...*\n\n---\n\nThe arcane channel is overwhelmed. Rest a moment, then try again.",
+];
+
+const GENERIC_ERROR_MESSAGES = [
+  "*The GM's voice cuts out mid-sentence. Something has gone wrong in the ether...*\n\n---\n\nAn unknown force disrupted the connection. Try again.",
+  "*Silence falls where there was once a voice. The weave has frayed...*\n\n---\n\nSomething went wrong. Try your action again.",
+];
+
+function getAtmosphericError(error: unknown): string {
+  const msg = error instanceof Error ? error.message : String(error);
+  const isOverloaded =
+    msg.toLowerCase().includes("overload") ||
+    (error instanceof Object && "status" in error && (error as { status: number }).status === 529);
+
+  const pool = isOverloaded ? OVERLOADED_MESSAGES : GENERIC_ERROR_MESSAGES;
+  return "\n\n" + pool[Math.floor(Math.random() * pool.length)];
+}
+
 const MODEL = "claude-sonnet-4-20250514";
 const MAX_TOKENS = 4096;
 
@@ -61,11 +82,7 @@ export function createStreamingResponse(
         });
         controller.close();
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown streaming error";
-        controller.enqueue(
-          encoder.encode(`\n\n[Error: ${errorMessage}]`),
-        );
+        controller.enqueue(encoder.encode(getAtmosphericError(error)));
         controller.close();
       }
     },
