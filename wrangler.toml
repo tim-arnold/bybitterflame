@@ -1,5 +1,6 @@
 name = "shadowdark"
 main = ".open-next/worker.js"
+account_id = "4bef1453ad78da6e3bb7e83b421e26df"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
