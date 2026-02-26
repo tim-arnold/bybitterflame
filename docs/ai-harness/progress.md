@@ -50,6 +50,20 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 
 ## Recent Work
 
+### Session 5 (2026-02-26)
+
+**Fixed production 500 errors on all DB routes:**
+- Root cause: all DB API routes used `runtime = "edge"`, which uses Next.js's strict Edge Runtime bundler — incompatible with drizzle-orm's CJS internals
+- Fix: changed all five DB routes to `runtime = "nodejs"` (consistent with `/api/chat`)
+- Affected routes: `/api/character`, `/api/campaigns`, `/api/campaign/[id]`, `/api/campaign/[id]/save`, `/api/campaign/[id]/inherit`
+- Verified: `/api/character` returns `{characterId, campaignId}`, `/api/campaigns` returns campaign list
+
+**CI/CD via GitHub Actions:**
+- Added `.github/workflows/deploy.yml` — triggers on push to `main`, runs `npm run build:cf` then `wrangler deploy`
+- Replaces the Cloudflare dashboard git integration (which was using wrong build command)
+- Added `account_id` to `wrangler.toml` (required for non-interactive deploy with multi-account token)
+- `CLOUDFLARE_API_TOKEN` stored as GitHub Actions secret
+
 ### Session 4 (2026-02-25)
 
 **Soul transfer fixes (stale closure bug):**

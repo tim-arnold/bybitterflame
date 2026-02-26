@@ -27,14 +27,15 @@
       "id": "cloudflare-deployment",
       "name": "Cloudflare Workers production deployment",
       "status": "done",
-      "notes": "Live at https://dark.tim52.io. wrangler.toml configures D1 binding (DB), assets, and nodejs_compat. Build via npx @opennextjs/cloudflare build, deploy via wrangler deploy.",
+      "notes": "Live at https://dark.tim52.io. All DB routes use runtime=nodejs (not edge) — Edge Runtime bundler is incompatible with drizzle-orm CJS. CI/CD via GitHub Actions (.github/workflows/deploy.yml) on push to main. account_id in wrangler.toml for non-interactive deploy.",
       "tests": [
         { "name": "npx @opennextjs/cloudflare build succeeds", "pass": true },
         { "name": "wrangler deploy uploads and deploys worker", "pass": true },
         { "name": "D1 binding env.DB accessible in all API routes", "pass": true },
         { "name": "ANTHROPIC_API_KEY secret available to worker", "pass": true },
         { "name": "Site loads at production URL", "pass": true },
-        { "name": "Character creation → play redirect works end-to-end in production", "pass": true }
+        { "name": "Character creation → play redirect works end-to-end in production", "pass": true },
+        { "name": "GitHub Actions deploys on push to main", "pass": true }
       ]
     },
     {
