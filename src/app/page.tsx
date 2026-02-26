@@ -28,7 +28,13 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center text-center">
+    <div className="relative flex min-h-screen flex-col items-center justify-center text-center">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[url('/cover.png')] bg-cover bg-center" />
+      <div className="absolute inset-0 bg-stone-950/80" />
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center">
       <h1 className="mb-2 text-5xl font-bold tracking-tight text-[var(--color-gold)]">
         Shadowdark
       </h1>
@@ -68,16 +74,25 @@ export default function Home() {
         </div>
       )}
 
-      <Link
-        href="/create"
-        className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-8 py-3 text-lg font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800"
-      >
-        Begin Your Adventure
-      </Link>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Link
+          href="/create"
+          className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-8 py-3 text-lg font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800"
+        >
+          Begin Your Adventure
+        </Link>
+        <Link
+          href="/adventures"
+          className="rounded-lg border border-stone-600 bg-stone-900 px-8 py-3 text-lg font-semibold text-stone-300 transition-colors hover:border-stone-400 hover:bg-stone-800"
+        >
+          Choose an Adventure
+        </Link>
+      </div>
 
       <p className="mt-6 text-xs text-stone-600">
         Powered by the Shadowdark RPG rules by The Arcane Library
       </p>
+      </div>
     </div>
   );
 }
