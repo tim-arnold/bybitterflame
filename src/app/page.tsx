@@ -49,6 +49,27 @@ export default function Home() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Campaign lock state — persisted in localStorage, unlocked by default
+  const [lockedIds, setLockedIds] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    try {
+      const stored = localStorage.getItem("locked-campaigns");
+      return stored ? new Set(JSON.parse(stored) as string[]) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+
+  function toggleLock(campaignId: string) {
+    setLockedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(campaignId)) next.delete(campaignId);
+      else next.add(campaignId);
+      localStorage.setItem("locked-campaigns", JSON.stringify([...next]));
+      return next;
+    });
+  }
+
   // New adventure flow
   const [showNewOptions, setShowNewOptions] = useState(false);
   const [gmAnswers, setGmAnswers] = useState<Record<string, string>>({});
@@ -116,6 +137,7 @@ export default function Home() {
           <div className="flex flex-col gap-2">
             {campaigns.map((c) => {
               const isPending = pendingDeleteId === c.campaignId;
+              const isLocked = lockedIds.has(c.campaignId);
               return (
                 <div key={c.campaignId} className="group relative">
                   {isPending ? (
@@ -180,13 +202,35 @@ export default function Home() {
                           {new Date(c.updatedAt).toLocaleDateString()}
                         </span>
                       </Link>
+                      {/* Lock / unlock button — always right-2; gold when locked, appears on hover when unlocked */}
                       <button
-                        onClick={() => setPendingDeleteId(c.campaignId)}
-                        className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded text-white opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer text-sm leading-none"
-                        aria-label="Delete adventure"
+                        onClick={() => toggleLock(c.campaignId)}
+                        className={`absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded transition-all cursor-pointer ${
+                          isLocked
+                            ? "text-[var(--color-gold-dim)]"
+                            : "text-stone-600 opacity-0 group-hover:opacity-100 hover:text-stone-400"
+                        }`}
+                        aria-label={isLocked ? "Unlock adventure" : "Lock adventure"}
                       >
-                        ×
+                        <svg viewBox="0 0 12 14" width="11" height="13" fill="currentColor">
+                          <rect x="1" y="6" width="10" height="8" rx="1.5" />
+                          {isLocked ? (
+                            <path d="M3.5 6V4a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                          ) : (
+                            <path d="M3.5 6V4a2.5 2.5 0 0 1 5 0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                          )}
+                        </svg>
                       </button>
+                      {/* Delete — only available when unlocked */}
+                      {!isLocked && (
+                        <button
+                          onClick={() => setPendingDeleteId(c.campaignId)}
+                          className="absolute right-8 top-2 flex h-5 w-5 items-center justify-center rounded text-stone-500 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer text-sm leading-none"
+                          aria-label="Delete adventure"
+                        >
+                          ×
+                        </button>
+                      )}
                     </>
                   )}
                 </div>
