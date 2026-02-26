@@ -34,6 +34,7 @@ ${personaBlock}
 - Be fair but unforgiving. Follow the rules as written.
 - NPCs should have personality, motives, and speak with distinct voices.
 - NEVER control the player's character. Present situations and ask what they do.
+- NEVER take actions on the player's behalf — do not light torches, draw weapons, open doors, or make any physical action for them. Only the player decides what their character does.
 - Always use the player character's pronouns (listed in the character block) when NPCs or narration refer to them in the third person.
 
 ## Companions
@@ -139,8 +140,9 @@ Shadowdark has only ONE rest type — Full Rest. There is no "short rest" or "lo
 ## Torch Tracking
 - Real-time torch tracking is a core Shadowdark mechanic.
 - **Light state is tracked in worldState as \`torchExpiresAt\`** (an ISO timestamp). If it is absent or null, NO torch is lit.
-- **CRITICAL: If \`torchExpiresAt\` is absent or null, the character is in TOTAL DARKNESS.** Do NOT describe anything visible. Describe only what can be sensed without sight — sounds, smells, cold air, the feel of stone underfoot. Wait for the player to explicitly light a torch before revealing anything visual.
-- When the player lights a torch, emit \`campaignUpdates.torchExpiresAt\` set to a timestamp ~1 hour from now. Then describe what the torchlight reveals.
+- **CRITICAL: If \`torchExpiresAt\` is absent or null AND the party is underground or it is night, the character is in TOTAL DARKNESS.** Do NOT describe anything visible. Describe only what can be sensed without sight — sounds, smells, cold air, the feel of stone underfoot. Wait for the player to explicitly say they light a torch.
+- **NEVER light a torch for the player.** Do not assume they want one, do not narrate them lighting one, do not suggest they do so. Wait for the player to say "I light a torch" or similar.
+- When the player explicitly lights a torch, emit \`campaignUpdates.torchExpiresAt\` set to a timestamp ~1 hour from now. Then describe what the torchlight reveals.
 - A torch lasts approximately 1 hour (6 exploration turns of ~10 minutes each). Count turns and periodically remind the player how much torch time remains.
 - When a torch is getting low (1-2 turns left), describe it flickering ominously. Emit a \`notification\` warning.
 - When a torch goes out, emit \`campaignUpdates.torchExpiresAt\` set to null. Describe the darkness closing in.
@@ -259,13 +261,19 @@ function buildWorldBlock(worldState?: WorldState | Partial<WorldState>): string 
     parts.push(`Current Location: ${worldState.currentLocation}`);
   }
 
-  // Torch / light state — always emit so GM knows darkness status
+  // Torch / light state
   if (worldState.torchExpiresAt) {
     const expiresAt = new Date(worldState.torchExpiresAt);
     const minutesLeft = Math.max(0, Math.round((expiresAt.getTime() - Date.now()) / 60000));
     parts.push(`Light: Torch lit — ~${minutesLeft} min remaining`);
   } else {
-    parts.push("Light: NO TORCH LIT — party is in total darkness");
+    const isUnderground = (worldState.undergroundTurns ?? 0) > 0;
+    const nightKeywords = ["dusk", "evening", "night", "midnight", "deep night"];
+    const isNight = nightKeywords.some((k) => worldState.timeOfDay?.toLowerCase().includes(k));
+    if (isUnderground || isNight) {
+      parts.push("Light: NO TORCH LIT — party is in total darkness");
+    }
+    // Outdoors during daylight: natural light available, no torch needed
   }
 
   // Time, date, weather
