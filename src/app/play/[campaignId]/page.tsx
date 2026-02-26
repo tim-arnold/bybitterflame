@@ -51,7 +51,6 @@ export default function PlayPage() {
     { name: string; initiative: number; isPlayer: boolean; isActive: boolean }[]
   >([]);
   const [combatRound, setCombatRound] = useState(1);
-  const [torchExpired, setTorchExpired] = useState(false);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [companions, setCompanions] = useState<Companion[]>([]);
   const [isDead, setIsDead] = useState(false);
@@ -244,14 +243,7 @@ export default function PlayPage() {
       const activeCampaign = initialCampaign ?? campaign;
       const activeCompanions = initialCompanions ?? companions;
 
-      // Inject torch context if expired
-      let messageContent = content;
-      if (torchExpired) {
-        messageContent += "\n[SYSTEM: The torch has just gone out. The party is now in total darkness.]";
-        setTorchExpired(false);
-      }
-
-      const userMessage: Message = { role: "user", content: messageContent, hidden };
+      const userMessage: Message = { role: "user", content, hidden };
       const newMessages = [...messages, userMessage];
       setMessages(newMessages);
       setIsLoading(true);
@@ -396,7 +388,7 @@ export default function PlayPage() {
         setIsLoading(false);
       }
     },
-    [messages, character, campaign, companions, torchExpired, campaignId, sessionNumber]
+    [messages, character, campaign, companions, campaignId, sessionNumber]
   );
 
   async function handleCompanionInherit(companionId: string) {
@@ -612,7 +604,20 @@ export default function PlayPage() {
   }
 
   function handleTorchExpire() {
-    setTorchExpired(true);
+    // Save torchExpiresAt: null to worldState and notify the GM immediately.
+    setCampaign((prev) => {
+      const updated = {
+        ...prev,
+        worldState: { ...prev.worldState, torchExpiresAt: undefined } as typeof prev.worldState,
+      };
+      fetch(`/api/campaign/${campaignId}/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign: updated, sessionNumber }),
+      }).catch((err) => console.error("Torch expire save failed:", err));
+      return updated;
+    });
+    sendMessage("[SYSTEM: The torch has burned out. The party is now in total darkness. Describe the darkness closing in and apply the Blind condition.]", { hidden: true });
   }
 
   return (

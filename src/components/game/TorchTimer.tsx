@@ -50,12 +50,12 @@ export function TorchTimer({ torchExpiresAt, onTorchStateChange, onExpire }: Tor
     return () => clearInterval(interval);
   }, [secondsLeft !== null && secondsLeft > 0]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Detect natural expiry (reached zero)
+  // Detect natural expiry (reached zero) — only fire onExpire, not onTorchStateChange.
+  // The play page's handleTorchExpire owns saving state and notifying the GM on natural burnout.
   useEffect(() => {
     if (secondsLeft === 0 && torchExpiresAt) {
       setSecondsLeft(null);
       onExpire?.();
-      onTorchStateChange?.(null);
     }
   }, [secondsLeft]); // eslint-disable-line react-hooks/exhaustive-deps
 
