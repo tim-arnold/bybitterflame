@@ -4,7 +4,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { characters, campaigns, sessions } from "@/lib/db/schema";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * GET /api/campaign/[campaignId]

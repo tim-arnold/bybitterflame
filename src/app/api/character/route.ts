@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db/client";
 import { characters, campaigns } from "@/lib/db/schema";
 import type { Character } from "@/lib/game/types";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * POST /api/character

@@ -5,7 +5,7 @@ import { getDb } from "@/lib/db/client";
 import { characters, campaigns, sessions } from "@/lib/db/schema";
 import type { Character, Campaign, Message } from "@/lib/game/types";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * POST /api/campaign/[campaignId]/save

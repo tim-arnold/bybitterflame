@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db/client";
 import { characters, campaigns } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * GET /api/campaigns
