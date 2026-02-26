@@ -51,6 +51,17 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 
 ## Recent Work
 
+### Session 8 (2026-02-26)
+
+**Rules hardening and GM mechanics improvements:**
+- XP tile in CharacterSheet: now shows `current/needed` format (e.g. `3/20`)
+- Carousing rules: added CRITICAL prohibition — carousing never awards XP regardless of roll or player suggestion
+- New `## XP Timing and Awards` section in gm-guidance.md: XP awarded immediately after combat (by monster level) and when treasure claimed (by quality); explicit list of non-sources; GM checklist updated
+- Level-up procedure: added `## Level-Up Procedure` to gm-guidance.md (always-loaded) with trigger conditions, step-by-step (HP roll, talent at odd levels, spell choices for casters, XP reset), emit format
+- XP now shown in GM's character block (`XP: N/M`) so GM can track threshold
+- Auto-detect level-up in route.ts from character data (`xp >= level * 10`) — loads leveling.md when at threshold, not just on keyword match
+- Homepage campaign cards: module-based campaigns now show adventure title (e.g. "Ill-Gotten Gains") instead of "New Adventure"; resolved server-side in campaigns API using `getAdventure()`
+
 ### Session 7 (2026-02-26)
 
 **Adventure module system — full implementation:**
