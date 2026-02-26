@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { characters, campaigns } from "@/lib/db/schema";
-import { nanoid } from "nanoid";
 import type { Character } from "@/lib/game/types";
 
 export const runtime = "edge";
@@ -27,8 +26,8 @@ export async function POST(request: Request) {
     const { env } = await getCloudflareContext({ async: true });
     const db = getDb(env.DB);
 
-    const characterId = nanoid();
-    const campaignId = nanoid();
+    const characterId = crypto.randomUUID();
+    const campaignId = crypto.randomUUID();
     const now = new Date().toISOString();
 
     await db.insert(characters).values({
