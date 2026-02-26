@@ -361,23 +361,28 @@ export default function PlayPage() {
         }
 
         const finalMessages = [...newMessages, { role: "assistant" as const, content: fullResponse }];
+
+        // Capture current torch countdown before committing state — prevents stale
+        // closure from overwriting a torch change that happened mid-sendMessage
+        // (e.g. user extinguished while waiting for GM response).
+        const torchSecsNow = torchTimerRef.current?.getSecondsLeft();
+        const finalCampaign = torchSecsNow !== undefined
+          ? { ...updatedCampaign, worldState: { ...updatedCampaign.worldState, torchRemainingSeconds: torchSecsNow ?? undefined } as typeof updatedCampaign.worldState }
+          : updatedCampaign;
+
         setCharacter(updatedCharacter);
-        setCampaign(updatedCampaign);
+        setCampaign(finalCampaign);
         if (companionsChanged) setCompanions(updatedCompanions);
         setMessages(finalMessages);
         setStreamingContent("");
 
-        // Auto-save after every AI response — capture current torch countdown
-        const torchSecsNow = torchTimerRef.current?.getSecondsLeft();
-        const campaignToAutoSave = torchSecsNow !== undefined
-          ? { ...updatedCampaign, worldState: { ...updatedCampaign.worldState, torchRemainingSeconds: torchSecsNow ?? undefined } as typeof updatedCampaign.worldState }
-          : updatedCampaign;
+        // Auto-save after every AI response
         fetch(`/api/campaign/${campaignId}/save`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             character: updatedCharacter,
-            campaign: campaignToAutoSave,
+            campaign: finalCampaign,
             messages: finalMessages,
             sessionNumber,
           }),
@@ -598,8 +603,9 @@ export default function PlayPage() {
   function resolveTorchUpdate(data: Record<string, unknown>): Record<string, unknown> {
     if (!("torchLit" in data)) return data;
     const { torchLit, ...rest } = data;
-    const torchRemainingSeconds = torchLit === true ? 60 * 60 : undefined;
-    return torchRemainingSeconds !== undefined ? { ...rest, torchRemainingSeconds } : rest;
+    if (torchLit === true) return { ...rest, torchRemainingSeconds: 60 * 60 };
+    // torchLit: false — explicitly clear the countdown so worldState reflects extinguishment
+    return { ...rest, torchRemainingSeconds: undefined };
   }
 
   function handleTorchStateChange(remainingSeconds: number | null) {
