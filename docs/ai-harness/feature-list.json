@@ -24,6 +24,20 @@
       ]
     },
     {
+      "id": "cloudflare-deployment",
+      "name": "Cloudflare Workers production deployment",
+      "status": "done",
+      "notes": "Live at https://dark.tim52.io. wrangler.toml configures D1 binding (DB), assets, and nodejs_compat. Build via npx @opennextjs/cloudflare build, deploy via wrangler deploy.",
+      "tests": [
+        { "name": "npx @opennextjs/cloudflare build succeeds", "pass": true },
+        { "name": "wrangler deploy uploads and deploys worker", "pass": true },
+        { "name": "D1 binding env.DB accessible in all API routes", "pass": true },
+        { "name": "ANTHROPIC_API_KEY secret available to worker", "pass": true },
+        { "name": "Site loads at production URL", "pass": true },
+        { "name": "Character creation → play redirect works end-to-end in production", "pass": true }
+      ]
+    },
+    {
       "id": "ai-client",
       "name": "Claude API streaming integration",
       "status": "done",
@@ -50,7 +64,8 @@
       "tests": [
         { "name": "Extracts gamestate blocks from narrative", "pass": true },
         { "name": "Parses character updates correctly", "pass": true },
-        { "name": "Handles missing or malformed blocks gracefully", "pass": true }
+        { "name": "Handles missing or malformed blocks gracefully", "pass": true },
+        { "name": "Parses companionJoined, companionUpdate, playerDied", "pass": true }
       ]
     },
     {
@@ -81,13 +96,14 @@
       "id": "character-creation",
       "name": "Character creation flow (/create)",
       "status": "done",
-      "notes": "Steps: Ability Scores → Ancestry → Class → Alignment → Name & Pronouns → Background → Hit Points → Equipment & Gold → Final Summary",
+      "notes": "Steps: Ability Scores → Ancestry → Class → Alignment → Name & Pronouns → Background → Hit Points → Equipment & Gold → Final Summary. Manual 'Begin Adventure' button shown when isCharacterComplete.",
       "tests": [
         { "name": "Chat-driven creation with initializer agent", "pass": true },
         { "name": "Live character preview sidebar updates", "pass": true },
         { "name": "Pronouns asked and stored", "pass": true },
-        { "name": "All stats/choices persist to DB", "pass": true },
-        { "name": "Redirect to gameplay after completion", "pass": true }
+        { "name": "All stats/choices persist to D1 in production", "pass": true },
+        { "name": "Redirect to gameplay after completion", "pass": true },
+        { "name": "Manual 'Begin Adventure' button visible when character complete", "pass": true }
       ]
     },
     {
@@ -111,6 +127,36 @@
         { "name": "Character sheet sidebar shows live data", "pass": true },
         { "name": "Chat input auto-focuses when AI finishes", "pass": true },
         { "name": "State changes from AI update UI and DB", "pass": true }
+      ]
+    },
+    {
+      "id": "companion-npcs",
+      "name": "Companion NPCs with full stat sheets and personalities",
+      "status": "done",
+      "notes": "GM-controlled companions with disposition, loyalty drift, death saves, hostile turn. All state stored in worldState.companions JSON blob. Code complete; not yet manually verified in production.",
+      "tests": [
+        { "name": "companionJoined gamestate parsed and companion added to state", "pass": false },
+        { "name": "CompanionPanel renders in right sidebar when companions present", "pass": false },
+        { "name": "companionUpdate merges HP/loyalty/status correctly", "pass": false },
+        { "name": "Companions persist across page reload from worldState", "pass": false }
+      ]
+    },
+    {
+      "id": "soul-transfer",
+      "name": "Soul transfer on player death",
+      "status": "done",
+      "notes": "playerDied gamestate triggers DeathScreen overlay. Player selects companion; inherit API creates new character. Legacy talent appended. Dead character's gear preserved in LegacyCharacter.equipment and surfaced to GM. Stale closure bug fixed (sendMessage accepts initialCharacter/initialCampaign/initialCompanions overrides). Code complete; not yet manually verified in production.",
+      "tests": [
+        { "name": "playerDied triggers DeathScreen overlay", "pass": false },
+        { "name": "DeathScreen shows companion selection cards", "pass": false },
+        { "name": "Inherit API creates new character and updates campaign.characterId", "pass": false },
+        { "name": "Character sheet swaps to new character after transfer", "pass": false },
+        { "name": "Legacy talent appears in new character's talents list", "pass": false },
+        { "name": "No-companion path shows campaign end option", "pass": false },
+        { "name": "Hostile-companion killer path auto-selects and forces inherit", "pass": false },
+        { "name": "Transferred character has companion's actual HP (not 0)", "pass": false },
+        { "name": "Languages merged from both characters", "pass": false },
+        { "name": "Old character no longer appears in CompanionPanel", "pass": false }
       ]
     },
     {
@@ -143,30 +189,15 @@
       ]
     },
     {
-      "id": "companion-npcs",
-      "name": "Companion NPCs with full stat sheets and personalities",
-      "status": "done",
-      "notes": "GM-controlled companions with disposition, loyalty drift, death saves, hostile turn. All state stored in worldState.companions JSON blob.",
+      "id": "auth",
+      "name": "User authentication (BetterAuth + D1)",
+      "status": "pending",
+      "notes": "Plan at docs/plans/auth.md. Lazy singleton pattern required for D1 (binding only available per-request). Schema additions: users, sessions, accounts tables.",
       "tests": [
-        { "name": "companionJoined gamestate parsed and companion added to state", "pass": false },
-        { "name": "CompanionPanel renders in right sidebar when companions present", "pass": false },
-        { "name": "companionUpdate merges HP/loyalty/status correctly", "pass": false },
-        { "name": "Companions persist across page reload from worldState", "pass": false }
-      ]
-    },
-    {
-      "id": "soul-transfer",
-      "name": "Soul transfer on player death",
-      "status": "done",
-      "notes": "playerDied gamestate triggers DeathScreen overlay. Player selects companion; inherit API creates new character. Legacy talent appended. Adventure continues.",
-      "tests": [
-        { "name": "playerDied triggers DeathScreen overlay", "pass": false },
-        { "name": "DeathScreen shows companion selection cards", "pass": false },
-        { "name": "Inherit API creates new character and updates campaign.characterId", "pass": false },
-        { "name": "Character sheet swaps to new character after transfer", "pass": false },
-        { "name": "Legacy talent appears in new character's talents list", "pass": false },
-        { "name": "No-companion path shows campaign end option", "pass": false },
-        { "name": "Hostile-companion killer path auto-selects and forces inherit", "pass": false }
+        { "name": "Sign up / sign in with email+password", "pass": false },
+        { "name": "Session cookie persists across reloads", "pass": false },
+        { "name": "Campaigns scoped to authenticated user", "pass": false },
+        { "name": "Unauthenticated access redirected to login", "pass": false }
       ]
     },
     {
@@ -183,7 +214,7 @@
       "id": "persistence",
       "name": "End-to-end data persistence",
       "status": "done",
-      "notes": "Verified with Dryn's campaign: 167 gold, full gear, 70K bytes of message history. Close and return to URL — picks up exactly where left off.",
+      "notes": "Verified in production at dark.tim52.io. Character creation → D1 insert → redirect → play → autosave all confirmed working.",
       "tests": [
         { "name": "Character saved to D1 after creation", "pass": true },
         { "name": "Campaign created and linked to character", "pass": true },

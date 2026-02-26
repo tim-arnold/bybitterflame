@@ -4,7 +4,9 @@ Current state of the project and recent work. Read this at the start of each ses
 
 ## Current State
 
-Full end-to-end persistence is working. Character creation, gameplay loop, autosave, and session resume all work. Verified live with Dryn's campaign (Chaotic Elf Thief, 70K+ bytes of message history).
+**Production deployment is live at https://dark.tim52.io** (Cloudflare Workers + D1).
+
+Full end-to-end persistence is working. Character creation, gameplay loop, autosave, and session resume all work. Companion NPC and soul transfer mechanics are implemented (code complete, not yet manually verified in production). Verified live character creation → play flow in production after fixing the `/api/character` 500 error.
 
 **What works:**
 - Character creation at `/create` — full 9-step chat flow with Claude as GM
@@ -21,20 +23,57 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **Opening scene** — auto-generated on first visit (hidden `[BEGIN ADVENTURE]` trigger)
 - **Token optimization** — gamestate blocks stripped from assistant history; 20-message window with user-first guard
 - Chat input auto-focuses when AI finishes responding
+- **Companion NPCs** — full stat sheets, personalities, loyalty drift, death saves, hostile turn; stored in `worldState.companions`
+- **Soul transfer on death** — `playerDied` triggers DeathScreen overlay; player picks companion; inherit API creates new character; legacy talent appended; adventure continues
+- **Cloudflare deployment** — `wrangler deploy` → Workers runtime; D1 binding confirmed
 
 **What doesn't work yet:**
 - Session management with AI-generated summaries (long-term memory across many sessions)
 - Torch timer
 - Combat tracker UI
-- Deployment to Cloudflare Pages (/api/chat uses nodejs runtime for Anthropic SDK — needs fixing before CF deployment)
+- Auth (BetterAuth integration planned at `docs/plans/auth.md`)
+- Companion/soul transfer features: code complete but not manually verified end-to-end in production
 
 ## DB Setup
 
-- Local D1 SQLite: `.wrangler/state/v3/d1/` (populated via `npm run db:migrate:local`)
-- Production D1: Create with `wrangler d1 create shadowdark`, update `database_id` in `wrangler.toml`, then run migration with `--remote` flag
+- Local D1 SQLite: `.wrangler/state/v3/d1/` (populated via `wrangler d1 migrations apply shadowdark --local`)
+- Production D1: `shadowdark` DB (`aae22728-e098-4c3e-811e-aa1c73d33fbb`) in Cloudflare account
+- Migration applied via `wrangler d1 execute shadowdark --remote --file=drizzle/0000_eager_firebrand.sql`
 - `initOpenNextCloudflareForDev()` in `next.config.ts` provides D1 binding during `npm run dev`
 
+## Deployment
+
+- Build: `npx @opennextjs/cloudflare build` → `.open-next/worker.js` + `.open-next/assets/`
+- Deploy: `wrangler deploy` (uses `wrangler.toml` — binding `DB`, assets, `ANTHROPIC_API_KEY` secret)
+- `.open-next/` is gitignored (build artifact)
+- Live URL: https://dark.tim52.io (also https://shadowdark.tim-arnold.workers.dev)
+
 ## Recent Work
+
+### Session 4 (2026-02-25)
+
+**Soul transfer fixes (stale closure bug):**
+- `sendMessage` now accepts `initialCharacter`, `initialCampaign`, `initialCompanions` overrides to bypass stale closures
+- `handleCompanionInherit` fires an immediate save before `sendMessage` with fresh state
+- On page load: filter companions by name to exclude current character (handles stale DB worldState)
+- HP on transfer: `companion.hp > 0 ? companion.hp : (companion.maxHp || 1)` (GM rarely emits HP before transfer)
+- Languages merge on soul transfer: `[...new Set([...companion.languages, ...deadCharacter.languages])]`
+- Deity: stays with the companion's own faith (not inherited from dead character)
+- Equipment: companion carries their own gear only; dead character's inventory preserved in `LegacyCharacter.equipment`
+- `LegacyCharacter` type gains optional `equipment` field
+- `buildWorldBlock` in `session.ts` surfaces "Fallen Heroes" with gear list to GM
+- Soul transfer prompt step: dead character's body remains in-world; GM offers loot to party
+
+**Cloudflare production deployment:**
+- Created `drizzle.config.ts` (dialect: sqlite, schema: src/lib/db/schema.ts, out: drizzle/)
+- Created `open-next.config.ts` (defineCloudflareConfig)
+- Fixed `wrangler.toml`: added `main`, `[assets]` block, corrected `database_id` and binding name `DB`
+- Added `src/env.d.ts`: `CloudflareEnv` augmented with `DB: D1Database`
+- Applied schema migration to production D1 via `wrangler d1 execute --remote`
+- Fixed `/api/character` 500 error: replaced `nanoid` (ESM-only, CJS interop crash) with `crypto.randomUUID()`
+- Added `isCharacterComplete` computed flag and manual "Begin Adventure →" button to `/create`
+- Added `.open-next/` to `.gitignore`
+- Auth plan written at `docs/plans/auth.md` (BetterAuth + lazy singleton pattern for D1)
 
 ### Session 3 (2026-02-25)
 - Added `CompanionPersonality`, `Companion`, `LegacyCharacter` types to `types.ts`
