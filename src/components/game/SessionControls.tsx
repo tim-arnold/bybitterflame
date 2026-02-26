@@ -24,7 +24,7 @@ export function SessionControls({ onEndSession, onSaveSession, sessionNumber, is
           disabled={isLoading}
           className="w-full rounded bg-stone-800 border border-red-900/50 px-3 py-1.5 text-sm text-red-400 hover:bg-red-900/20 transition-colors disabled:opacity-50"
         >
-          End Session
+          Pause Session
         </button>
       </div>
     </div>

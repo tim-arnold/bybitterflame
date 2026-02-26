@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ChatWindow, type Message } from "@/components/chat/ChatWindow";
 import { CharacterSheet } from "@/components/character/CharacterSheet";
 import { DiceRoller } from "@/components/dice/DiceRoller";
-import { TorchTimer } from "@/components/game/TorchTimer";
+import { TorchTimer, type TorchTimerHandle } from "@/components/game/TorchTimer";
 import { CombatTracker } from "@/components/game/CombatTracker";
 import { SessionControls } from "@/components/game/SessionControls";
 import { TravelersJournal } from "@/components/game/TravelersJournal";
@@ -55,6 +55,7 @@ export default function PlayPage() {
   const [companions, setCompanions] = useState<Companion[]>([]);
   const [isDead, setIsDead] = useState(false);
   const [deathData, setDeathData] = useState<DeathData | null>(null);
+  const torchTimerRef = useRef<TorchTimerHandle>(null);
 
   useEffect(() => {
     const parts = ["ShadowdarkAI"];
@@ -366,13 +367,17 @@ export default function PlayPage() {
         setMessages(finalMessages);
         setStreamingContent("");
 
-        // Auto-save after every AI response
+        // Auto-save after every AI response — capture current torch countdown
+        const torchSecsNow = torchTimerRef.current?.getSecondsLeft();
+        const campaignToAutoSave = torchSecsNow !== undefined
+          ? { ...updatedCampaign, worldState: { ...updatedCampaign.worldState, torchRemainingSeconds: torchSecsNow ?? undefined } as typeof updatedCampaign.worldState }
+          : updatedCampaign;
         fetch(`/api/campaign/${campaignId}/save`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             character: updatedCharacter,
-            campaign: updatedCampaign,
+            campaign: campaignToAutoSave,
             messages: finalMessages,
             sessionNumber,
           }),
@@ -574,33 +579,35 @@ export default function PlayPage() {
   }
 
   function handleSaveSession() {
+    const torchSecsNow = torchTimerRef.current?.getSecondsLeft();
+    const campaignToSave = torchSecsNow !== undefined
+      ? { ...campaign, worldState: { ...campaign.worldState, torchRemainingSeconds: torchSecsNow ?? undefined } as typeof campaign.worldState }
+      : campaign;
     fetch(`/api/campaign/${campaignId}/save`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ character, campaign, messages, sessionNumber }),
+      body: JSON.stringify({ character, campaign: campaignToSave, messages, sessionNumber }),
     });
   }
 
   /**
-   * Translate a GM-emitted torchLit signal into a real torchExpiresAt timestamp.
+   * Translate a GM-emitted torchLit signal into a torchRemainingSeconds value.
    * The GM emits { torchLit: true/false } — the UI owns the actual clock.
-   * Returns cleaned campaignUpdate data with torchLit replaced by torchExpiresAt.
+   * Returns cleaned campaignUpdate data with torchLit replaced by torchRemainingSeconds.
    */
   function resolveTorchUpdate(data: Record<string, unknown>): Record<string, unknown> {
     if (!("torchLit" in data)) return data;
     const { torchLit, ...rest } = data;
-    const torchExpiresAt = torchLit === true
-      ? new Date(Date.now() + 60 * 60 * 1000).toISOString()
-      : undefined;
-    return torchExpiresAt !== undefined ? { ...rest, torchExpiresAt } : rest;
+    const torchRemainingSeconds = torchLit === true ? 60 * 60 : undefined;
+    return torchRemainingSeconds !== undefined ? { ...rest, torchRemainingSeconds } : rest;
   }
 
-  function handleTorchStateChange(expiresAt: string | null) {
-    const isLighting = expiresAt !== null;
+  function handleTorchStateChange(remainingSeconds: number | null) {
+    const isLighting = remainingSeconds !== null;
     setCampaign((prev) => {
       const updated = {
         ...prev,
-        worldState: { ...prev.worldState, torchExpiresAt: expiresAt ?? undefined } as typeof prev.worldState,
+        worldState: { ...prev.worldState, torchRemainingSeconds: remainingSeconds ?? undefined } as typeof prev.worldState,
       };
       // Persist to DB
       fetch(`/api/campaign/${campaignId}/save`, {
@@ -618,11 +625,10 @@ export default function PlayPage() {
   }
 
   function handleTorchExpire() {
-    // Save torchExpiresAt: null to worldState and notify the GM immediately.
     setCampaign((prev) => {
       const updated = {
         ...prev,
-        worldState: { ...prev.worldState, torchExpiresAt: undefined } as typeof prev.worldState,
+        worldState: { ...prev.worldState, torchRemainingSeconds: undefined } as typeof prev.worldState,
       };
       fetch(`/api/campaign/${campaignId}/save`, {
         method: "POST",
@@ -653,8 +659,9 @@ export default function PlayPage() {
           <>
             <WorldConditions worldState={campaign.worldState} />
             <TorchTimer
-              torchExpiresAt={campaign.worldState?.torchExpiresAt}
-              onTorchStateChange={handleTorchStateChange}
+              ref={torchTimerRef}
+              torchRemainingSeconds={campaign.worldState?.torchRemainingSeconds}
+              onTorchChange={handleTorchStateChange}
               onExpire={handleTorchExpire}
             />
             <CombatTracker

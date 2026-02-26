@@ -139,7 +139,7 @@ Shadowdark has only ONE rest type — Full Rest. There is no "short rest" or "lo
 
 ## Torch Tracking
 - Real-time torch tracking is a core Shadowdark mechanic.
-- **Light state is tracked in worldState as \`torchExpiresAt\`** (an ISO timestamp). If it is absent or null, NO torch is lit.
+- **Light state is tracked in worldState as \`torchRemainingSeconds\`** (seconds remaining). If it is absent or zero, NO torch is lit.
 - **CRITICAL: If \`torchExpiresAt\` is absent or null AND the party is underground or it is night, the character is in TOTAL DARKNESS.** Do NOT describe anything visible. Describe only what can be sensed without sight — sounds, smells, cold air, the feel of stone underfoot. Wait for the player to explicitly say they light a torch.
 - **NEVER light a torch for the player.** Do not assume they want one, do not narrate them lighting one, do not suggest they do so. Wait for the player to say "I light a torch" or similar.
 - When the player explicitly lights a torch, emit \`{ "campaignUpdates": { "torchLit": true } }\`. The UI manages the actual 60-minute timer — do not emit a timestamp.
@@ -262,9 +262,8 @@ function buildWorldBlock(worldState?: WorldState | Partial<WorldState>): string 
   }
 
   // Torch / light state
-  if (worldState.torchExpiresAt) {
-    const expiresAt = new Date(worldState.torchExpiresAt);
-    const minutesLeft = Math.max(0, Math.round((expiresAt.getTime() - Date.now()) / 60000));
+  if (worldState.torchRemainingSeconds && worldState.torchRemainingSeconds > 0) {
+    const minutesLeft = Math.round(worldState.torchRemainingSeconds / 60);
     parts.push(`Light: Torch lit — ~${minutesLeft} min remaining`);
   } else {
     const isUnderground = (worldState.undergroundTurns ?? 0) > 0;
