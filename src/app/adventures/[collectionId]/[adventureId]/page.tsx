@@ -95,9 +95,9 @@ export default function AdventureDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           character: {
-            name: "",
-            ancestry: "Unknown",
-            class: "Unknown",
+            name: "Adventurer",
+            ancestry: "Human",
+            class: "Fighter",
             level: adventure.levelMin,
             alignment: "Neutral",
             background: "",
