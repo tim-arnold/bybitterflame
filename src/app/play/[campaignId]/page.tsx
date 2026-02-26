@@ -80,9 +80,12 @@ export default function PlayPage() {
   // Load character and campaign data. For new campaigns (no messages), auto-trigger
   // the GM's opening scene using the freshly loaded data before state is set.
   useEffect(() => {
+    const controller = new AbortController();
     async function loadData() {
       try {
-        const res = await fetch(`/api/campaign/${campaignId}`);
+        const res = await fetch(`/api/campaign/${campaignId}`, {
+          signal: controller.signal,
+        });
         if (!res.ok) return;
 
         const data = await res.json();
@@ -162,6 +165,7 @@ export default function PlayPage() {
             campaign: loadedCampaign,
             mode: chatMode,
           }),
+          signal: controller.signal,
         });
 
         if (!chatRes.ok) { setIsLoading(false); return; }
@@ -279,10 +283,11 @@ export default function PlayPage() {
           }),
         }).catch((err) => console.error("Opening save failed:", err));
       } catch {
-        setIsLoading(false);
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     }
     loadData();
+    return () => controller.abort();
   }, [campaignId]);
 
   /**

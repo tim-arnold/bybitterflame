@@ -49,6 +49,8 @@ HOOK: ${adventure.hook}
     "background": "...",
     "str": 0, "dex": 0, "con": 0, "int": 0, "wis": 0, "cha": 0,
     "hp": 0, "maxHp": 0, "ac": 10,
+    "deity": "",
+    "languages": ["Common"],
     "equipment": [],
     "spells": [],
     "talents": [],
@@ -69,6 +71,8 @@ Fill in all values with real Shadowdark stats:
 - AC = 10 + DEX modifier (+ armor bonus if equipped)
 - Ancestry talent at Level 1
 - One class talent at Level 1 (choose the most fitting for the adventure)
+- deity: leave empty string "" unless the class is Priest (who must have a deity)
+- languages: always include "Common"; add ancestry language (Elvish for Elves, Dwarvish for Dwarves, etc.) and any class-granted languages
 
 ## Important
 - Do NOT ask more questions — generate the character immediately from what the player provided

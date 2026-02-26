@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, memo } from "react";
 import ReactMarkdown from "react-markdown";
 import { DiceRollDisplay } from "./DiceRollDisplay";
 
@@ -67,6 +67,21 @@ function splitAtRule(narrative: string): [string, string | null] {
   return [before, after];
 }
 
+/** Split text into non-empty paragraphs at double-newline boundaries. */
+function splitParagraphs(text: string): string[] {
+  return text.split(/\n\n+/).filter((p) => p.trim() !== "");
+}
+
+/**
+ * A single paragraph rendered through ReactMarkdown.
+ * Wrapped in memo so that once a paragraph's text is finalised it never
+ * re-renders — preventing earlier paragraphs from flickering while the
+ * in-progress paragraph continues to stream in.
+ */
+const MarkdownParagraph = memo(function MarkdownParagraph({ text }: { text: string }) {
+  return <ReactMarkdown>{text}</ReactMarkdown>;
+});
+
 const narrativeBaseClass =
   "narrative text-stone-200 leading-relaxed prose prose-invert prose-stone max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5 prose-strong:text-[var(--color-gold)] prose-em:text-stone-300 prose-headings:text-[var(--color-gold)]";
 
@@ -78,12 +93,12 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
 
   const { narrative, diceRolls } = useMemo(() => {
     if (isStreaming) {
-      // Once a ```gamestate fence appears in the stream (even before the block
-      // is complete), suppress ALL narrative. This prevents the text flash that
-      // happens when narrative streams in before dice, then hides for animation.
-      // The same component instance will re-render with isStreaming=false once
-      // streaming finishes, at which point dice are extracted and animated.
-      if (/```gamestate/.test(content)) {
+      // Only suppress narrative when the gamestate block leads the response
+      // (dice-roll pattern: gamestate first, narrative after the `---` separator).
+      // If the gamestate appears later in the stream (e.g. GM-create character
+      // reveal where narrative comes first), just strip it cleanly so the
+      // narrative stays visible throughout streaming without flickering.
+      if (content.trimStart().startsWith("```gamestate")) {
         return { narrative: "", diceRolls: [] };
       }
       return { narrative: stripStreamingGamestate(content), diceRolls: [] };
@@ -108,8 +123,12 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
     );
   }
 
-  // Streaming with suppressed narrative (gamestate detected) — show waiting indicator
-  if (isStreaming && !narrative) {
+  // Streaming — split into paragraphs so that completed paragraphs are
+  // memoized and never re-rendered while the in-progress paragraph updates.
+  // The same structure is used for the final (non-streaming) render so there
+  // is no DOM structure change at the streaming→final transition.
+  if (isStreaming) {
+    const paragraphs = splitParagraphs(narrative);
     return (
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
@@ -117,20 +136,29 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
             Game Master
           </span>
         </div>
-        <div className="flex items-center gap-2 text-stone-500">
-          <div className="flex gap-1">
-            <span className="w-2 h-2 bg-[var(--color-gold-dim)] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-            <span className="w-2 h-2 bg-[var(--color-gold-dim)] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-            <span className="w-2 h-2 bg-[var(--color-gold-dim)] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+        {!narrative ? (
+          <div className="flex items-center gap-2 text-stone-500">
+            <div className="flex gap-1">
+              <span className="w-2 h-2 bg-[var(--color-gold-dim)] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-2 h-2 bg-[var(--color-gold-dim)] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-2 h-2 bg-[var(--color-gold-dim)] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+            <span className="text-sm">The fates are being decided...</span>
           </div>
-          <span className="text-sm">The fates are being decided...</span>
-        </div>
+        ) : (
+          <div className={narrativeBaseClass}>
+            {paragraphs.map((para, i) => (
+              <MarkdownParagraph key={i} text={para} />
+            ))}
+          </div>
+        )}
       </div>
     );
   }
 
-  // No dice — render everything immediately
+  // No dice — same paragraph structure as streaming so the transition is seamless
   if (!hasDice) {
+    const paragraphs = splitParagraphs(narrative);
     return (
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
@@ -138,8 +166,10 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
             Game Master
           </span>
         </div>
-        <div className={`${narrativeBaseClass}`}>
-          <ReactMarkdown>{narrative}</ReactMarkdown>
+        <div className={narrativeBaseClass}>
+          {paragraphs.map((para, i) => (
+            <MarkdownParagraph key={i} text={para} />
+          ))}
         </div>
       </div>
     );
