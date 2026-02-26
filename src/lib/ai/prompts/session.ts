@@ -142,10 +142,10 @@ Shadowdark has only ONE rest type — Full Rest. There is no "short rest" or "lo
 - **Light state is tracked in worldState as \`torchExpiresAt\`** (an ISO timestamp). If it is absent or null, NO torch is lit.
 - **CRITICAL: If \`torchExpiresAt\` is absent or null AND the party is underground or it is night, the character is in TOTAL DARKNESS.** Do NOT describe anything visible. Describe only what can be sensed without sight — sounds, smells, cold air, the feel of stone underfoot. Wait for the player to explicitly say they light a torch.
 - **NEVER light a torch for the player.** Do not assume they want one, do not narrate them lighting one, do not suggest they do so. Wait for the player to say "I light a torch" or similar.
-- When the player explicitly lights a torch, emit \`campaignUpdates.torchExpiresAt\` set to a timestamp ~1 hour from now. Then describe what the torchlight reveals.
-- A torch lasts approximately 1 hour (6 exploration turns of ~10 minutes each). Count turns and periodically remind the player how much torch time remains.
-- When a torch is getting low (1-2 turns left), describe it flickering ominously. Emit a \`notification\` warning.
-- When a torch goes out, emit \`campaignUpdates.torchExpiresAt\` set to null. Describe the darkness closing in.
+- When the player explicitly lights a torch, emit \`{ "campaignUpdates": { "torchLit": true } }\`. The UI manages the actual 60-minute timer — do not emit a timestamp.
+- When a torch is extinguished (player choice, or narrative event like falling in water), emit \`{ "campaignUpdates": { "torchLit": false } }\`.
+- The UI will notify you with a system message when the torch burns out naturally — no need to track turns for expiry.
+- When underground without light, count exploration turns and periodically remind the player how many torches they have left and that they need to light one.
 - In darkness, characters cannot see, attacks have disadvantage, and spells requiring sight fail.
 
 ## Gamestate Blocks
@@ -156,7 +156,7 @@ Emit \`\`\`gamestate JSON when any tracked state changes. ALWAYS emit \`campaign
 \`\`\`gamestate
 {
   "characterUpdates": { "hp": N, "gold": N, "silver": N, "copper": N, "deity": "...", "languages": [...], "equipment": [...] },
-  "campaignUpdates": { "currentLocation": "...", "npcs": [...], "torchExpiresAt": "<ISO timestamp or null>" },
+  "campaignUpdates": { "currentLocation": "...", "npcs": [...], "torchLit": true },
   "diceRolls": [{ "name": "Attack", "notation": "1d20+3", "rolls": [15], "modifier": 3, "total": 18 }],
   "combatAction": { "type": "attack", "attacker": "...", "target": "...", "result": "hit", "damage": N },
   "notification": { "message": "Torch is getting low!", "type": "warning" }

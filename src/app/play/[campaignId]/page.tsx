@@ -137,7 +137,7 @@ export default function PlayPage() {
           if (update.type === "campaignUpdate") {
             updatedCampaign = {
               ...updatedCampaign,
-              worldState: { ...updatedCampaign.worldState, ...update.data } as typeof updatedCampaign.worldState,
+              worldState: { ...updatedCampaign.worldState, ...resolveTorchUpdate(update.data as Record<string, unknown>) } as typeof updatedCampaign.worldState,
             };
           }
           if (update.type === "journalUpdate") {
@@ -292,7 +292,7 @@ export default function PlayPage() {
           if (update.type === "campaignUpdate") {
             updatedCampaign = {
               ...updatedCampaign,
-              worldState: { ...updatedCampaign.worldState, ...update.data } as typeof updatedCampaign.worldState,
+              worldState: { ...updatedCampaign.worldState, ...resolveTorchUpdate(update.data as Record<string, unknown>) } as typeof updatedCampaign.worldState,
             };
           }
           if (update.type === "combatAction") {
@@ -579,6 +579,20 @@ export default function PlayPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ character, campaign, messages, sessionNumber }),
     });
+  }
+
+  /**
+   * Translate a GM-emitted torchLit signal into a real torchExpiresAt timestamp.
+   * The GM emits { torchLit: true/false } — the UI owns the actual clock.
+   * Returns cleaned campaignUpdate data with torchLit replaced by torchExpiresAt.
+   */
+  function resolveTorchUpdate(data: Record<string, unknown>): Record<string, unknown> {
+    if (!("torchLit" in data)) return data;
+    const { torchLit, ...rest } = data;
+    const torchExpiresAt = torchLit === true
+      ? new Date(Date.now() + 60 * 60 * 1000).toISOString()
+      : undefined;
+    return torchExpiresAt !== undefined ? { ...rest, torchExpiresAt } : rest;
   }
 
   function handleTorchStateChange(expiresAt: string | null) {
