@@ -138,10 +138,12 @@ Shadowdark has only ONE rest type — Full Rest. There is no "short rest" or "lo
 
 ## Torch Tracking
 - Real-time torch tracking is a core Shadowdark mechanic.
-- A torch lasts approximately 1 hour (6 exploration turns of ~10 minutes each).
-- Count turns and periodically remind the player how much torch time remains.
-- When a torch is getting low (1-2 turns left), describe it flickering ominously.
-- When a torch goes out, describe encroaching darkness and apply the Blind condition.
+- **Light state is tracked in worldState as \`torchExpiresAt\`** (an ISO timestamp). If it is absent or null, NO torch is lit.
+- **CRITICAL: If \`torchExpiresAt\` is absent or null, the character is in TOTAL DARKNESS.** Do NOT describe anything visible. Describe only what can be sensed without sight — sounds, smells, cold air, the feel of stone underfoot. Wait for the player to explicitly light a torch before revealing anything visual.
+- When the player lights a torch, emit \`campaignUpdates.torchExpiresAt\` set to a timestamp ~1 hour from now. Then describe what the torchlight reveals.
+- A torch lasts approximately 1 hour (6 exploration turns of ~10 minutes each). Count turns and periodically remind the player how much torch time remains.
+- When a torch is getting low (1-2 turns left), describe it flickering ominously. Emit a \`notification\` warning.
+- When a torch goes out, emit \`campaignUpdates.torchExpiresAt\` set to null. Describe the darkness closing in.
 - In darkness, characters cannot see, attacks have disadvantage, and spells requiring sight fail.
 
 ## Gamestate Blocks
@@ -152,7 +154,7 @@ Emit \`\`\`gamestate JSON when any tracked state changes. ALWAYS emit \`campaign
 \`\`\`gamestate
 {
   "characterUpdates": { "hp": N, "gold": N, "silver": N, "copper": N, "deity": "...", "languages": [...], "equipment": [...] },
-  "campaignUpdates": { "currentLocation": "...", "npcs": [...] },
+  "campaignUpdates": { "currentLocation": "...", "npcs": [...], "torchExpiresAt": "<ISO timestamp or null>" },
   "diceRolls": [{ "name": "Attack", "notation": "1d20+3", "rolls": [15], "modifier": 3, "total": 18 }],
   "combatAction": { "type": "attack", "attacker": "...", "target": "...", "result": "hit", "damage": N },
   "notification": { "message": "Torch is getting low!", "type": "warning" }
@@ -255,6 +257,15 @@ function buildWorldBlock(worldState?: WorldState | Partial<WorldState>): string 
   const parts: string[] = [];
   if (worldState.currentLocation) {
     parts.push(`Current Location: ${worldState.currentLocation}`);
+  }
+
+  // Torch / light state — always emit so GM knows darkness status
+  if (worldState.torchExpiresAt) {
+    const expiresAt = new Date(worldState.torchExpiresAt);
+    const minutesLeft = Math.max(0, Math.round((expiresAt.getTime() - Date.now()) / 60000));
+    parts.push(`Light: Torch lit — ~${minutesLeft} min remaining`);
+  } else {
+    parts.push("Light: NO TORCH LIT — party is in total darkness");
   }
 
   // Time, date, weather
