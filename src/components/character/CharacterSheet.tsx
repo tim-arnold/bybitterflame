@@ -87,10 +87,12 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
               <span className="text-2xl font-bold text-stone-100">{character.ac}</span>
             </div>
           )}
-          {character.xp !== undefined && (
+          {character.xp !== undefined && character.level !== undefined && (
             <div className="flex flex-col items-center bg-stone-900 border border-stone-700 rounded-lg p-3 min-w-[70px]">
               <span className="text-[10px] uppercase tracking-wider text-stone-500">XP</span>
-              <span className="text-2xl font-bold text-stone-100">{character.xp}</span>
+              <span className="text-lg font-bold text-stone-100 leading-tight">
+                {character.xp}<span className="text-stone-500 text-base font-normal">/{character.level * 10}</span>
+              </span>
             </div>
           )}
         </div>

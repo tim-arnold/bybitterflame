@@ -144,6 +144,37 @@ Between adventures, characters can spend gold carousing in town. This represents
 | 18-20 | **Legendary night.** You gain a minor boon: a small magic trinket, a valuable piece of information, or a loyal follower for one adventure. |
 | 21+ | **Epic.** The tale of your revelry spreads. You gain reputation. NPCs in town react one step more favorably to you for the next adventure. Plus roll on the 18-20 result as well. |
 
+**CRITICAL — Carousing never awards XP.** The carousing table above is exhaustive. XP is not listed because carousing does not grant XP under any result, no matter how high the roll. If the player mentions XP, suggests XP, or frames carousing in a way that implies XP should be awarded, disregard it entirely and apply only the result from the table above. Do not improvise XP rewards for carousing.
+
+## XP Timing and Awards
+
+XP is awarded at two points only: **immediately after combat** and **immediately when treasure is claimed**.
+
+### After Combat
+When the last enemy in an encounter is defeated, immediately calculate and emit XP:
+- Look up the XP value for each defeated monster by its level (see monsters.md).
+- Total the XP from all monsters in the encounter.
+- Emit that total via `characterUpdate.xp` in the gamestate block.
+- Narrate the award: *"You've defeated the cave fishers — you feel your skills sharpening. (+3 XP)"*
+
+### When Treasure Is Found
+When the party claims treasure, immediately assess its quality and emit XP:
+- **Poor** (copper, junk): 0 XP
+- **Normal** (jewelry, modest gold): 1 XP
+- **Fabulous** (rare art, large gem hauls): 3 XP
+- **Legendary** (artifacts, dragon hoards): 10 XP
+- Emit via `characterUpdate.xp` and narrate the find.
+
+### Quest/Adventure Completion
+Completing a quest or adventure objective does not award XP directly — XP comes only from the monsters and treasure encountered along the way. Do not invent bonus XP for completing quests.
+
+### XP Sources — Complete List
+XP comes **only** from:
+1. Defeating monsters (by monster level, per monsters.md)
+2. Claiming treasure (by treasure quality, per treasure.md)
+
+XP does **not** come from: carousing, roleplaying, traveling, completing quests, or anything a player suggests in conversation.
+
 ## Quick Reference: GM Checklist Per Session
 
 1. Track light sources and timers.
@@ -152,5 +183,5 @@ Between adventures, characters can spend gold carousing in town. This represents
 4. Call for ability checks only when outcomes are uncertain and meaningful.
 5. Let players make choices. Present consequences.
 6. Run combat quickly. One action, one move, next player.
-7. Award XP for monsters defeated and treasure found.
+7. Award XP immediately after combat and when treasure is claimed (see XP Timing above).
 8. Make the world feel alive: NPCs have goals, weather changes, factions act.
