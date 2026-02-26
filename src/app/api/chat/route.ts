@@ -70,6 +70,15 @@ export async function POST(request: NextRequest) {
       if (recentText.includes("level up") || recentText.includes("leveling")) {
         context.levelingUp = true;
       }
+      // Auto-detect level-up from character data — load leveling rules whenever XP is at or above threshold
+      if (
+        character &&
+        character.xp !== undefined &&
+        character.level !== undefined &&
+        character.xp >= character.level * 10
+      ) {
+        context.levelingUp = true;
+      }
 
       const rules = loadRules(context);
 

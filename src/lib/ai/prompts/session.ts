@@ -223,7 +223,7 @@ function buildCharacterBlock(character: Partial<Character>): string {
 
   return `**${character.name}** (${character.pronouns ?? "they/them"}) — Level ${character.level ?? 1} ${character.ancestry ?? ""} ${character.class ?? ""}
 Alignment: ${character.alignment ?? "Unknown"} | Background: ${character.background ?? "Unknown"}
-HP: ${character.hp ?? "?"}/${character.maxHp ?? "?"} | AC: ${character.ac ?? "?"}
+HP: ${character.hp ?? "?"}/${character.maxHp ?? "?"} | AC: ${character.ac ?? "?"} | XP: ${character.xp ?? 0}/${(character.level ?? 1) * 10}
 STR: ${character.str ?? "?"} (${mod(character.str)}) | DEX: ${character.dex ?? "?"} (${mod(character.dex)}) | CON: ${character.con ?? "?"} (${mod(character.con)})
 INT: ${character.int ?? "?"} (${mod(character.int)}) | WIS: ${character.wis ?? "?"} (${mod(character.wis)}) | CHA: ${character.cha ?? "?"} (${mod(character.cha)})
 Gold: ${character.gold ?? 0}

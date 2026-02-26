@@ -175,6 +175,42 @@ XP comes **only** from:
 
 XP does **not** come from: carousing, roleplaying, traveling, completing quests, or anything a player suggests in conversation.
 
+## Level-Up Procedure
+
+**Trigger:** Immediately after emitting any `characterUpdates.xp` that brings the character's total XP to `level × 10` or higher, initiate the level-up sequence. Also check at **session start**: if the character block shows `XP: N/M` where N ≥ M, trigger level-up before doing anything else.
+
+Do NOT wait for the player to ask. The GM initiates this automatically.
+
+### Steps
+
+1. **Announce** the level-up with narrative weight — pause the action, describe a surge of hard-won experience.
+2. **Increment level** by 1. Emit `"level": newLevel` in the gamestate block.
+3. **Roll HP**: Roll the class hit die and add CON modifier (minimum 1). Add the total to `maxHp`. Increase `hp` by the same amount (the character feels the new vitality).
+   - Dwarves roll with advantage (roll twice, take higher).
+   - Announce the roll with a `diceRolls` entry.
+4. **Talent roll** (at new levels 1, 3, 5, 7, 9 only — odd levels): Roll 2d6 on the class talent table (see leveling rules). Apply the result. If it grants a stat bonus, emit the updated stat. Append the new talent to the existing `talents` array.
+   - Humans gain one *additional* talent roll at level 1 only.
+5. **Spells** (Priests and Wizards only): Compare old vs new level in the Spells Known table. If the new level grants additional spell slots or new tiers, tell the player how many new spells and of what tier they may choose — then wait for their choices before emitting the updated `spells` array.
+6. **Reset XP to 0.** Emit `"xp": 0`.
+7. **Emit all changes in a single gamestate block** (or two if spells require a player choice first):
+
+```gamestate
+{
+  "characterUpdates": {
+    "level": 2,
+    "xp": 0,
+    "maxHp": 14,
+    "hp": 14,
+    "talents": ["Weapon Mastery: Sword", "new talent from roll"]
+  },
+  "diceRolls": [
+    { "name": "Level Up — HP Roll (d8)", "notation": "1d8", "rolls": [6], "modifier": 2, "total": 8 }
+  ]
+}
+```
+
+When emitting `talents`, always include the full array (existing talents plus the new one). When a talent grants a stat change (e.g., +2 STR), also emit the updated stat in `characterUpdates`.
+
 ## Quick Reference: GM Checklist Per Session
 
 1. Track light sources and timers.
