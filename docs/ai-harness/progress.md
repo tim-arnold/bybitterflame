@@ -25,11 +25,12 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - Chat input auto-focuses when AI finishes responding
 - **Companion NPCs** — full stat sheets, personalities, loyalty drift, death saves, hostile turn; stored in `worldState.companions`
 - **Soul transfer on death** — `playerDied` triggers DeathScreen overlay; player picks companion; inherit API creates new character; legacy talent appended; adventure continues
+- **Torch timer** — 60-minute paused countdown; UI owns the clock; GM signals intent only; darkness enforced when no torch lit; AI notified on burnout
 - **Cloudflare deployment** — `wrangler deploy` → Workers runtime; D1 binding confirmed
+- **Adventure modules** — Shots in the Dark #1 (18 oneshots); /adventures browser; adventure brief in session prompt; mapReveal → Map tab; GM character creation mode; pending DB migration for production
 
 **What doesn't work yet:**
 - Session management with AI-generated summaries (long-term memory across many sessions)
-- Torch timer
 - Combat tracker UI
 - Auth (BetterAuth integration planned at `docs/plans/auth.md`)
 - Companion/soul transfer features: code complete but not manually verified end-to-end in production
@@ -49,6 +50,39 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - Live URL: https://dark.tim52.io (also https://shadowdark.tim-arnold.workers.dev)
 
 ## Recent Work
+
+### Session 7 (2026-02-26)
+
+**Adventure module system — full implementation:**
+- `src/lib/adventures/types.ts` — `AdventureLocation`, `Adventure`, `AdventureCollection` types
+- `src/lib/adventures/shots-in-the-dark-1.ts` — all 18 oneshot adventures with locations, NPCs, mechanics, PC map filenames
+- `src/lib/adventures/index.ts` — `ADVENTURE_COLLECTIONS`, `getCollection()`, `getAdventure()` helpers
+- DB migration `drizzle/0001_adventure_fields.sql` — adds `campaign_type`, `module_id`, `adventure_id` to campaigns
+- Drizzle schema updated with those 3 new columns
+- `Campaign` type gains `campaignType`, `moduleId`, `adventureId`; `GameStateUpdate` type gains `"mapReveal"`; `ChatRequest.mode` gains `"adventure-create"`
+- `src/lib/ai/prompts/adventure-create.ts` — GM-interview character creation prompt for specific adventures
+- `session.ts` — `buildAdventureBlock()` helper; injected into session prompt when campaign has moduleId/adventureId
+- `state-parser.ts` — `mapReveal` parsed and emitted as `GameStateUpdate`
+- `/api/character` — accepts `campaignType`, `moduleId`, `adventureId`; persists to DB
+- `/api/campaign/[id]` — returns `campaignType`, `moduleId`, `adventureId` in response
+- `/api/chat` — handles `mode: "adventure-create"` using `buildAdventureCreatePrompt`; injects adventure into session prompt for `mode: "play"` when campaign has module
+- `/api/character/start-adventure` — new route: creates new campaign for existing character with adventure context
+- `MapViewer.tsx` — zoom/pan map image viewer with reset button
+- PC maps copied to `public/adventures/shots-in-the-dark-1/`
+- `play/[campaignId]/page.tsx` — adventure loaded on page load; gm-create mode if no character name; Map tab in right panel; mapReveal handling; tab badge on new reveal
+- `/adventures/page.tsx` — adventure browser with level-range color coding
+- `/adventures/[collectionId]/[adventureId]/page.tsx` — adventure detail + 3-option character selection
+- Homepage — added "Choose an Adventure" button alongside "Begin Your Adventure"
+- `/create` — reads `adventureId`/`collectionId` query params; passes through to `POST /api/character`
+- **Build: clean ✓**
+- DB migration needs applying: `wrangler d1 execute shadowdark --remote --file=drizzle/0001_adventure_fields.sql`
+
+### Session 6 (2026-02-26)
+
+**Torch timer complete:**
+- Marked torch timer as done in feature-list.json (all tests passing)
+- Removed from "What doesn't work yet" list
+- Multiple bug fixes across previous session: double-notification on burnout, stale closure causing reignite-after-extinguish, wall-clock → paused countdown, darkness enforcement
 
 ### Session 5 (2026-02-26)
 

@@ -59,6 +59,9 @@ export async function GET(
       campaign: {
         ...campaign,
         worldState: JSON.parse(campaign.worldState),
+        campaignType: campaign.campaignType ?? "standard",
+        moduleId: campaign.moduleId ?? null,
+        adventureId: campaign.adventureId ?? null,
       },
       sessionNumber: session?.sessionNumber ?? 1,
       messages: session ? JSON.parse(session.messages) : [],
@@ -66,6 +69,52 @@ export async function GET(
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal server error";
     console.error("Campaign load error:", error);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+/**
+ * DELETE /api/campaign/[campaignId]?target=adventure|character|both
+ * Delete a campaign and optionally its character.
+ *
+ * target=adventure  — deletes sessions + campaign; character row survives for reuse
+ * target=character  — deletes sessions + campaign + character
+ * target=both       — same as "character"
+ */
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ campaignId: string }> },
+) {
+  const { campaignId } = await params;
+  const url = new URL(request.url);
+  const target = url.searchParams.get("target") ?? "adventure";
+
+  try {
+    const { env } = await getCloudflareContext({ async: true });
+    const db = getDb(env.DB);
+
+    const [campaign] = await db
+      .select({ characterId: campaigns.characterId })
+      .from(campaigns)
+      .where(eq(campaigns.id, campaignId))
+      .limit(1);
+
+    if (!campaign) {
+      return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+    }
+
+    // Delete in FK-safe order: sessions → campaign → (optionally) character
+    await db.delete(sessions).where(eq(sessions.campaignId, campaignId));
+    await db.delete(campaigns).where(eq(campaigns.id, campaignId));
+
+    if (target === "character" || target === "both") {
+      await db.delete(characters).where(eq(characters.id, campaign.characterId));
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Internal server error";
+    console.error("Campaign delete error:", error);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

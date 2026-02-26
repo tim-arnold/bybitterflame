@@ -58,6 +58,9 @@ export interface Campaign {
   state: "active" | "completed" | "abandoned";
   gmPersona: string;
   worldState: WorldState;
+  campaignType?: "standard" | "oneshot";
+  moduleId?: string;
+  adventureId?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -205,7 +208,8 @@ export interface GameStateUpdate {
     | "journalUpdate"
     | "companionJoined"
     | "companionUpdate"
-    | "playerDied";
+    | "playerDied"
+    | "mapReveal";
   data: Record<string, unknown>;
 }
 
@@ -220,5 +224,5 @@ export interface ChatRequest {
   messages: Message[];
   character?: Partial<Character>;
   campaign?: Partial<Campaign>;
-  mode: "create" | "play";
+  mode: "create" | "play" | "adventure-create" | "gm-create";
 }

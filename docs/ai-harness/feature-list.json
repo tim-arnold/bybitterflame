@@ -163,11 +163,12 @@
     {
       "id": "torch-timer",
       "name": "Real-time torch timer",
-      "status": "pending",
+      "status": "done",
+      "notes": "UI owns the clock; GM signals intent only. Paused countdown (not wall-clock). Fixed stale closure bugs causing reignite-after-extinguish and double-notification on burnout. Darkness enforced when no torch lit.",
       "tests": [
-        { "name": "60-minute countdown works", "pass": false },
-        { "name": "Persists across page refreshes (localStorage)", "pass": false },
-        { "name": "AI notified when torch expires", "pass": false }
+        { "name": "60-minute countdown works", "pass": true },
+        { "name": "Persists across page refreshes (localStorage)", "pass": true },
+        { "name": "AI notified when torch expires", "pass": true }
       ]
     },
     {
@@ -187,6 +188,21 @@
       "tests": [
         { "name": "Initiative order displays", "pass": false },
         { "name": "Turn indicators work", "pass": false }
+      ]
+    },
+    {
+      "id": "adventure-modules",
+      "name": "Adventure module system (oneshot modules)",
+      "status": "done",
+      "notes": "Shots in the Dark #1: 18 oneshot adventures. Adventure browser at /adventures. Character selection (existing / roll own / GM creates). Adventure data injected into session prompt. mapReveal gamestate key triggers Map tab in right panel. GM-create mode: brief interview → full character generated. DB: campaign_type, module_id, adventure_id columns. PC maps in public/adventures/shots-in-the-dark-1/. New migration: drizzle/0001_adventure_fields.sql.",
+      "tests": [
+        { "name": "/adventures lists all 18 oneshots with correct level ranges", "pass": false },
+        { "name": "Adventure detail page shows all 3 character options", "pass": false },
+        { "name": "Roll my own → create page passes adventureId/collectionId through to DB", "pass": false },
+        { "name": "Let GM decide → brief interview → characterComplete → adventure starts", "pass": false },
+        { "name": "Adventure module brief injected into session prompt", "pass": false },
+        { "name": "mapReveal gamestate key triggers Map tab badge and shows map", "pass": false },
+        { "name": "Build clean", "pass": true }
       ]
     },
     {

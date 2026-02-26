@@ -16,10 +16,15 @@ export async function POST(request: Request) {
     const body = await request.json() as {
       character: Partial<Character>;
       gmPersona: string;
+      campaignType?: "standard" | "oneshot";
+      moduleId?: string;
+      adventureId?: string;
     };
-    const { character, gmPersona } = body;
+    const { character, gmPersona, campaignType, moduleId, adventureId } = body;
 
-    if (!character.name || !character.ancestry || !character.class) {
+    // GM-create mode starts with an empty placeholder — the GM fills in the character
+    const isGmCreate = !character.name;
+    if (!isGmCreate && (!character.name || !character.ancestry || !character.class)) {
       return NextResponse.json({ error: "Incomplete character data" }, { status: 400 });
     }
 
@@ -32,10 +37,10 @@ export async function POST(request: Request) {
 
     await db.insert(characters).values({
       id: characterId,
-      name: character.name,
+      name: character.name ?? "",
       pronouns: character.pronouns ?? "they/them",
-      ancestry: character.ancestry,
-      class: character.class,
+      ancestry: character.ancestry ?? "",
+      class: character.class ?? "",
       level: character.level ?? 1,
       xp: character.xp ?? 0,
       alignment: character.alignment ?? "Neutral",
@@ -65,7 +70,7 @@ export async function POST(request: Request) {
     await db.insert(campaigns).values({
       id: campaignId,
       characterId,
-      name: `The Adventures of ${character.name}`,
+      name: character.name ? `The Adventures of ${character.name}` : "New Adventure",
       state: "active",
       gmPersona: gmPersona ?? "",
       worldState: JSON.stringify({
@@ -75,6 +80,9 @@ export async function POST(request: Request) {
         quests: [],
         flags: {},
       }),
+      campaignType: campaignType ?? "standard",
+      moduleId: moduleId ?? null,
+      adventureId: adventureId ?? null,
       createdAt: now,
       updatedAt: now,
     });

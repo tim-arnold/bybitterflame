@@ -12,8 +12,11 @@ import { TravelersJournal } from "@/components/game/TravelersJournal";
 import { CompanionPanel } from "@/components/game/CompanionPanel";
 import { DeathScreen } from "@/components/game/DeathScreen";
 import { WorldConditions } from "@/components/game/WorldConditions";
+import { MapViewer } from "@/components/game/MapViewer";
 import { GameLayout } from "@/components/layout/GameLayout";
 import { parseGameState } from "@/lib/game/state-parser";
+import { getAdventure } from "@/lib/adventures/index";
+import type { Adventure } from "@/lib/adventures/types";
 import type { Character, Campaign, JournalEntry, Companion, LegacyCharacter } from "@/lib/game/types";
 
 /** Keep only the first companion with each name (guards against GM re-emitting companionJoined) */
@@ -57,12 +60,22 @@ export default function PlayPage() {
   const [deathData, setDeathData] = useState<DeathData | null>(null);
   const torchTimerRef = useRef<TorchTimerHandle>(null);
 
+  // Adventure module state
+  const [adventure, setAdventure] = useState<Adventure | null>(null);
+  const [currentMapFile, setCurrentMapFile] = useState<string | null>(null);
+  const [currentMapLocationName, setCurrentMapLocationName] = useState<string | undefined>(undefined);
+  const [mapHasNewReveal, setMapHasNewReveal] = useState(false);
+  const [activeRightTab, setActiveRightTab] = useState<"tools" | "map">("tools");
+  const [isGmCreateMode, setIsGmCreateMode] = useState(false);
+
+  const campaignTitle = adventure?.title ?? campaign.name ?? "";
+
   useEffect(() => {
-    const parts = ["ShadowdarkAI"];
+    const parts = ["Shadowdark"];
+    if (campaignTitle) parts.push(campaignTitle);
     if (character.name) parts.push(character.name);
-    if (campaign.worldState?.currentLocation) parts.push(campaign.worldState.currentLocation);
-    document.title = parts.join(" : ");
-  }, [character.name, campaign.worldState?.currentLocation]);
+    document.title = parts.join(" · ");
+  }, [campaignTitle, character.name]);
 
   // Load character and campaign data. For new campaigns (no messages), auto-trigger
   // the GM's opening scene using the freshly loaded data before state is set.
@@ -92,13 +105,51 @@ export default function PlayPage() {
         );
         setCompanions(dedupedCompanions);
 
+        // Load adventure data if campaign has a module
+        const moduleId = loadedCampaign.moduleId;
+        const adventureId = loadedCampaign.adventureId;
+        let loadedAdventure: Adventure | undefined;
+        if (moduleId && adventureId) {
+          loadedAdventure = getAdventure(moduleId, adventureId);
+          if (loadedAdventure) setAdventure(loadedAdventure);
+        }
+
+        // Check if this is a GM-create campaign (no character name yet, any campaign type)
+        const needsGmCreate = !loadedCharacter.name;
+        if (needsGmCreate) {
+          setIsGmCreateMode(true);
+        }
+
         if (loadedMessages.length > 0) {
           setMessages(loadedMessages);
           return;
         }
 
         // New campaign — generate the opening scene immediately
-        const triggerMsg: Message = { role: "user", content: "[BEGIN ADVENTURE]", hidden: true };
+        // Pick the right GM-create mode: adventure-specific or generic
+        const chatMode = needsGmCreate
+          ? (loadedCampaign.moduleId && loadedCampaign.adventureId ? "adventure-create" : "gm-create")
+          : "play";
+
+        // For GM-create mode, read canned answers stored by the adventure detail page
+        let gmCreateContent = "[BEGIN CHARACTER CREATION]";
+        if (needsGmCreate) {
+          const storedAnswers = sessionStorage.getItem(`gm-create-answers-${campaignId}`);
+          if (storedAnswers) {
+            const parsed = JSON.parse(storedAnswers) as Record<string, string>;
+            const parts = Object.values(parsed).filter(Boolean);
+            if (parts.length > 0) {
+              gmCreateContent = parts.join(" | ");
+            }
+            sessionStorage.removeItem(`gm-create-answers-${campaignId}`);
+          }
+        }
+
+        const triggerMsg: Message = {
+          role: "user",
+          content: needsGmCreate ? gmCreateContent : "[BEGIN ADVENTURE]",
+          hidden: true,
+        };
         setIsLoading(true);
         setStreamingContent("");
 
@@ -106,10 +157,10 @@ export default function PlayPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            messages: [{ role: "user", content: "[BEGIN ADVENTURE]" }],
+            messages: [{ role: "user", content: triggerMsg.content }],
             character: loadedCharacter,
             campaign: loadedCampaign,
-            mode: "play",
+            mode: chatMode,
           }),
         });
 
@@ -173,6 +224,17 @@ export default function PlayPage() {
             setIsDead(true);
             setDeathData(update.data as unknown as DeathData);
           }
+          if (update.type === "mapReveal" && loadedAdventure && loadedCampaign.moduleId) {
+            const locationName = update.data.locationName as string;
+            const mapFile = `/adventures/${loadedCampaign.moduleId}/${loadedAdventure.pcMapFile}`;
+            setCurrentMapFile(mapFile);
+            setCurrentMapLocationName(locationName);
+            setMapHasNewReveal(true);
+          }
+          // Handle character complete in gm-create mode — transition to play mode
+          if (update.type === "notification" && update.data.type === "characterComplete" && needsGmCreate) {
+            setIsGmCreateMode(false);
+          }
         }
 
         if (newEntries.length > 0) {
@@ -223,6 +285,20 @@ export default function PlayPage() {
     loadData();
   }, [campaignId]);
 
+  /**
+   * Given an adventure, collection id, and a location name from a mapReveal event,
+   * return the URL path to the PC map image, or null if none.
+   */
+  function resolveMapFile(adv: Adventure, locationName: string): string | null {
+    if (!adv.pcMapFile) return null;
+    const collectionId = campaign.moduleId;
+    if (!collectionId) return null;
+    // Ensure the revealed location actually has a PC map marker
+    const hasMapLocation = adv.locations.some((l) => l.hasPcMap);
+    if (!hasMapLocation) return null;
+    return `/adventures/${collectionId}/${adv.pcMapFile}`;
+  }
+
   const sendMessage = useCallback(
     async (
       content: string,
@@ -258,7 +334,7 @@ export default function PlayPage() {
             messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
             character: activeCharacter,
             campaign: activeCampaign,
-            mode: "play",
+            mode: isGmCreateMode ? "adventure-create" : "play",
           }),
         });
 
@@ -345,6 +421,19 @@ export default function PlayPage() {
               deathNarrative: narrative,
               companionsAtDeath: updatedCompanions,
             });
+          }
+          if (update.type === "mapReveal" && adventure) {
+            const locationName = update.data.locationName as string;
+            const mapFile = resolveMapFile(adventure, locationName);
+            if (mapFile) {
+              setCurrentMapFile(mapFile);
+              setCurrentMapLocationName(locationName);
+              setMapHasNewReveal(true);
+            }
+          }
+          // Handle character complete in gm-create mode
+          if (update.type === "notification" && update.data.type === "characterComplete" && isGmCreateMode) {
+            setIsGmCreateMode(false);
           }
         }
 
@@ -649,6 +738,8 @@ export default function PlayPage() {
   return (
     <>
       <GameLayout
+        title={campaignTitle || undefined}
+        isSaved={!isLoading}
         leftTitle="Character"
         rightTitle="Tools"
         leftPanel={<CharacterSheet character={character} />}
@@ -658,37 +749,68 @@ export default function PlayPage() {
             streamingContent={streamingContent}
             onSend={sendMessage}
             isLoading={isLoading}
-            placeholder="What do you do?"
+            placeholder={isGmCreateMode ? "Tell the GM about your character..." : "What do you do?"}
           />
         }
         rightPanel={
           <>
-            <WorldConditions worldState={campaign.worldState} />
-            <TorchTimer
-              ref={torchTimerRef}
-              torchRemainingSeconds={campaign.worldState?.torchRemainingSeconds}
-              onTorchChange={handleTorchStateChange}
-              onExpire={handleTorchExpire}
-            />
-            <CombatTracker
-              combatants={combatants}
-              round={combatRound}
-              isInCombat={isInCombat}
-            />
-            <CompanionPanel companions={companions} />
-            <TravelersJournal
-              entries={journalEntries}
-              onAddEntry={handleAddJournalEntry}
-              onEditEntry={handleEditJournalEntry}
-              onDeleteEntry={handleDeleteJournalEntry}
-            />
-            <DiceRoller />
-            <SessionControls
-              sessionNumber={sessionNumber}
-              onEndSession={handleEndSession}
-              onSaveSession={handleSaveSession}
-              isLoading={isLoading}
-            />
+            {adventure && (
+              <div className="flex gap-1 border-b border-stone-800 pb-2 -mt-1">
+                <button
+                  onClick={() => setActiveRightTab("tools")}
+                  className={`text-xs px-3 py-1 rounded transition-colors ${activeRightTab === "tools" ? "bg-stone-700 text-stone-100" : "text-stone-500 hover:text-stone-300"}`}
+                >
+                  Tools
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveRightTab("map");
+                    setMapHasNewReveal(false);
+                  }}
+                  className={`relative text-xs px-3 py-1 rounded transition-colors ${activeRightTab === "map" ? "bg-stone-700 text-stone-100" : "text-stone-500 hover:text-stone-300"}`}
+                >
+                  Map
+                  {mapHasNewReveal && activeRightTab !== "map" && (
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--color-gold)]" />
+                  )}
+                </button>
+              </div>
+            )}
+            {adventure && activeRightTab === "map" ? (
+              <div className="bg-stone-900 border border-stone-700 rounded-lg p-3">
+                <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Area Map</h3>
+                <MapViewer mapSrc={currentMapFile} locationName={currentMapLocationName} />
+              </div>
+            ) : (
+              <>
+                <WorldConditions worldState={campaign.worldState} />
+                <TorchTimer
+                  ref={torchTimerRef}
+                  torchRemainingSeconds={campaign.worldState?.torchRemainingSeconds}
+                  onTorchChange={handleTorchStateChange}
+                  onExpire={handleTorchExpire}
+                />
+                <CombatTracker
+                  combatants={combatants}
+                  round={combatRound}
+                  isInCombat={isInCombat}
+                />
+                <CompanionPanel companions={companions} />
+                <TravelersJournal
+                  entries={journalEntries}
+                  onAddEntry={handleAddJournalEntry}
+                  onEditEntry={handleEditJournalEntry}
+                  onDeleteEntry={handleDeleteJournalEntry}
+                />
+                <DiceRoller />
+                <SessionControls
+                  sessionNumber={sessionNumber}
+                  onEndSession={handleEndSession}
+                  onSaveSession={handleSaveSession}
+                  isLoading={isLoading}
+                />
+              </>
+            )}
           </>
         }
       />

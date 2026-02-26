@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { MobileNav } from "./MobileNav";
 
@@ -9,6 +10,8 @@ interface GameLayoutProps {
   rightPanel: React.ReactNode;
   leftTitle?: string;
   rightTitle?: string;
+  title?: string;
+  isSaved?: boolean;
 }
 
 export function GameLayout({
@@ -17,11 +20,51 @@ export function GameLayout({
   rightPanel,
   leftTitle = "Character",
   rightTitle = "Tools",
+  title,
+  isSaved = true,
 }: GameLayoutProps) {
   const [mobileTab, setMobileTab] = useState<"left" | "center" | "right">("center");
 
+  const tooltip = isSaved
+    ? "Your session is saved — safe to leave."
+    : "The GM is responding. Wait a moment before leaving.";
+
   return (
     <div className="h-screen flex flex-col bg-stone-950">
+      {/* Title bar */}
+      {title && (
+        <div className="shrink-0 border-b border-stone-800 bg-stone-950 px-4 py-2 grid grid-cols-3 items-center">
+          {/* Left: home + info */}
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="text-xs text-stone-500 hover:text-stone-200 transition-colors"
+            >
+              ← Home
+            </Link>
+            <div className="relative group">
+              <span className="flex h-4 w-4 items-center justify-center rounded-full border border-stone-600 text-[10px] text-stone-500 cursor-default select-none group-hover:border-stone-400 group-hover:text-stone-300 transition-colors">
+                i
+              </span>
+              <div className="pointer-events-none absolute left-0 top-6 z-50 w-56 rounded border border-stone-700 bg-stone-900 px-3 py-2 text-xs text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                <span className={`mr-1.5 ${isSaved ? "text-emerald-400" : "text-yellow-400"}`}>
+                  {isSaved ? "●" : "○"}
+                </span>
+                {tooltip}
+              </div>
+            </div>
+          </div>
+
+          {/* Center: campaign title */}
+          <span className="text-sm font-semibold text-[var(--color-gold)] tracking-wide text-center">
+            {title}
+          </span>
+
+          {/* Right: empty spacer for symmetry */}
+          <div />
+        </div>
+      )}
+
       {/* Desktop layout */}
       <div className="hidden md:flex flex-1 overflow-hidden">
         <aside className="w-72 border-r border-stone-800 overflow-y-auto">

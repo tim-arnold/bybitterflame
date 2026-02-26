@@ -1,35 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getAdventure, getCollection } from "@/lib/adventures/index";
 
-interface CampaignSummary {
-  campaignId: string;
-  campaignName: string;
-  updatedAt: string;
-  currentLocation: string;
-  character: {
-    name: string;
-    class: string;
-    ancestry: string;
-    level: number;
-    alignment: string;
-  };
-}
-
-function levelMatchClass(charLevel: number, min: number, max: number): string {
-  if (charLevel >= min && charLevel <= max) return "text-emerald-400";
-  if (charLevel === min - 1 || charLevel === max + 1) return "text-yellow-400";
-  return "text-stone-500";
-}
-
-function levelMatchLabel(charLevel: number, min: number, max: number): string {
-  if (charLevel >= min && charLevel <= max) return "Good match";
-  if (charLevel < min) return `${min - charLevel} level${min - charLevel > 1 ? "s" : ""} below recommended`;
-  return `${charLevel - max} level${charLevel - max > 1 ? "s" : ""} above recommended`;
-}
+const GM_QUESTIONS = [
+  {
+    id: "style",
+    question: "When trouble finds you, what's your first instinct?",
+    options: [
+      "Steel and muscle — I hit first",
+      "Shadows and patience — I wait for my moment",
+      "Words and wit — I talk my way through",
+      "Power — magic or faith sees me through",
+    ],
+  },
+  {
+    id: "motivation",
+    question: "What brought you to this line of work?",
+    options: [
+      "The coin",
+      "The thrill",
+      "A debt to repay",
+      "Someone I'm searching for",
+    ],
+  },
+] as const;
 
 export default function AdventureDetailPage() {
   const params = useParams();
@@ -37,19 +34,14 @@ export default function AdventureDetailPage() {
   const collectionId = params.collectionId as string;
   const adventureId = params.adventureId as string;
 
-  const [campaigns, setCampaigns] = useState<CampaignSummary[]>([]);
   const [isCreating, setIsCreating] = useState(false);
-  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+
+  // GM create interview state
+  const [showInterview, setShowInterview] = useState(false);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
 
   const collection = getCollection(collectionId);
   const adventure = getAdventure(collectionId, adventureId);
-
-  useEffect(() => {
-    fetch("/api/campaigns")
-      .then((r) => r.json())
-      .then((data) => setCampaigns(data.campaigns ?? []))
-      .catch(() => {});
-  }, []);
 
   if (!collection || !adventure) {
     return (
@@ -62,50 +54,15 @@ export default function AdventureDetailPage() {
     );
   }
 
-  async function handleUseExistingCharacter(campaignData: CampaignSummary) {
-    setSelectedCampaignId(campaignData.campaignId);
-    setIsCreating(true);
-    try {
-      // Create a new campaign for this character + adventure
-      const res = await fetch(`/api/character/start-adventure`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sourceCampaignId: campaignData.campaignId,
-          moduleId: collectionId,
-          adventureId,
-        }),
-      });
-      if (!res.ok) throw new Error("Failed to start adventure");
-      const { campaignId: newCampaignId } = await res.json() as { campaignId: string };
-      router.push(`/play/${newCampaignId}`);
-    } catch {
-      setIsCreating(false);
-      setSelectedCampaignId(null);
-    }
-  }
-
-  async function handleGmCreateCharacter() {
+  async function handleBeginWithAnswers() {
     if (!adventure) return;
     setIsCreating(true);
     try {
-      // Create a campaign with a placeholder — the GM will create the character
       const res = await fetch("/api/character", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          character: {
-            name: "Adventurer",
-            ancestry: "Human",
-            class: "Fighter",
-            level: adventure.levelMin,
-            alignment: "Neutral",
-            background: "",
-            str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10,
-            hp: 1, maxHp: 1, ac: 10,
-            equipment: [], spells: [], talents: [], features: [],
-            gold: 0, silver: 0, copper: 0,
-          },
+          character: {},
           gmPersona: "",
           campaignType: "oneshot",
           moduleId: collectionId,
@@ -114,11 +71,20 @@ export default function AdventureDetailPage() {
       });
       if (!res.ok) throw new Error("Failed to create campaign");
       const { campaignId } = await res.json() as { campaignId: string };
+
+      // Store answers so the play page can send them as the opening message
+      sessionStorage.setItem(
+        `gm-create-answers-${campaignId}`,
+        JSON.stringify(answers),
+      );
+
       router.push(`/play/${campaignId}`);
     } catch {
       setIsCreating(false);
     }
   }
+
+  const allAnswered = GM_QUESTIONS.every((q) => answers[q.id]);
 
   const levelLabel =
     adventure.levelMin === adventure.levelMax
@@ -158,42 +124,7 @@ export default function AdventureDetailPage() {
 
         {/* Character options */}
         <div className="space-y-6">
-          {/* Option A: existing characters */}
-          {campaigns.length > 0 && (
-            <div>
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-3">
-                Use an Existing Character
-              </h2>
-              <div className="space-y-2">
-                {campaigns.map((c) => {
-                  const matchColor = levelMatchClass(c.character.level, adventure.levelMin, adventure.levelMax);
-                  const matchLabel = levelMatchLabel(c.character.level, adventure.levelMin, adventure.levelMax);
-                  const isBusy = isCreating && selectedCampaignId === c.campaignId;
-                  return (
-                    <button
-                      key={c.campaignId}
-                      onClick={() => handleUseExistingCharacter(c)}
-                      disabled={isCreating}
-                      className="w-full flex items-center justify-between rounded-lg border border-stone-700 bg-stone-900 px-4 py-3 text-left transition-colors hover:border-stone-500 hover:bg-stone-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <div>
-                        <p className="font-semibold text-stone-100">{c.character.name}</p>
-                        <p className="text-sm text-stone-400">
-                          Level {c.character.level} {c.character.ancestry} {c.character.class}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className={`text-xs ${matchColor}`}>{matchLabel}</p>
-                        {isBusy && <p className="text-xs text-stone-500 mt-0.5">Starting...</p>}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Option B: create new character */}
+          {/* Option A: create new character */}
           <div>
             <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-3">
               Roll Your Own Character
@@ -214,18 +145,54 @@ export default function AdventureDetailPage() {
             <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-3">
               Let the GM Decide
             </h2>
-            <button
-              onClick={handleGmCreateCharacter}
-              disabled={isCreating}
-              className="w-full rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-4 py-3 text-center transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <p className="font-semibold text-[var(--color-gold)]">
-                {isCreating && !selectedCampaignId ? "Preparing..." : "Brief Interview — GM Builds Your Character"}
-              </p>
-              <p className="text-sm text-stone-400 mt-0.5">
-                Answer 1–2 questions, then jump straight into the adventure
-              </p>
-            </button>
+
+            {!showInterview ? (
+              <button
+                onClick={() => setShowInterview(true)}
+                disabled={isCreating}
+                className="w-full rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-4 py-3 text-center transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <p className="font-semibold text-[var(--color-gold)]">GM Builds Your Character</p>
+                <p className="text-sm text-stone-400 mt-0.5">
+                  Answer 2 quick questions, then jump straight into the adventure
+                </p>
+              </button>
+            ) : (
+              <div className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-4 py-5 space-y-6">
+                {GM_QUESTIONS.map((q) => (
+                  <div key={q.id}>
+                    <p className="text-sm font-semibold text-stone-200 mb-3">{q.question}</p>
+                    <div className="grid grid-cols-1 gap-2">
+                      {q.options.map((opt) => {
+                        const selected = answers[q.id] === opt;
+                        return (
+                          <button
+                            key={opt}
+                            onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: opt }))}
+                            disabled={isCreating}
+                            className={`w-full rounded border px-3 py-2 text-left text-sm transition-colors cursor-pointer ${
+                              selected
+                                ? "border-[var(--color-gold-dim)] bg-stone-800 text-[var(--color-gold)]"
+                                : "border-stone-700 bg-stone-800 text-stone-300 hover:border-stone-500 hover:text-stone-100"
+                            }`}
+                          >
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  onClick={handleBeginWithAnswers}
+                  disabled={!allAnswered || isCreating}
+                  className="w-full rounded-lg border border-[var(--color-gold-dim)] bg-stone-800 px-4 py-2.5 text-sm font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-700 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {isCreating ? "Preparing…" : "Begin Adventure →"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

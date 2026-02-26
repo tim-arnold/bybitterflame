@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface CampaignSummary {
   campaignId: string;
@@ -17,8 +18,41 @@ interface CampaignSummary {
   };
 }
 
+type DeleteTarget = "adventure" | "character" | "both";
+
+const GM_QUESTIONS = [
+  {
+    id: "style",
+    question: "When trouble finds you, what's your first instinct?",
+    options: [
+      "Steel and muscle — I hit first",
+      "Shadows and patience — I wait for my moment",
+      "Words and wit — I talk my way through",
+      "Power — magic or faith sees me through",
+    ],
+  },
+  {
+    id: "motivation",
+    question: "What brought you to this line of work?",
+    options: [
+      "The coin",
+      "The thrill",
+      "A debt to repay",
+      "Someone I'm searching for",
+    ],
+  },
+] as const;
+
 export default function Home() {
+  const router = useRouter();
   const [campaigns, setCampaigns] = useState<CampaignSummary[]>([]);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // New adventure flow
+  const [showNewOptions, setShowNewOptions] = useState(false);
+  const [gmAnswers, setGmAnswers] = useState<Record<string, string>>({});
+  const [isStartingGm, setIsStartingGm] = useState(false);
 
   useEffect(() => {
     fetch("/api/campaigns")
@@ -26,6 +60,36 @@ export default function Home() {
       .then((data) => setCampaigns(data.campaigns ?? []))
       .catch(() => {});
   }, []);
+
+  async function handleDelete(campaignId: string, target: DeleteTarget) {
+    setIsDeleting(true);
+    try {
+      await fetch(`/api/campaign/${campaignId}?target=${target}`, { method: "DELETE" });
+      setCampaigns((prev) => prev.filter((c) => c.campaignId !== campaignId));
+      setPendingDeleteId(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
+  async function handleGmBegin() {
+    setIsStartingGm(true);
+    try {
+      const res = await fetch("/api/character", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ character: {}, gmPersona: "", campaignType: "standard" }),
+      });
+      if (!res.ok) throw new Error("Failed to create campaign");
+      const { campaignId } = await res.json() as { campaignId: string };
+      sessionStorage.setItem(`gm-create-answers-${campaignId}`, JSON.stringify(gmAnswers));
+      router.push(`/play/${campaignId}`);
+    } catch {
+      setIsStartingGm(false);
+    }
+  }
+
+  const allAnswered = GM_QUESTIONS.every((q) => gmAnswers[q.id]);
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center text-center">
@@ -44,49 +108,172 @@ export default function Home() {
         darkness ahead. Will you press on?
       </p>
 
-      {campaigns.length > 0 && (
+      {campaigns.length > 0 && !showNewOptions && (
         <div className="mb-8 w-full max-w-md">
           <p className="mb-3 text-sm uppercase tracking-widest text-stone-500">
             Continue Adventure
           </p>
           <div className="flex flex-col gap-2">
-            {campaigns.map((c) => (
-              <Link
-                key={c.campaignId}
-                href={`/play/${c.campaignId}`}
-                className="flex items-center justify-between rounded-lg border border-stone-700 bg-stone-900 px-5 py-3 text-left transition-colors hover:border-stone-500 hover:bg-stone-800"
-              >
-                <div>
-                  <p className="font-semibold text-stone-100">{c.character.name}</p>
-                  <p className="text-sm text-stone-400">
-                    Level {c.character.level} {c.character.ancestry} {c.character.class}
-                    {c.currentLocation && (
-                      <span className="text-stone-500"> · {c.currentLocation}</span>
-                    )}
-                  </p>
+            {campaigns.map((c) => {
+              const isPending = pendingDeleteId === c.campaignId;
+              return (
+                <div key={c.campaignId} className="group relative">
+                  {isPending ? (
+                    <div className="rounded-lg border border-red-800 bg-stone-900 px-5 py-4 text-left">
+                      <p className="text-sm font-semibold text-stone-200 mb-1">
+                        Delete {c.character.name || "this adventure"}?
+                      </p>
+                      <p className="text-xs text-stone-500 mb-4">
+                        This cannot be undone. Choose what to remove:
+                      </p>
+                      <div className="flex flex-col gap-2 mb-3">
+                        <button
+                          onClick={() => handleDelete(c.campaignId, "adventure")}
+                          disabled={isDeleting}
+                          className="w-full rounded border border-stone-700 bg-stone-800 px-3 py-2 text-left text-sm hover:border-stone-500 hover:bg-stone-700 disabled:opacity-50 cursor-pointer transition-colors"
+                        >
+                          <span className="font-medium text-stone-200">Adventure only</span>
+                          <span className="ml-2 text-stone-500">— keep the character for a future run</span>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(c.campaignId, "character")}
+                          disabled={isDeleting}
+                          className="w-full rounded border border-stone-700 bg-stone-800 px-3 py-2 text-left text-sm hover:border-stone-500 hover:bg-stone-700 disabled:opacity-50 cursor-pointer transition-colors"
+                        >
+                          <span className="font-medium text-stone-200">Character only</span>
+                          <span className="ml-2 text-stone-500">— deletes everything</span>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(c.campaignId, "both")}
+                          disabled={isDeleting}
+                          className="w-full rounded border border-red-900 bg-stone-800 px-3 py-2 text-left text-sm hover:border-red-700 hover:bg-stone-700 disabled:opacity-50 cursor-pointer transition-colors"
+                        >
+                          <span className="font-medium text-red-400">Delete both</span>
+                          <span className="ml-2 text-stone-500">— adventure and character gone</span>
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => setPendingDeleteId(null)}
+                        disabled={isDeleting}
+                        className="text-xs text-stone-600 hover:text-stone-400 transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <Link
+                        href={`/play/${c.campaignId}`}
+                        className="flex items-center justify-between rounded-lg border border-stone-700 bg-stone-900 px-5 py-3 text-left transition-colors hover:border-stone-500 hover:bg-stone-800"
+                      >
+                        <div>
+                          <p className="text-xs text-[var(--color-gold)] mb-0.5">{c.campaignName}</p>
+                          <p className="font-semibold text-stone-100">{c.character.name || "Unnamed Adventurer"}</p>
+                          <p className="text-sm text-stone-400">
+                            Level {c.character.level} {c.character.ancestry} {c.character.class}
+                            {c.currentLocation && (
+                              <span className="text-stone-500"> · {c.currentLocation}</span>
+                            )}
+                          </p>
+                        </div>
+                        <span className="text-xs text-stone-600">
+                          {new Date(c.updatedAt).toLocaleDateString()}
+                        </span>
+                      </Link>
+                      <button
+                        onClick={() => setPendingDeleteId(c.campaignId)}
+                        className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded text-white opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer text-sm leading-none"
+                        aria-label="Delete adventure"
+                      >
+                        ×
+                      </button>
+                    </>
+                  )}
                 </div>
-                <span className="text-xs text-stone-600">
-                  {new Date(c.updatedAt).toLocaleDateString()}
-                </span>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-3">
-        <Link
-          href="/create"
-          className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-8 py-3 text-lg font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800"
-        >
-          Begin Your Adventure
-        </Link>
-        <Link
-          href="/adventures"
-          className="rounded-lg border border-stone-600 bg-stone-900 px-8 py-3 text-lg font-semibold text-stone-300 transition-colors hover:border-stone-400 hover:bg-stone-800"
-        >
-          Choose an Adventure
-        </Link>
+      {/* New adventure options */}
+      <div className="w-full max-w-md">
+        {!showNewOptions ? (
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => setShowNewOptions(true)}
+              className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-8 py-3 text-lg font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800 cursor-pointer"
+            >
+              Begin New Adventure
+            </button>
+            <Link
+              href="/adventures"
+              className="rounded-lg border border-stone-600 bg-stone-900 px-8 py-3 text-lg font-semibold text-stone-300 transition-colors hover:border-stone-400 hover:bg-stone-800"
+            >
+              Choose an Adventure
+            </Link>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-5 py-5 text-left space-y-5">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold uppercase tracking-wider text-stone-400">New Adventure</p>
+              <button
+                onClick={() => { setShowNewOptions(false); setGmAnswers({}); }}
+                className="text-xs text-stone-600 hover:text-stone-400 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+
+            {/* Option A: build your own */}
+            <Link
+              href="/create"
+              className="block rounded border border-stone-700 bg-stone-800 px-4 py-3 transition-colors hover:border-stone-500 hover:bg-stone-700"
+            >
+              <p className="font-semibold text-stone-100">Create My Own Character</p>
+              <p className="text-xs text-stone-500 mt-0.5">Step through character creation with the GM</p>
+            </Link>
+
+            {/* Option B: GM decides */}
+            <div>
+              <p className="font-semibold text-stone-100 mb-3">Let the GM Decide</p>
+              <div className="space-y-4">
+                {GM_QUESTIONS.map((q) => (
+                  <div key={q.id}>
+                    <p className="text-sm text-stone-300 mb-2">{q.question}</p>
+                    <div className="grid grid-cols-1 gap-1.5">
+                      {q.options.map((opt) => {
+                        const selected = gmAnswers[q.id] === opt;
+                        return (
+                          <button
+                            key={opt}
+                            onClick={() => setGmAnswers((prev) => ({ ...prev, [q.id]: opt }))}
+                            disabled={isStartingGm}
+                            className={`w-full rounded border px-3 py-2 text-left text-sm transition-colors cursor-pointer ${
+                              selected
+                                ? "border-[var(--color-gold-dim)] bg-stone-700 text-[var(--color-gold)]"
+                                : "border-stone-700 bg-stone-800 text-stone-300 hover:border-stone-500 hover:text-stone-100"
+                            }`}
+                          >
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  onClick={handleGmBegin}
+                  disabled={!allAnswered || isStartingGm}
+                  className="w-full rounded border border-[var(--color-gold-dim)] bg-stone-800 px-4 py-2.5 text-sm font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-700 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {isStartingGm ? "Preparing…" : "Begin Adventure →"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <p className="mt-6 text-xs text-stone-600">

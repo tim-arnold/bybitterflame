@@ -1,10 +1,12 @@
 import type { Character, Campaign, Companion, WorldState } from "@/lib/game/types";
+import type { Adventure } from "@/lib/adventures/types";
 
 interface SessionPromptParams {
   character: Partial<Character>;
   campaign: Partial<Campaign>;
   sessionSummaries: string[];
   rules: string;
+  adventure?: Adventure;
 }
 
 /**
@@ -15,6 +17,7 @@ export function buildSessionPrompt({
   campaign,
   sessionSummaries,
   rules,
+  adventure,
 }: SessionPromptParams): string {
   const charBlock = buildCharacterBlock(character);
   const worldBlock = buildWorldBlock(campaign?.worldState);
@@ -25,8 +28,10 @@ export function buildSessionPrompt({
     ? `\n## Your Persona\nYou must embody the following Game Master identity consistently. Stay in character — same name, same mannerisms, same voice:\n${campaign.gmPersona}\n`
     : "";
 
+  const adventureBlock = adventure ? `\n${buildAdventureBlock(adventure)}\n` : "";
+
   return `You are the Game Master for a Shadowdark RPG session. You control the world, NPCs, and all creatures. The player controls their character.
-${personaBlock}
+${personaBlock}${adventureBlock}
 ## Your Role
 - Narrate in second person ("You step into the darkness...")
 - Describe environments with vivid sensory detail — sound, smell, temperature, light
@@ -320,4 +325,50 @@ function buildSummaryBlock(summaries: string[]): string {
   return `## Previous Session Summaries\n${summaries
     .map((s, i) => `### Session ${i + 1}\n${s}`)
     .join("\n\n")}`;
+}
+
+export function buildAdventureBlock(adventure: Adventure): string {
+  const levelRange =
+    adventure.levelMin === adventure.levelMax
+      ? `Level ${adventure.levelMin}`
+      : `Levels ${adventure.levelMin}–${adventure.levelMax}`;
+
+  const locationLines = adventure.locations
+    .map((loc, i) => {
+      const lines: string[] = [`${i + 1}. **${loc.name}** — ${loc.description}`];
+      if (loc.npcs?.length) {
+        lines.push(`   NPCs: ${loc.npcs.join("; ")}`);
+      }
+      if (loc.hazards?.length) {
+        lines.push(`   Hazards: ${loc.hazards.join("; ")}`);
+      }
+      return lines.join("\n");
+    })
+    .join("\n");
+
+  const npcLines = adventure.keyNPCs.map((n) => `- ${n}`).join("\n");
+  const mechanicLines = adventure.specialMechanics.map((m) => `- ${m}`).join("\n");
+
+  const mapLocations = adventure.locations.filter((l) => l.hasPcMap);
+  const mapInstructions =
+    adventure.pcMapFile && mapLocations.length > 0
+      ? `\nMAP REVEAL INSTRUCTIONS:\nWhen the player first enters any of the following areas, emit \`"mapReveal": {"locationName": "[area name]"}\` in the gamestate block so the player can see the area map:\n${mapLocations.map((l) => `- ${l.name}`).join("\n")}\n`
+      : "";
+
+  return `--- ADVENTURE MODULE ---
+You are running: ${adventure.title} (Oneshot, ${levelRange})
+
+HOOK: ${adventure.hook}
+
+KEY LOCATIONS:
+${locationLines}
+
+KEY NPCs:
+${npcLines}
+
+SPECIAL MECHANICS:
+${mechanicLines}
+${mapInstructions}
+IMPORTANT: Run this adventure faithfully. The player should encounter these locations and NPCs in a way that makes the hook feel organic. Embellish atmosphere and dialog freely, but don't skip or replace the core encounters.
+--- END ADVENTURE MODULE ---`;
 }

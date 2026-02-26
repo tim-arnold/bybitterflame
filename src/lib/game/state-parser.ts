@@ -114,6 +114,13 @@ function extractUpdates(
       data: parsed.playerDied as Record<string, unknown>,
     });
   }
+
+  if (parsed.mapReveal) {
+    updates.push({
+      type: "mapReveal",
+      data: parsed.mapReveal as Record<string, unknown>,
+    });
+  }
 }
 
 /**

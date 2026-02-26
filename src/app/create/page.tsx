@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { ChatWindow, type Message } from "@/components/chat/ChatWindow";
 import { CharacterSheet } from "@/components/character/CharacterSheet";
 import { DiceRoller } from "@/components/dice/DiceRoller";
@@ -9,8 +10,12 @@ import { GameLayout } from "@/components/layout/GameLayout";
 import { parseGameState } from "@/lib/game/state-parser";
 import type { Character, Campaign } from "@/lib/game/types";
 
-export default function CreateCharacterPage() {
+function CreateCharacterPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const adventureId = searchParams.get("adventureId") ?? undefined;
+  const collectionId = searchParams.get("collectionId") ?? undefined;
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [streamingContent, setStreamingContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +33,9 @@ export default function CreateCharacterPage() {
         body: JSON.stringify({
           character: char,
           gmPersona: camp.gmPersona ?? "",
+          campaignType: adventureId ? "oneshot" : "standard",
+          moduleId: collectionId ?? null,
+          adventureId: adventureId ?? null,
         }),
       });
       if (!res.ok) throw new Error("Failed to save character");
@@ -184,5 +192,13 @@ export default function CreateCharacterPage() {
         </>
       }
     />
+  );
+}
+
+export default function CreateCharacterPage() {
+  return (
+    <Suspense>
+      <CreateCharacterPageInner />
+    </Suspense>
   );
 }

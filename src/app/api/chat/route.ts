@@ -2,7 +2,10 @@ import { NextRequest } from "next/server";
 import { createStreamingResponse } from "@/lib/ai/client";
 import { CHARACTER_CREATION_PROMPT } from "@/lib/ai/prompts/initializer";
 import { buildSessionPrompt } from "@/lib/ai/prompts/session";
+import { buildAdventureCreatePrompt } from "@/lib/ai/prompts/adventure-create";
+import { buildGmCreatePrompt } from "@/lib/ai/prompts/gm-create";
 import { loadRules } from "@/lib/ai/rules-loader";
+import { getAdventure } from "@/lib/adventures/index";
 import type { ChatRequest, GameContext } from "@/lib/game/types";
 
 export const runtime = "nodejs";
@@ -23,6 +26,21 @@ export async function POST(request: NextRequest) {
 
     if (mode === "create") {
       systemPrompt = CHARACTER_CREATION_PROMPT;
+    } else if (mode === "adventure-create") {
+      // GM-driven character creation for a specific adventure module
+      const moduleId = campaign?.moduleId;
+      const adventureId = campaign?.adventureId;
+      const adventure = moduleId && adventureId ? getAdventure(moduleId, adventureId) : undefined;
+      if (!adventure) {
+        return new Response(JSON.stringify({ error: "Adventure not found" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      systemPrompt = buildAdventureCreatePrompt(adventure);
+    } else if (mode === "gm-create") {
+      // GM-driven character creation for a standard (non-module) campaign
+      systemPrompt = buildGmCreatePrompt();
     } else {
       // Build gameplay context from the current state
       const context: GameContext = {
@@ -55,11 +73,17 @@ export async function POST(request: NextRequest) {
 
       const rules = loadRules(context);
 
+      // Load adventure data if this campaign has a module
+      const moduleId = campaign?.moduleId;
+      const adventureId = campaign?.adventureId;
+      const adventure = moduleId && adventureId ? getAdventure(moduleId, adventureId) : undefined;
+
       systemPrompt = buildSessionPrompt({
         character: character ?? {},
         campaign: campaign ?? {},
         sessionSummaries: [],
         rules,
+        adventure,
       });
     }
 
