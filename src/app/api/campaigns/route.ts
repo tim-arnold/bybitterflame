@@ -3,6 +3,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { characters, campaigns } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { getAdventure } from "@/lib/adventures/index";
 
 export const runtime = "nodejs";
 
@@ -22,6 +23,8 @@ export async function GET() {
         state: campaigns.state,
         worldState: campaigns.worldState,
         updatedAt: campaigns.updatedAt,
+        moduleId: campaigns.moduleId,
+        adventureId: campaigns.adventureId,
         characterName: characters.name,
         characterClass: characters.class,
         characterAncestry: characters.ancestry,
@@ -34,9 +37,13 @@ export async function GET() {
 
     const result = rows.map((row) => {
       const worldState = JSON.parse(row.worldState ?? "{}");
+      const adventure =
+        row.moduleId && row.adventureId
+          ? getAdventure(row.moduleId, row.adventureId)
+          : undefined;
       return {
         campaignId: row.campaignId,
-        campaignName: row.campaignName,
+        campaignName: adventure ? adventure.title : row.campaignName,
         updatedAt: row.updatedAt,
         currentLocation: worldState.currentLocation ?? "",
         character: {
