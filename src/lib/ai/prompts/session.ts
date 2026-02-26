@@ -336,6 +336,15 @@ export function buildAdventureBlock(adventure: Adventure): string {
   const locationLines = adventure.locations
     .map((loc, i) => {
       const lines: string[] = [`${i + 1}. **${loc.name}** — ${loc.description}`];
+      if (loc.mapPosition) {
+        lines.push(`   Position: ${loc.mapPosition}`);
+      }
+      if (loc.dimensions) {
+        lines.push(`   Size: ${loc.dimensions}`);
+      }
+      if (loc.connections?.length) {
+        lines.push(`   Connections: ${loc.connections.join("; ")}`);
+      }
       if (loc.npcs?.length) {
         lines.push(`   NPCs: ${loc.npcs.join("; ")}`);
       }
@@ -355,11 +364,15 @@ export function buildAdventureBlock(adventure: Adventure): string {
       ? `\nMAP REVEAL INSTRUCTIONS:\nWhen the player first enters any of the following areas, emit \`"mapReveal": {"locationName": "[area name]"}\` in the gamestate block so the player can see the area map:\n${mapLocations.map((l) => `- ${l.name}`).join("\n")}\n`
       : "";
 
+  const mapLayoutBlock = adventure.mapLayout
+    ? `\nMAP LAYOUT (GM reference — north = up, each grid square = 10×10 ft):\n${adventure.mapLayout}\n`
+    : "";
+
   return `--- ADVENTURE MODULE ---
 You are running: ${adventure.title} (Oneshot, ${levelRange})
 
 HOOK: ${adventure.hook}
-
+${mapLayoutBlock}
 KEY LOCATIONS:
 ${locationLines}
 
