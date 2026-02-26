@@ -48,3 +48,6 @@ shadowdark-raw.txt
 
 # Wrangler local dev state (D1 SQLite, KV, etc.)
 .wrangler/
+
+# Cloudflare/OpenNext build output
+.open-next/
