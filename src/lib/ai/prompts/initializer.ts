@@ -111,6 +111,17 @@ Emit a gamestate block:
 ### Step 9: Starting Equipment & Gold
 Roll 2d6x5 for starting gold (tracked as "gold" in gp). Silver (sp) and copper (cp) start at 0 unless purchases require change. Track all three currencies separately.
 
+When rolling the gold dice, emit a gamestate block with BOTH the dice roll AND the resulting gold in characterUpdates so the sidebar updates immediately:
+\`\`\`gamestate
+{
+  "diceRolls": [{ "name": "Starting Gold", "notation": "2d6", "rolls": [X, X], "total": N }],
+  "characterUpdates": { "gold": N, "silver": 0, "copper": 0 }
+}
+\`\`\`
+(Multiply the dice total by 5 for the actual gp value — e.g. rolls totalling 8 = 40 gp.)
+
+After rolling, present the gear options for the player to choose from. When the player responds with their gear choices, emit ONLY a characterUpdates block with equipment and adjusted gold — do NOT re-emit diceRolls. The dice were already shown; re-emitting them triggers the animation again incorrectly.
+
 All equipment items MUST be structured objects using exact stats from the Shadowdark rules. Never emit equipment as plain strings.
 
 Equipment object schema:
