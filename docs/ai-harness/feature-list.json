@@ -134,30 +134,30 @@
       "id": "companion-npcs",
       "name": "Companion NPCs with full stat sheets and personalities",
       "status": "done",
-      "notes": "GM-controlled companions with disposition, loyalty drift, death saves, hostile turn. All state stored in worldState.companions JSON blob. Code complete; not yet manually verified in production.",
+      "notes": "GM-controlled companions with disposition, loyalty drift, death saves, hostile turn. All state stored in worldState.companions JSON blob. Verified in production.",
       "tests": [
-        { "name": "companionJoined gamestate parsed and companion added to state", "pass": false },
-        { "name": "CompanionPanel renders in right sidebar when companions present", "pass": false },
-        { "name": "companionUpdate merges HP/loyalty/status correctly", "pass": false },
-        { "name": "Companions persist across page reload from worldState", "pass": false }
+        { "name": "companionJoined gamestate parsed and companion added to state", "pass": true },
+        { "name": "CompanionPanel renders in right sidebar when companions present", "pass": true },
+        { "name": "companionUpdate merges HP/loyalty/status correctly", "pass": true },
+        { "name": "Companions persist across page reload from worldState", "pass": true }
       ]
     },
     {
       "id": "soul-transfer",
       "name": "Soul transfer on player death",
       "status": "done",
-      "notes": "playerDied gamestate triggers DeathScreen overlay. Player selects companion; inherit API creates new character. Legacy talent appended. Dead character's gear preserved in LegacyCharacter.equipment and surfaced to GM. Stale closure bug fixed (sendMessage accepts initialCharacter/initialCampaign/initialCompanions overrides). Code complete; not yet manually verified in production.",
+      "notes": "playerDied gamestate triggers DeathScreen overlay. Player selects companion; inherit API creates new character. Legacy talent appended. Dead character's gear preserved in LegacyCharacter.equipment and surfaced to GM. Stale closure bug fixed (sendMessage accepts initialCharacter/initialCampaign/initialCompanions overrides). Verified in production.",
       "tests": [
-        { "name": "playerDied triggers DeathScreen overlay", "pass": false },
-        { "name": "DeathScreen shows companion selection cards", "pass": false },
-        { "name": "Inherit API creates new character and updates campaign.characterId", "pass": false },
-        { "name": "Character sheet swaps to new character after transfer", "pass": false },
-        { "name": "Legacy talent appears in new character's talents list", "pass": false },
-        { "name": "No-companion path shows campaign end option", "pass": false },
-        { "name": "Hostile-companion killer path auto-selects and forces inherit", "pass": false },
-        { "name": "Transferred character has companion's actual HP (not 0)", "pass": false },
-        { "name": "Languages merged from both characters", "pass": false },
-        { "name": "Old character no longer appears in CompanionPanel", "pass": false }
+        { "name": "playerDied triggers DeathScreen overlay", "pass": true },
+        { "name": "DeathScreen shows companion selection cards", "pass": true },
+        { "name": "Inherit API creates new character and updates campaign.characterId", "pass": true },
+        { "name": "Character sheet swaps to new character after transfer", "pass": true },
+        { "name": "Legacy talent appears in new character's talents list", "pass": true },
+        { "name": "No-companion path shows campaign end option", "pass": true },
+        { "name": "Hostile-companion killer path auto-selects and forces inherit", "pass": true },
+        { "name": "Transferred character has companion's actual HP (not 0)", "pass": true },
+        { "name": "Languages merged from both characters", "pass": true },
+        { "name": "Old character no longer appears in CompanionPanel", "pass": true }
       ]
     },
     {
@@ -196,12 +196,12 @@
       "status": "done",
       "notes": "Shots in the Dark #1: 18 oneshot adventures. Adventure browser at /adventures. Character selection (existing / roll own / GM creates). Adventure data injected into session prompt. mapReveal gamestate key triggers Map tab in right panel. GM-create mode: brief interview → full character generated. DB: campaign_type, module_id, adventure_id columns. PC maps in public/adventures/shots-in-the-dark-1/. New migration: drizzle/0001_adventure_fields.sql.",
       "tests": [
-        { "name": "/adventures lists all 18 oneshots with correct level ranges", "pass": false },
-        { "name": "Adventure detail page shows all 3 character options", "pass": false },
-        { "name": "Roll my own → create page passes adventureId/collectionId through to DB", "pass": false },
-        { "name": "Let GM decide → brief interview → characterComplete → adventure starts", "pass": false },
-        { "name": "Adventure module brief injected into session prompt", "pass": false },
-        { "name": "mapReveal gamestate key triggers Map tab badge and shows map", "pass": false },
+        { "name": "/adventures lists all 18 oneshots with correct level ranges", "pass": true },
+        { "name": "Adventure detail page shows all 3 character options", "pass": true },
+        { "name": "Roll my own → create page passes adventureId/collectionId through to DB", "pass": true },
+        { "name": "Let GM decide → brief interview → characterComplete → adventure starts", "pass": true },
+        { "name": "Adventure module brief injected into session prompt", "pass": true },
+        { "name": "mapReveal gamestate key triggers Map tab badge and shows map", "pass": true },
         { "name": "Build clean", "pass": true }
       ]
     },

@@ -23,8 +23,8 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **Opening scene** — auto-generated on first visit (hidden `[BEGIN ADVENTURE]` trigger)
 - **Token optimization** — gamestate blocks stripped from assistant history; 20-message window with user-first guard
 - Chat input auto-focuses when AI finishes responding
-- **Companion NPCs** — full stat sheets, personalities, loyalty drift, death saves, hostile turn; stored in `worldState.companions`
-- **Soul transfer on death** — `playerDied` triggers DeathScreen overlay; player picks companion; inherit API creates new character; legacy talent appended; adventure continues
+- **Companion NPCs** — full stat sheets, personalities, loyalty drift, death saves, hostile turn; stored in `worldState.companions`; verified in production
+- **Soul transfer on death** — `playerDied` triggers DeathScreen overlay; player picks companion; inherit API creates new character; legacy talent appended; adventure continues; verified in production
 - **Torch timer** — 60-minute paused countdown; UI owns the clock; GM signals intent only; darkness enforced when no torch lit; AI notified on burnout
 - **Cloudflare deployment** — `wrangler deploy` → Workers runtime; D1 binding confirmed
 - **Adventure modules** — Shots in the Dark #1 (18 oneshots); /adventures browser; adventure brief in session prompt; mapReveal → Map tab; GM character creation mode; pending DB migration for production
@@ -33,7 +33,6 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - Session management with AI-generated summaries (long-term memory across many sessions)
 - Combat tracker UI
 - Auth (BetterAuth integration planned at `docs/plans/auth.md`)
-- Companion/soul transfer features: code complete but not manually verified end-to-end in production
 
 ## DB Setup
 
