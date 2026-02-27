@@ -127,7 +127,7 @@ export default function Home() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center">
       <h1 className="mb-2 text-5xl font-bold tracking-tight text-[var(--color-gold)]">
-        Shadowdork
+        ShadowDork
       </h1>
       <p className="mb-1 text-lg text-stone-300">AI-Powered Game Master</p>
       <p className="narrative mb-10 max-w-md text-stone-500">
