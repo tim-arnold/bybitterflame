@@ -345,6 +345,22 @@ export default function PlayPage() {
           }),
         });
 
+        if (response.status === 402) {
+          const errData = await response.json() as { error: string; turnsUsed: number; limit: number };
+          if (errData.error === "api_key_required") {
+            setMessages([
+              ...newMessages,
+              {
+                role: "assistant",
+                content: `*The arcane channel falls silent...*\n\nYou've used all ${errData.limit} free turns. Add your Anthropic API key in [Settings](/account) to continue playing.`,
+              },
+            ]);
+            setStreamingContent("");
+            setIsLoading(false);
+            return;
+          }
+        }
+
         if (!response.ok) throw new Error("Chat request failed");
 
         const reader = response.body?.getReader();

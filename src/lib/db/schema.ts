@@ -46,6 +46,8 @@ export const users = sqliteTable("user", {
   image: text("image"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  anthropicApiKey: text("anthropic_api_key"),
+  serverKeyTurnsUsed: integer("server_key_turns_used").notNull().default(0),
 });
 
 export const authSessions = sqliteTable("session", {

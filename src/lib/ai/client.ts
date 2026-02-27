@@ -1,8 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@/lib/game/types";
 
-const anthropic = new Anthropic();
-
 const OVERLOADED_MESSAGES = [
   "*The arcane connection flickers and dies. The GM's voice fades into silence...*\n\n---\n\nThe threads of fate are stretched thin across the realm. Try again in a moment.",
   "*A tremor runs through the weave of magic. Something vast stirs, disrupting the connection...*\n\n---\n\nThe spirits are restless and cannot be reached right now. Try again shortly.",
@@ -36,7 +34,9 @@ export async function streamChat(
   systemPrompt: string,
   messages: Message[],
   onChunk: (text: string) => void,
+  apiKey?: string,
 ): Promise<string> {
+  const anthropic = new Anthropic({ apiKey: apiKey ?? process.env.ANTHROPIC_API_KEY });
   let fullText = "";
 
   const stream = anthropic.messages.stream({
@@ -71,6 +71,7 @@ export async function streamChat(
 export function createStreamingResponse(
   systemPrompt: string,
   messages: Message[],
+  apiKey?: string,
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
 
@@ -79,7 +80,7 @@ export function createStreamingResponse(
       try {
         await streamChat(systemPrompt, messages, (chunk) => {
           controller.enqueue(encoder.encode(chunk));
-        });
+        }, apiKey);
         controller.close();
       } catch (error) {
         controller.enqueue(encoder.encode(getAtmosphericError(error)));

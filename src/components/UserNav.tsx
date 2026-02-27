@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
 
@@ -31,6 +32,13 @@ export function UserNav() {
         {session.user.name || session.user.email}
       </span>
       <span className="hidden sm:block text-stone-600">·</span>
+      <Link
+        href="/account"
+        className="text-stone-400 hover:text-stone-100 transition-colors"
+      >
+        Settings
+      </Link>
+      <span className="text-stone-600">·</span>
       <button
         onClick={handleSignOut}
         className="text-stone-400 hover:text-stone-100 transition-colors cursor-pointer"
