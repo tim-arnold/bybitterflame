@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
         context.levelingUp = true;
       }
 
-      const rules = loadRules(context);
+      const rules = loadRules(context, character?.level);
 
       // Load adventure data if this campaign has a module
       const moduleId = campaign?.moduleId;

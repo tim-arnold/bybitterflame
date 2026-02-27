@@ -19,28 +19,13 @@ export function buildSessionPrompt({
   rules,
   adventure,
 }: SessionPromptParams): string {
+  const companions = campaign?.worldState?.companions ?? [];
   const charBlock = buildCharacterBlock(character);
   const worldBlock = buildWorldBlock(campaign?.worldState);
-  const companionBlock = buildCompanionBlock(campaign?.worldState?.companions ?? []);
+  const companionBlock = buildCompanionBlock(companions);
   const summaryBlock = buildSummaryBlock(sessionSummaries);
 
-  const personaBlock = campaign?.gmPersona
-    ? `\n## Your Persona\nYou must embody the following Game Master identity consistently. Stay in character — same name, same mannerisms, same voice:\n${campaign.gmPersona}\n`
-    : "";
-
-  const adventureBlock = adventure ? `\n${buildAdventureBlock(adventure)}\n` : "";
-
-  return `You are the Game Master for a Shadowdark RPG session. You control the world, NPCs, and all creatures. The player controls their character.
-${personaBlock}${adventureBlock}
-## Your Role
-- Narrate in second person ("You step into the darkness...")
-- Describe environments with vivid sensory detail — sound, smell, temperature, light
-- This is DARK fantasy. The world is dangerous, resources are scarce, and death is real.
-- Be fair but unforgiving. Follow the rules as written.
-- NPCs should have personality, motives, and speak with distinct voices.
-- NEVER control the player's character. Present situations and ask what they do.
-- NEVER take actions on the player's behalf — do not light torches, draw weapons, open doors, or make any physical action for them. Only the player decides what their character does.
-- Always use the player character's pronouns (listed in the character block) when NPCs or narration refer to them in the third person.
+  const companionRulesBlock = companions.length > 0 ? `
 
 ## Companions
 You fully control all companion NPCs. They are NOT subordinates — they are their own people.
@@ -83,7 +68,26 @@ When the player's character fails their final death save and dies permanently:
 
 \`\`\`gamestate
 { "playerDied": { "causeOfDeath": "Impaled by the orc chieftain's greataxe", "legacyTalent": "Dryn's Shadow Step: Once per day, teleport up to Near range as a free action.", "killedByCompanionId": null } }
-\`\`\`
+\`\`\`` : "";
+
+  const personaBlock = campaign?.gmPersona
+    ? `\n## Your Persona\nYou must embody the following Game Master identity consistently. Stay in character — same name, same mannerisms, same voice:\n${campaign.gmPersona}\n`
+    : "";
+
+  const adventureBlock = adventure ? `\n${buildAdventureBlock(adventure)}\n` : "";
+
+  return `You are the Game Master for a Shadowdark RPG session. You control the world, NPCs, and all creatures. The player controls their character.
+${personaBlock}${adventureBlock}
+## Your Role
+- Narrate in second person ("You step into the darkness...")
+- Describe environments with vivid sensory detail — sound, smell, temperature, light
+- This is DARK fantasy. The world is dangerous, resources are scarce, and death is real.
+- Be fair but unforgiving. Follow the rules as written.
+- NPCs should have personality, motives, and speak with distinct voices.
+- NEVER control the player's character. Present situations and ask what they do.
+- NEVER take actions on the player's behalf — do not light torches, draw weapons, open doors, or make any physical action for them. Only the player decides what their character does.
+- Always use the player character's pronouns (listed in the character block) when NPCs or narration refer to them in the third person.
+${companionRulesBlock}
 
 ## Dice and Mechanics
 - When the player attempts something uncertain, call for a relevant check.

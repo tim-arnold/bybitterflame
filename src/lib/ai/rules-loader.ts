@@ -9,17 +9,17 @@ const CONTEXT_RULES: Record<keyof GameContext, string[]> = {
   inCombat: ["combat.md"],
   inCharacterCreation: ["character-creation.md"],
   shopping: ["equipment.md"],
-  exploring: ["exploration.md"],
+  exploring: ["exploration-mechanics.md"],
   levelingUp: ["leveling.md"],
-  casting: ["spellcasting.md"],
+  casting: ["spellcasting-core.md"],
 };
 
 /** Files always loaded regardless of context */
 const ALWAYS_LOAD = [
   "ability-scores.md",
   "deities.md",
-  "exploration.md", // rest rules are relevant everywhere, not just while exploring
-  "gm-guidance.md", // carousing, DC table, core ethos — always relevant
+  "light-and-darkness.md", // light/torch rules are critical every turn
+  "gm-guidance.md",        // DC table, core ethos — always relevant
 ];
 
 /**
@@ -36,8 +36,11 @@ function readRuleFile(filename: string): string {
 /**
  * Load the relevant Shadowdark rules based on the current game context.
  * Returns a combined string of all applicable rule sections.
+ *
+ * @param context - Current game context flags
+ * @param characterLevel - Character's current level (used to load only accessible spell tiers)
  */
-export function loadRules(context: GameContext): string {
+export function loadRules(context: GameContext, characterLevel?: number): string {
   const filesToLoad = new Set<string>(ALWAYS_LOAD);
 
   for (const [flag, files] of Object.entries(CONTEXT_RULES)) {
@@ -45,6 +48,15 @@ export function loadRules(context: GameContext): string {
       for (const file of files) {
         filesToLoad.add(file);
       }
+    }
+  }
+
+  // Load only the spell tier files the character can actually access.
+  // Shadowdark tier = ceil(level / 2). A level-1 char gets T1 only; level-5 gets T1–3.
+  if (context.casting) {
+    const maxTier = Math.ceil((characterLevel ?? 1) / 2);
+    for (let t = 1; t <= maxTier; t++) {
+      filesToLoad.add(`spellcasting-t${t}.md`);
     }
   }
 
