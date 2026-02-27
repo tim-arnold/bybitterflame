@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { MobileNav } from "./MobileNav";
+import { UserNav } from "@/components/UserNav";
 
 interface GameLayoutProps {
   leftPanel: React.ReactNode;
@@ -60,8 +61,10 @@ export function GameLayout({
             {title}
           </span>
 
-          {/* Right: empty spacer for symmetry */}
-          <div />
+          {/* Right: user nav */}
+          <div className="flex justify-end">
+            <UserNav />
+          </div>
         </div>
       )}
 

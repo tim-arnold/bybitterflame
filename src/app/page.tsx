@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { UserNav } from "@/components/UserNav";
 
 interface CampaignSummary {
   campaignId: string;
@@ -117,6 +118,11 @@ export default function Home() {
       {/* Background */}
       <div className="absolute inset-0 bg-[url('/cover.png')] bg-cover bg-center" />
       <div className="absolute inset-0 bg-stone-950/80" />
+
+      {/* User nav */}
+      <div className="absolute top-4 right-4 z-20">
+        <UserNav />
+      </div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center">

@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { characters, campaigns } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { getAdventure } from "@/lib/adventures/index";
+import { getSession } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 
@@ -11,10 +12,15 @@ export const runtime = "nodejs";
  * GET /api/campaigns
  * List all active campaigns with their character and current location.
  */
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const session = await getSession(request);
     const { env } = await getCloudflareContext({ async: true });
     const db = getDb(env.DB);
+
+    const userFilter = session
+      ? eq(campaigns.userId, session.user.id)
+      : isNull(campaigns.userId);
 
     const rows = await db
       .select({
@@ -33,7 +39,7 @@ export async function GET() {
       })
       .from(campaigns)
       .innerJoin(characters, eq(campaigns.characterId, characters.id))
-      .where(eq(campaigns.state, "active"));
+      .where(and(eq(campaigns.state, "active"), userFilter));
 
     const result = rows.map((row) => {
       const worldState = JSON.parse(row.worldState ?? "{}");

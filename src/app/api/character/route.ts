@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { characters, campaigns } from "@/lib/db/schema";
+import { getSession } from "@/lib/auth/session";
 import type { Character } from "@/lib/game/types";
 
 export const runtime = "nodejs";
@@ -27,6 +28,8 @@ export async function POST(request: Request) {
     if (!isGmCreate && (!character.name || !character.ancestry || !character.class)) {
       return NextResponse.json({ error: "Incomplete character data" }, { status: 400 });
     }
+
+    const session = await getSession(request);
 
     const { env } = await getCloudflareContext({ async: true });
     const db = getDb(env.DB);
@@ -69,6 +72,7 @@ export async function POST(request: Request) {
 
     await db.insert(campaigns).values({
       id: campaignId,
+      userId: session?.user.id ?? null,
       characterId,
       name: character.name ? `The Adventures of ${character.name}` : "New Adventure",
       state: "active",
