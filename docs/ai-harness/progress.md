@@ -28,11 +28,12 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **Torch timer** — 60-minute paused countdown; UI owns the clock; GM signals intent only; darkness enforced when no torch lit; AI notified on burnout
 - **Cloudflare deployment** — `wrangler deploy` → Workers runtime; D1 binding confirmed
 - **Adventure modules** — Shots in the Dark #1 (18 oneshots); /adventures browser; adventure brief in session prompt; mapReveal → Map tab; GM character creation mode; pending DB migration for production
+- **Auth** — BetterAuth v1.4.19 with D1 adapter; email+password sign up/in; session cookie; middleware (proxy.ts) redirects unauthenticated users; campaigns scoped to userId; UserNav pill in header; lazy singleton pattern for D1 binding
+- **Token optimization** — companion rules block gated on companions.length > 0 (~1.5KB/turn); exploration.md split into light-and-darkness.md (always) + exploration-mechanics.md (conditional); spellcasting.md split into core + per-tier files T1–T5, only tiers ≤ character's max loaded (~10KB saved for low-level casters)
 
 **What doesn't work yet:**
 - Session management with AI-generated summaries (long-term memory across many sessions)
 - Combat tracker UI
-- Auth (BetterAuth integration planned at `docs/plans/auth.md`)
 
 ## DB Setup
 
@@ -49,6 +50,31 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - Live URL: https://dark.tim52.io (also https://shadowdark.tim-arnold.workers.dev)
 
 ## Recent Work
+
+### Session 9 (2026-02-27)
+
+**Auth + token optimization:**
+
+Auth (BetterAuth v1.4.19):
+- Schema: `users`, `authSessions`, `accounts`, `verifications` tables with integer timestamps (D1 rejects Date objects)
+- `src/lib/auth/index.ts` — lazy singleton `getAuth()` via `getCloudflareContext({ async: true })`
+- `src/lib/auth/session.ts` — `requireSession()` / `getSession()` helpers for API routes
+- `src/lib/auth/client.ts` — `authClient` with `createAuthClient` for React hooks
+- `src/app/api/auth/[...all]/route.ts` — BetterAuth handler (nodejs runtime)
+- `src/proxy.ts` (was middleware.ts) — cookie-presence redirect guard; renamed to proxy per Next.js 16 convention; export renamed to `proxy`
+- `src/app/login/page.tsx` — combined sign-in/create-account with Suspense boundary for useSearchParams
+- `UserNav.tsx` — bordered pill with name + sign out; fixed top-right on home and play pages
+- `/api/character` stamps userId; `/api/campaigns` filters by userId
+- Background image changed to `fixed` so content scrolls over it
+- `cover.png` → `cover.webp` at q85 (910K → 454K, 50% smaller)
+- D1 migration `0006_auth_and_userid.sql` applied to production via `--command`
+- Cloudflare secrets: BETTER_AUTH_SECRET, BETTER_AUTH_URL, NEXT_PUBLIC_APP_URL
+
+Token optimization (~16KB/turn reduction for typical sessions):
+- `session.ts`: companions rules block + soul transfer section gated on `companions.length > 0`
+- `exploration.md` → `light-and-darkness.md` (always loaded, ~1.5KB) + `exploration-mechanics.md` (loaded when `exploring`, ~4.5KB)
+- `spellcasting.md` → `spellcasting-core.md` + `spellcasting-t{1-5}.md`; rules-loader loads tiers ≤ `ceil(level/2)`; route.ts passes `character?.level`
+- Planning docs saved: `docs/plans/token-optimization.md`, `docs/plans/session-summarization.md`
 
 ### Session 8 (2026-02-26)
 

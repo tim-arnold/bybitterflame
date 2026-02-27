@@ -208,13 +208,13 @@
     {
       "id": "auth",
       "name": "User authentication (BetterAuth + D1)",
-      "status": "pending",
-      "notes": "Plan at docs/plans/auth.md. Lazy singleton pattern required for D1 (binding only available per-request). Schema additions: users, sessions, accounts tables.",
+      "status": "done",
+      "notes": "BetterAuth v1.4.19 with Drizzle adapter. Lazy singleton getAuth() — D1 binding only available per-request via getCloudflareContext. Integer timestamps in schema (D1 rejects Date objects). Cookie-presence proxy.ts guard (Edge Runtime can't call getCloudflareContext; full validation in API routes). Production migration applied via --command. BETTER_AUTH_SECRET + BETTER_AUTH_URL secrets set in Cloudflare.",
       "tests": [
-        { "name": "Sign up / sign in with email+password", "pass": false },
-        { "name": "Session cookie persists across reloads", "pass": false },
-        { "name": "Campaigns scoped to authenticated user", "pass": false },
-        { "name": "Unauthenticated access redirected to login", "pass": false }
+        { "name": "Sign up / sign in with email+password", "pass": true },
+        { "name": "Session cookie persists across reloads", "pass": true },
+        { "name": "Campaigns scoped to authenticated user", "pass": true },
+        { "name": "Unauthenticated access redirected to login", "pass": true }
       ]
     },
     {
