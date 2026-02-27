@@ -16,6 +16,7 @@ Master reference mapping topics to their source files. Use this to quickly locat
 | `treasure.md` | XP from treasure, gold guidelines by level, magic item attributes, magic item generators, potions |
 | `leveling.md` | XP requirements, talent roll levels, HP increases, spells known tables, class titles by alignment, level-up procedure |
 | `random-tables.md` | Character names by ancestry, NPC names, backgrounds, adventure generator, site names, Something Happens (d100), rumors (d100), NPC qualities |
+| `encounter-tables.md` | d100 random encounter tables for 20 location types: Arctic, Artisan District, Cave, Desert, Forest, Grassland, High District, Jungle, Low District, Market, Mountain, Ocean, River and Coast, Ruins, Slums, Swamp, Tavern, Temple District, Tomb, University District |
 | `gm-guidance.md` | Core ethos, On Balance, setting DCs, when to roll, NPCs, character death, light management, luck tokens, d6 decider, adventure completion |
 | `traps-and-hazards.md` | Trap rules (finding, disabling, tells), d12 trap table, hazard types, d12 hazards table |
 | `xp-awards.md` | XP sources (treasure quality, carousing, clever thinking), gold guidelines, what does NOT award XP |
@@ -106,6 +107,7 @@ Master reference mapping topics to their source files. Use this to quickly locat
 - Site names -> `random-tables.md`
 - Random events (d100) -> `random-tables.md`
 - Rumors (d100) -> `random-tables.md`
+- Random encounters by location -> `encounter-tables.md`
 
 ### GM Tools
 - Core ethos -> `gm-guidance.md`
