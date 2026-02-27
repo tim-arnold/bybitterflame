@@ -116,11 +116,11 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center text-center">
       {/* Background */}
-      <div className="absolute inset-0 bg-[url('/cover.png')] bg-cover bg-center" />
-      <div className="absolute inset-0 bg-stone-950/80" />
+      <div className="fixed inset-0 bg-[url('/cover.webp')] bg-cover bg-center" />
+      <div className="fixed inset-0 bg-stone-950/80" />
 
       {/* User nav */}
-      <div className="absolute top-4 right-4 z-20">
+      <div className="fixed top-4 right-4 z-20">
         <UserNav />
       </div>
 

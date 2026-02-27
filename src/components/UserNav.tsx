@@ -13,7 +13,7 @@ export function UserNav() {
     return (
       <a
         href="/login"
-        className="rounded border border-stone-700 bg-stone-900/80 px-3 py-1.5 text-xs font-medium text-stone-300 hover:border-stone-500 hover:text-stone-100 transition-colors"
+        className="rounded border border-stone-600 bg-stone-900/90 px-3 py-1.5 text-xs font-medium text-stone-200 hover:border-stone-400 hover:text-white transition-colors backdrop-blur-sm"
       >
         Sign in
       </a>
@@ -26,11 +26,14 @@ export function UserNav() {
   }
 
   return (
-    <div className="flex items-center gap-3 text-xs text-stone-500">
-      <span className="hidden sm:block truncate max-w-[160px]">{session.user.name || session.user.email}</span>
+    <div className="flex items-center gap-2 rounded border border-stone-600 bg-stone-900/90 px-3 py-1.5 text-xs backdrop-blur-sm">
+      <span className="hidden sm:block truncate max-w-[160px] text-stone-200 font-medium">
+        {session.user.name || session.user.email}
+      </span>
+      <span className="hidden sm:block text-stone-600">·</span>
       <button
         onClick={handleSignOut}
-        className="hover:text-stone-300 transition-colors cursor-pointer"
+        className="text-stone-400 hover:text-stone-100 transition-colors cursor-pointer"
       >
         Sign out
       </button>

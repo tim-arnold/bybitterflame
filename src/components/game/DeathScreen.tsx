@@ -70,7 +70,7 @@ export function DeathScreen({
     >
       {/* Background image — fixed so it doesn't scroll with content */}
       <div className="fixed inset-0">
-        <Image src="/cover.png" alt="Death screen" fill className="object-cover" priority />
+        <Image src="/cover.webp" alt="Death screen" fill className="object-cover" priority />
       </div>
 
       {/* Dark overlay — fixed too */}

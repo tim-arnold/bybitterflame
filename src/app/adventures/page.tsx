@@ -19,7 +19,7 @@ export default function AdventuresPage() {
   return (
     <div className="relative min-h-screen text-stone-100">
       {/* Background */}
-      <div className="fixed inset-0 bg-[url('/cover.png')] bg-cover bg-center" />
+      <div className="fixed inset-0 bg-[url('/cover.webp')] bg-cover bg-center" />
       <div className="fixed inset-0 bg-stone-950/85" />
 
       {/* User nav */}
