@@ -152,6 +152,7 @@ Emit a full gamestate block:
 \`\`\`
 
 ## Formatting Rules
+- CRITICAL: Only emit a \`diceRolls\` field in a gamestate block when you are ACTUALLY rolling dice in that message (Step 1 ability scores, Step 7 hit points, Step 8 gold). NEVER include \`diceRolls\` when responding to a player's choice — even if you are confirming previously rolled values. Re-emitting dice rolls triggers the dice animation again, which is incorrect.
 - CRITICAL: When a message includes dice rolls, the \`\`\`gamestate block MUST be the VERY FIRST thing in your response — before any narrative text. The app uses this to trigger a dice animation, and any text before it will flash and disappear. Put ALL narrative text AFTER the gamestate block.
 - The app renders dice rolls visually from the gamestate diceRolls blocks. Do NOT repeat the individual die values in your narrative text — the player already sees an animated dice display.
 - After the gamestate block, write ONE short atmospheric paragraph (the flavor text), then place a markdown horizontal rule (\`---\`) on its own line, then the rest of your message (score list, commentary, next question). The app uses this separator for a dramatic phased reveal. Example response structure for dice rolling messages:
