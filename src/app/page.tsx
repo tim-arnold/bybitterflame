@@ -127,9 +127,9 @@ export default function Home() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center">
       <h1 className="mb-2 text-5xl font-bold tracking-tight text-[var(--color-gold)]">
-        Shadowdark
+        Shadowdork
       </h1>
-      <p className="mb-1 text-lg text-stone-400">AI Game Master</p>
+      <p className="mb-1 text-lg text-stone-300">AI-Powered Game Master</p>
       <p className="narrative mb-10 max-w-md text-stone-500">
         The torchlight flickers against damp stone walls. Something stirs in the
         darkness ahead. Will you press on?
@@ -280,8 +280,8 @@ export default function Home() {
               href="/create"
               className="block rounded border border-stone-700 bg-stone-800 px-4 py-3 transition-colors hover:border-stone-500 hover:bg-stone-700"
             >
-              <p className="font-semibold text-stone-100">Create My Own Character</p>
-              <p className="text-xs text-stone-500 mt-0.5">Step through character creation with the GM</p>
+              <p className="font-semibold text-stone-100">Roll a New Character</p>
+              <p className="text-xs text-stone-300 mt-0.5">Step through character creation with the GM</p>
             </Link>
 
             {/* Option B: GM decides */}
@@ -326,7 +326,7 @@ export default function Home() {
         )}
       </div>
 
-      <p className="mt-6 text-xs text-stone-600">
+      <p className="mt-6 text-xs text-white">
         Powered by the Shadowdark RPG rules by The Arcane Library
       </p>
       </div>

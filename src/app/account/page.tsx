@@ -94,16 +94,16 @@ export default function AccountPage() {
         <div className="mb-6">
           <Link
             href="/"
-            className="text-xs text-stone-500 hover:text-stone-300 transition-colors"
+            className="text-xs text-stone-400 hover:text-stone-300 transition-colors"
           >
             ← Back
           </Link>
         </div>
 
         <h1 className="mb-1 text-center text-3xl font-bold tracking-tight text-[var(--color-gold)]">
-          Shadowdark
+          ShadowDork
         </h1>
-        <p className="mb-8 text-center text-sm text-stone-500">Account Settings</p>
+        <p className="mb-8 text-center text-sm text-stone-400">Account Settings</p>
 
         <div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6 flex flex-col gap-6">
           {/* API Key section */}

@@ -144,9 +144,9 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-sm px-4">
         <h1 className="mb-1 text-center text-3xl font-bold tracking-tight text-[var(--color-gold)]">
-          Shadowdark
+          ShadowDork
         </h1>
-        <p className="mb-8 text-center text-sm text-stone-500">AI Game Master</p>
+        <p className="mb-8 text-center text-sm text-stone-400">AI-Powered Game Master</p>
 
         <Suspense fallback={<div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6 text-center text-stone-500">Loading…</div>}>
           <LoginForm />
