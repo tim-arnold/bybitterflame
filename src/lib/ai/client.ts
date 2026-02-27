@@ -83,6 +83,7 @@ export function createStreamingResponse(
         }, apiKey);
         controller.close();
       } catch (error) {
+        console.error("[AI client] Stream error:", error);
         controller.enqueue(encoder.encode(getAtmosphericError(error)));
         controller.close();
       }

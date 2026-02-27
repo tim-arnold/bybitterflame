@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
           .where(eq(users.id, userId))
           .limit(1);
 
-        if (user?.anthropicApiKey) {
+        if (user?.anthropicApiKey?.startsWith("sk-ant-")) {
           // User has their own key — use it, no limit
           resolvedApiKey = user.anthropicApiKey;
         } else {
