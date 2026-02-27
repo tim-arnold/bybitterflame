@@ -9,14 +9,15 @@ Master reference mapping topics to their source files. Use this to quickly locat
 | `character-creation.md` | Full character creation flow, stat rolling, ancestries, classes, talents, alignment, backgrounds, starting gear |
 | `ability-scores.md` | Ability score modifiers, what each score governs, ability checks, advantage/disadvantage, stat damage |
 | `combat.md` | Initiative, actions, movement, attacks, critical hits, damage, dying/death, morale, cover, surprise |
-| `spellcasting.md` | Casting checks, success/failure, focus spells, scrolls, wands, penance, wizard mishaps, all priest spells, all wizard spells |
+| `spellcasting-core.md` | Casting checks, success/failure, focus spells, scrolls, wands (full rules incl. failure/break), penance, wizard mishap tables (d12, all tiers) |
 | `equipment.md` | Weapons table, armor table, gear table, weapon properties, gear slots, crawling kit, currency, mithral, ammunition |
 | `exploration.md` | Crawling rounds, light sources, darkness, distances, movement (climb/fall/swim), stealth, resting, overland travel, random encounters, reaction checks, doors |
 | `monsters.md` | Monster stat block format, morale, XP by level, designing monsters, monster generator tables, encounter balance |
 | `treasure.md` | XP from treasure, gold guidelines by level, magic item attributes, magic item generators, potions |
 | `leveling.md` | XP requirements, talent roll levels, HP increases, spells known tables, class titles by alignment, level-up procedure |
 | `random-tables.md` | Character names by ancestry, NPC names, backgrounds, adventure generator, site names, Something Happens (d100), rumors (d100), NPC qualities |
-| `gm-guidance.md` | Core ethos, On Balance, setting DCs, when to roll, NPCs, character death, light management, adventure completion |
+| `gm-guidance.md` | Core ethos, On Balance, setting DCs, when to roll, NPCs, character death, light management, luck tokens, d6 decider, adventure completion |
+| `traps-and-hazards.md` | Trap rules (finding, disabling, tells), d12 trap table, hazard types, d12 hazards table |
 | `xp-awards.md` | XP sources (treasure quality, carousing, clever thinking), gold guidelines, what does NOT award XP |
 | `carousing.md` | Carousing event tiers and outcome table, Learning downtime rule |
 | `running-adventures.md` | Dungeon crawling, overland travel, town and social procedures |
@@ -110,6 +111,8 @@ Master reference mapping topics to their source files. Use this to quickly locat
 - Core ethos -> `gm-guidance.md`
 - Setting DCs -> `gm-guidance.md`
 - When to roll -> `gm-guidance.md`
+- Luck tokens -> `gm-guidance.md`
+- D6 decider -> `gm-guidance.md`
 - Running dungeons -> `running-adventures.md`
 - Running towns -> `running-adventures.md`
 - Character death philosophy -> `gm-guidance.md`
@@ -118,3 +121,9 @@ Master reference mapping topics to their source files. Use this to quickly locat
 - Learning (downtime) -> `carousing.md`
 - XP sources and treasure quality -> `xp-awards.md`
 - Level-up procedure -> `leveling.md`
+
+### Traps and Hazards
+- Finding and disabling traps -> `traps-and-hazards.md`
+- Trap table (d12) -> `traps-and-hazards.md`
+- Hazard types -> `traps-and-hazards.md`
+- Hazard table (d12) -> `traps-and-hazards.md`

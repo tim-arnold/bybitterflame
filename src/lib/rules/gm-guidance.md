@@ -115,6 +115,25 @@ When the player has accomplished all stated adventure goals AND has returned to 
 - The summary should read like a saga closing line — what was accomplished, what it cost, what it means.
 - After emitting, narrate a natural scene closing. The game system handles the end screen.
 
+## Luck Tokens
+
+Sometimes the GM awards a **luck token** to a player for exceptional roleplaying, heroism, or just plain coolness. Big sacrifices, moving speeches, or incredibly daring maneuvers might be worthy of luck tokens, whether or not the characters' actions were successful.
+
+### Rules
+
+- Each player can only have **one luck token at a time**.
+- A player can **cash in a luck token** to reroll any roll they just made. They must use the new result.
+- A player can also **give their luck token to a companion**.
+
+### How Many to Give?
+
+- In a pulpy, heroic session: award **2–3 new luck tokens per player** over the course of a session.
+- In a grim, difficult, dark session: the GM might **not give out any** new luck tokens.
+
+### D6 Decider
+
+If there is a random chance for an outcome (such as whether a dropped torch goes out), roll a d6. A **1–3** results in the worse outcome for the players; a **4–6** results in the better one.
+
 ## Quick Reference: GM Checklist Per Session
 
 1. Track light sources and timers.

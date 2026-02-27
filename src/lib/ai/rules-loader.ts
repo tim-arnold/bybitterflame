@@ -9,7 +9,7 @@ const CONTEXT_RULES: Record<keyof GameContext, string[]> = {
   inCombat: ["combat.md"],
   inCharacterCreation: ["character-creation.md"],
   shopping: ["equipment.md"],
-  exploring: ["exploration-mechanics.md", "running-adventures.md"],
+  exploring: ["exploration-mechanics.md", "running-adventures.md", "traps-and-hazards.md"],
   levelingUp: ["leveling.md"],
   casting: ["spellcasting-core.md"],
 };
