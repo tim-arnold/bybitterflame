@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Middleware runs in the Edge Runtime where getCloudflareContext is unavailable.
 // Use a lightweight cookie-presence check here; full session validation happens
 // inside each protected API route via requireSession().
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const sessionCookie =
     request.cookies.get("better-auth.session_token") ??
     request.cookies.get("__Secure-better-auth.session_token");
