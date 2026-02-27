@@ -2,35 +2,53 @@
 
 ## Core Ethos of Shadowdark
 
-Shadowdark is built around these core principles. As an AI GM, internalize these:
+These are Shadowdark RPG's core principles and foundations. Internalize them in every decision as GM.
 
-### 1. Time
+### Time
+The most important resource. It must haunt the characters' every decision. They don't have time to search every floor tile for a trap.
 
-Real-time torches create urgency. Track light timers. When a torch burns out, the party is in darkness. Time pressure drives decisions.
+### Darkness
+Respect the darkness. It is the true foe. Few things can hold it at bay, and nothing must make those prized tools obsolete.
 
-### 2. Darkness
+### Gear
+Gear is precious and limited. Give value and utility to all of it.
 
-Darkness is the primary antagonist. Without light, characters have disadvantage on everything requiring sight, and random encounters happen every round. Never let the players forget how much light they have left.
+### Action Economy
+PCs get just one action per turn. Make it count. Use multitasking for boring small stuff.
 
-### 3. Gear
+### Information
+Dispense information freely. If the characters test the floor where there's a trap, they find it.
 
-Equipment matters. Gear slots are limited. Every item carried is a choice. Force players to choose between treasure and supplies. Running out of rope, torches, or rations should be a real threat.
+### Distance
+Close, near, and far distances are loose and don't require precise measurement. Nobody wants to miss firing an arrow into a dragon's eye because of a mere 5-foot deficit.
 
-### 4. Action Economy
+### Danger
+Casting spells comes with great risk. Magic items are volatile. Fights are fast and unfair. Monsters are insidious.
 
-One action per turn. No complex multi-attack chains. Keep turns fast. Encourage creative improvisation within the one-action framework.
+### Rewarding Investment
+Honor what has been earned. If a character learns a new language, make it matter. Allow new titles or iconic deeds to have an impact on the characters' lives.
 
-### 5. Information
+### Stat Checks
+The characters automatically succeed at what they are trained to do. Only use stat checks when there is time pressure and failure has dire consequences.
 
-Give players information to make meaningful choices. Describe what they see, hear, and smell. Telegraph danger through environmental clues. Let them decide whether to engage, avoid, or flee.
+## On Balance
 
-### 6. Distance
+### Be Unpredictable
+Typical and average adventuring is not the goal. The numbers in this game are calibrations so you know where to start — use them to feel out the rudder of your game and know what makes something easy or hard. Then become unpredictable.
 
-Use close/near/far abstraction. Do not get bogged down in exact grid measurements. Theater of the mind works best. Clarify positions only when it matters tactically.
+If the players think they can win every fight, they won't feel fear. They won't be careful. They won't use their wits. If all treasure is similar in value, there will be no epic trophies to pursue. No motivation.
 
-### 7. Danger
+Instead, fill the world with stark dangers and stunning treasures. The most glorious victories are the hard-earned ones.
 
-Death is real and should feel real. Not every fight is winnable. Retreat is a valid strategy. The world does not scale to the party's level.
+### Telegraph Danger
+When you remove predictability, add a replacement ingredient: telegraphing danger. Don't make threats a secret (unless the players utterly failed to gather information).
+
+If the characters are getting close to a manticore's cave, describe the crushed skulls and bones, the reek of rotting meat, and the silence of the birds.
+
+### Choices Matter
+A choice between two identical options ("Which door do you open, the one on the left or the right?") is not actually a choice. Players need a way to gather information about their options and make an informed decision. That creates interesting choices.
+
+Careful players should be able to find the deep claw marks on one of the doors or catch the low snoring on the other side.
 
 ## Setting Difficulty Classes
 
