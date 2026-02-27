@@ -19,13 +19,17 @@ function levelLabel(min: number, max: number): string {
 }
 
 export default function AdventuresPage() {
-  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [completedMap, setCompletedMap] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     fetch("/api/characters")
       .then((r) => r.json())
-      .then((data: { completedAdventureIds?: string[] }) => {
-        setCompletedIds(new Set(data.completedAdventureIds ?? []));
+      .then((data: { completedAdventures?: { adventureId: string; characterName: string }[] }) => {
+        const m = new Map<string, string>();
+        for (const { adventureId, characterName } of data.completedAdventures ?? []) {
+          m.set(adventureId, characterName);
+        }
+        setCompletedMap(m);
       })
       .catch(() => {});
   }, []);
@@ -64,20 +68,15 @@ export default function AdventuresPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {collection.adventures.map((adventure) => {
-                const completed = completedIds.has(adventure.id);
+                const completedBy = completedMap.get(adventure.id);
                 return (
                   <Link
                     key={adventure.id}
                     href={`/adventures/${collection.id}/${adventure.id}`}
                     className="group relative flex flex-col gap-2 rounded-lg border border-stone-700 bg-stone-900 p-4 transition-colors hover:border-stone-500 hover:bg-stone-800"
                   >
-                    {completed && (
-                      <span className="absolute top-3 right-3 text-xs px-1.5 py-0.5 rounded border border-[var(--color-gold-dim)] bg-stone-900 text-[var(--color-gold)] font-mono">
-                        Completed
-                      </span>
-                    )}
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-semibold text-stone-100 group-hover:text-white leading-tight pr-20">
+                      <h3 className="font-semibold text-stone-100 group-hover:text-white leading-tight">
                         {adventure.title}
                       </h3>
                       <span
@@ -89,9 +88,18 @@ export default function AdventuresPage() {
                     <p className="text-sm text-stone-400 leading-relaxed line-clamp-3">
                       {adventure.synopsis}
                     </p>
-                    <span className="mt-auto text-xs text-[var(--color-gold)] opacity-0 group-hover:opacity-100 transition-opacity">
-                      Select →
-                    </span>
+                    <div className="mt-auto flex items-center justify-between">
+                      {completedBy ? (
+                        <span className="text-xs px-2 py-0.5 rounded border border-[var(--color-gold-dim)] bg-stone-950 text-[var(--color-gold)] font-mono">
+                          ✓ Completed · {completedBy}
+                        </span>
+                      ) : (
+                        <span />
+                      )}
+                      <span className="text-xs text-[var(--color-gold)] opacity-0 group-hover:opacity-100 transition-opacity">
+                        Select →
+                      </span>
+                    </div>
                   </Link>
                 );
               })}

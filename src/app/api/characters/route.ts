@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   try {
     const session = await getSession(request);
     if (!session) {
-      return NextResponse.json({ characters: [], completedAdventureIds: [] });
+      return NextResponse.json({ characters: [], completedAdventures: [] });
     }
 
     const { env } = await getCloudflareContext({ async: true });
@@ -41,14 +41,22 @@ export async function GET(request: Request) {
       .innerJoin(characters, eq(campaigns.characterId, characters.id))
       .where(eq(campaigns.userId, session.user.id));
 
-    // Collect completed adventure IDs (any campaign, any character)
-    const completedAdventureIds = [
-      ...new Set(
-        rows
-          .filter((r) => r.campaignState === "completed" && r.adventureId)
-          .map((r) => r.adventureId as string),
-      ),
-    ];
+    // Collect completed adventures: adventureId → most recently completed character name
+    const completedMap = new Map<string, { characterName: string; updatedAt: string }>();
+    for (const r of rows) {
+      if (r.campaignState === "completed" && r.adventureId) {
+        const existing = completedMap.get(r.adventureId);
+        if (!existing || r.updatedAt > existing.updatedAt) {
+          completedMap.set(r.adventureId, {
+            characterName: r.characterName ?? "Unknown",
+            updatedAt: r.updatedAt,
+          });
+        }
+      }
+    }
+    const completedAdventures = Array.from(completedMap.entries()).map(
+      ([adventureId, { characterName }]) => ({ adventureId, characterName })
+    );
 
     // Deduplicate characters: keep the most recently updated campaign per character
     const charMap = new Map<string, typeof rows[0]>();
@@ -81,7 +89,7 @@ export async function GET(request: Request) {
         };
       });
 
-    return NextResponse.json({ characters: result, completedAdventureIds });
+    return NextResponse.json({ characters: result, completedAdventures });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal server error";
     console.error("Characters list error:", error);

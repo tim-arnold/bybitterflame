@@ -189,26 +189,37 @@ export default function AdventureDetailPage() {
                 Play as an Existing Character
               </h2>
               <div className="space-y-2">
-                {roster.map((char) => (
-                  <button
-                    key={char.id}
-                    onClick={() => handleSelectExistingCharacter(char.id)}
-                    disabled={isCreating}
-                    className="w-full rounded-lg border border-stone-700 bg-stone-900 px-4 py-3 text-left transition-colors hover:border-stone-500 hover:bg-stone-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="font-semibold text-stone-100">{char.name}</span>
-                      <span className="text-xs text-stone-500 shrink-0">
-                        Lvl {char.level} {char.ancestry} {char.class}
-                      </span>
-                    </div>
-                    {char.lastAdventureTitle && (
-                      <p className="text-xs text-stone-500 mt-0.5 truncate">
-                        Last played: {char.lastAdventureTitle}
-                      </p>
-                    )}
-                  </button>
-                ))}
+                {roster.map((char) => {
+                    const isBusy = char.lastCampaignState === "active";
+                    return (
+                      <button
+                        key={char.id}
+                        onClick={() => !isBusy && handleSelectExistingCharacter(char.id)}
+                        disabled={isCreating || isBusy}
+                        className={`w-full rounded-lg border bg-stone-900 px-4 py-3 text-left transition-colors disabled:cursor-not-allowed ${
+                          isBusy
+                            ? "border-stone-800"
+                            : "border-stone-700 hover:border-stone-500 hover:bg-stone-800 cursor-pointer disabled:opacity-50"
+                        }`}
+                      >
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="font-semibold text-stone-100">{char.name}</span>
+                          <span className="text-xs text-stone-500 shrink-0">
+                            Lvl {char.level} {char.ancestry} {char.class}
+                          </span>
+                        </div>
+                        {isBusy ? (
+                          <p className="text-xs text-stone-500 mt-0.5">
+                            Already adventuring elsewhere
+                          </p>
+                        ) : char.lastAdventureTitle ? (
+                          <p className="text-xs text-stone-500 mt-0.5 truncate">
+                            Last played: {char.lastAdventureTitle}
+                          </p>
+                        ) : null}
+                      </button>
+                    );
+                  })}
               </div>
             </div>
           )}
