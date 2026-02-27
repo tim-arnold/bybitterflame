@@ -33,7 +33,13 @@ export async function POST(request: NextRequest) {
     let resolvedApiKey: string | undefined;
     let userId: string | null = null;
 
-    const session = await getSession(request);
+    let session: Awaited<ReturnType<typeof getSession>> | null = null;
+    try {
+      session = await getSession(request);
+    } catch {
+      // Auth unavailable (e.g. no Cloudflare context in local dev) — treat as anonymous
+    }
+
     if (session) {
       userId = session.user.id;
       try {
