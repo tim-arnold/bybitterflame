@@ -9,7 +9,7 @@ const CONTEXT_RULES: Record<keyof GameContext, string[]> = {
   inCombat: ["combat.md"],
   inCharacterCreation: ["character-creation.md"],
   shopping: ["equipment.md"],
-  exploring: ["exploration-mechanics.md"],
+  exploring: ["exploration-mechanics.md", "running-adventures.md"],
   levelingUp: ["leveling.md"],
   casting: ["spellcasting-core.md"],
 };
@@ -19,7 +19,9 @@ const ALWAYS_LOAD = [
   "ability-scores.md",
   "deities.md",
   "light-and-darkness.md", // light/torch rules are critical every turn
-  "gm-guidance.md",        // DC table, core ethos — always relevant
+  "gm-guidance.md",        // core ethos, DCs, NPCs, death, adventure completion
+  "xp-awards.md",          // XP sources and treasure quality — relevant any session
+  "carousing.md",          // downtime rules — GM may offer carousing any time in town
 ];
 
 /**
