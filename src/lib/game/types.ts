@@ -126,6 +126,7 @@ export interface LegacyCharacter {
 export interface WorldState {
   currentLocation: string;
   visitedLocations: string[];
+  locationType?: LocationType; // encounter table to use; updated by GM via campaignUpdates
   npcs: NPC[];
   quests: Quest[];
   flags: Record<string, boolean | string>;
@@ -178,6 +179,29 @@ export interface Message {
   hidden?: boolean;
 }
 
+/** Location types that map to encounter table files */
+export type LocationType =
+  | "arctic"
+  | "artisan-district"
+  | "cave"
+  | "desert"
+  | "forest"
+  | "grassland"
+  | "high-district"
+  | "jungle"
+  | "low-district"
+  | "market"
+  | "mountain"
+  | "ocean"
+  | "river-and-coast"
+  | "ruins"
+  | "slums"
+  | "swamp"
+  | "tavern"
+  | "temple-district"
+  | "tomb"
+  | "university-district";
+
 /** Context flags passed to the rules loader */
 export interface GameContext {
   inCombat: boolean;
@@ -186,6 +210,7 @@ export interface GameContext {
   exploring: boolean;
   levelingUp: boolean;
   casting: boolean;
+  locationType?: LocationType;
 }
 
 /** Result of a dice roll */

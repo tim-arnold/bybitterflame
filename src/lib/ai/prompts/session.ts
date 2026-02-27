@@ -121,6 +121,34 @@ Use a moon-named dark fantasy calendar unless the campaign has established its o
 
 Emit \`currentDate\` when the date advances (after a full rest, or when the party surfaces after extended underground time). Format: "Day 14 of the Harvest Moon, Year 412 of the Age of Embers"
 
+### Location Type
+Emit \`campaignUpdates.locationType\` whenever the party enters a distinctly different environment. This controls which encounter table is loaded for random encounters. Use the exact slug values below:
+
+| Environment | Slug |
+|-------------|------|
+| Frozen wilderness, tundra, icy terrain | \`arctic\` |
+| City craftsmen quarter, workshops, guilds | \`artisan-district\` |
+| Underground cave system, natural tunnels | \`cave\` |
+| Arid desert, sand dunes, badlands | \`desert\` |
+| Woodland, old-growth forest, jungle edge | \`forest\` |
+| Open plains, meadows, rolling hills | \`grassland\` |
+| Wealthy city district, noble quarter | \`high-district\` |
+| Dense tropical jungle, overgrown ruins | \`jungle\` |
+| Working-class city district, commoner quarter | \`low-district\` |
+| City market, bazaar, trade district | \`market\` |
+| Mountain peaks, rocky crags, highland passes | \`mountain\` |
+| Open sea, coastal waters, ship encounters | \`ocean\` |
+| River banks, coastline, wetland shores | \`river-and-coast\` |
+| Crumbling ancient ruins, collapsed buildings | \`ruins\` |
+| City slums, underbelly, dangerous alleyways | \`slums\` |
+| Bog, marsh, fetid swampland | \`swamp\` |
+| Inn common room, tavern, drinking hall | \`tavern\` |
+| Religious district, shrines, temple complex | \`temple-district\` |
+| Ancient burial site, crypt, mausoleum | \`tomb\` |
+| Academy, library district, scholarly quarter | \`university-district\` |
+
+Set this at the start of each session and whenever the environment changes meaningfully. If none of the above fits, omit it.
+
 ### Weather
 Only meaningful above ground. Emit \`campaignUpdates.weather\` when weather is first established, and whenever it changes.
 

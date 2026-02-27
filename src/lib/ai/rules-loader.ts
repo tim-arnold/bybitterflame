@@ -1,15 +1,17 @@
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
-import type { GameContext } from "@/lib/game/types";
+import type { GameContext, LocationType } from "@/lib/game/types";
 
 const RULES_DIR = join(process.cwd(), "src/lib/rules");
 
-/** Map of context flags to the rule files they require */
-const CONTEXT_RULES: Record<keyof GameContext, string[]> = {
+type BooleanContextFlags = Omit<GameContext, "locationType">;
+
+/** Map of boolean context flags to the rule files they require */
+const CONTEXT_RULES: Record<keyof BooleanContextFlags, string[]> = {
   inCombat: ["combat.md"],
   inCharacterCreation: ["character-creation.md"],
   shopping: ["equipment.md"],
-  exploring: ["exploration-mechanics.md", "running-adventures.md", "traps-and-hazards.md", "encounter-tables.md"],
+  exploring: ["exploration-mechanics.md", "running-adventures.md", "traps-and-hazards.md"],
   levelingUp: ["leveling.md"],
   casting: ["spellcasting-core.md"],
 };
@@ -51,6 +53,11 @@ export function loadRules(context: GameContext, characterLevel?: number): string
         filesToLoad.add(file);
       }
     }
+  }
+
+  // Load the location-specific encounter table if exploring and a location type is set.
+  if (context.exploring && context.locationType) {
+    filesToLoad.add(`encounters/${context.locationType}.md`);
   }
 
   // Load only the spell tier files the character can actually access.

@@ -11,7 +11,7 @@ import { getAdventure } from "@/lib/adventures/index";
 import { getDb } from "@/lib/db/client";
 import { users } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
-import type { ChatRequest, GameContext } from "@/lib/game/types";
+import type { ChatRequest, GameContext, LocationType } from "@/lib/game/types";
 
 export const runtime = "nodejs";
 
@@ -105,6 +105,7 @@ export async function POST(request: NextRequest) {
         exploring: true,
         levelingUp: false,
         casting: false,
+        locationType: campaign?.worldState?.locationType as LocationType | undefined,
       };
 
       // Try to infer context from recent messages
