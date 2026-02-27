@@ -4,6 +4,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { characters, campaigns, sessions } from "@/lib/db/schema";
 import type { Character, Campaign, Message } from "@/lib/game/types";
+import { getSession } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 
@@ -19,6 +20,11 @@ export async function POST(
   const { campaignId } = await params;
 
   try {
+    const session = await getSession(request);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json() as {
       character?: Partial<Character>;
       campaign?: Partial<Campaign>;
@@ -31,13 +37,17 @@ export async function POST(
     const db = getDb(env.DB);
 
     const [campaignRow] = await db
-      .select({ characterId: campaigns.characterId })
+      .select({ characterId: campaigns.characterId, userId: campaigns.userId })
       .from(campaigns)
       .where(eq(campaigns.id, campaignId))
       .limit(1);
 
     if (!campaignRow) {
       return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+    }
+
+    if (campaignRow.userId && campaignRow.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const now = new Date().toISOString();

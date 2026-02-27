@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ADVENTURE_COLLECTIONS } from "@/lib/adventures/index";
 import { UserNav } from "@/components/UserNav";
@@ -16,6 +19,17 @@ function levelLabel(min: number, max: number): string {
 }
 
 export default function AdventuresPage() {
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    fetch("/api/characters")
+      .then((r) => r.json())
+      .then((data: { completedAdventureIds?: string[] }) => {
+        setCompletedIds(new Set(data.completedAdventureIds ?? []));
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="relative min-h-screen text-stone-100">
       {/* Background */}
@@ -49,30 +63,38 @@ export default function AdventuresPage() {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {collection.adventures.map((adventure) => (
-                <Link
-                  key={adventure.id}
-                  href={`/adventures/${collection.id}/${adventure.id}`}
-                  className="group flex flex-col gap-2 rounded-lg border border-stone-700 bg-stone-900 p-4 transition-colors hover:border-stone-500 hover:bg-stone-800"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold text-stone-100 group-hover:text-white leading-tight">
-                      {adventure.title}
-                    </h3>
-                    <span
-                      className={`shrink-0 text-xs px-2 py-0.5 rounded border font-mono ${levelBadgeColor(adventure.levelMin, adventure.levelMax)}`}
-                    >
-                      {levelLabel(adventure.levelMin, adventure.levelMax)}
+              {collection.adventures.map((adventure) => {
+                const completed = completedIds.has(adventure.id);
+                return (
+                  <Link
+                    key={adventure.id}
+                    href={`/adventures/${collection.id}/${adventure.id}`}
+                    className="group relative flex flex-col gap-2 rounded-lg border border-stone-700 bg-stone-900 p-4 transition-colors hover:border-stone-500 hover:bg-stone-800"
+                  >
+                    {completed && (
+                      <span className="absolute top-3 right-3 text-xs px-1.5 py-0.5 rounded border border-[var(--color-gold-dim)] bg-stone-900 text-[var(--color-gold)] font-mono">
+                        Completed
+                      </span>
+                    )}
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold text-stone-100 group-hover:text-white leading-tight pr-20">
+                        {adventure.title}
+                      </h3>
+                      <span
+                        className={`shrink-0 text-xs px-2 py-0.5 rounded border font-mono ${levelBadgeColor(adventure.levelMin, adventure.levelMax)}`}
+                      >
+                        {levelLabel(adventure.levelMin, adventure.levelMax)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-stone-400 leading-relaxed line-clamp-3">
+                      {adventure.synopsis}
+                    </p>
+                    <span className="mt-auto text-xs text-[var(--color-gold)] opacity-0 group-hover:opacity-100 transition-opacity">
+                      Select →
                     </span>
-                  </div>
-                  <p className="text-sm text-stone-400 leading-relaxed line-clamp-3">
-                    {adventure.synopsis}
-                  </p>
-                  <span className="mt-auto text-xs text-[var(--color-gold)] opacity-0 group-hover:opacity-100 transition-opacity">
-                    Select →
-                  </span>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </section>
         ))}

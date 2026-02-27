@@ -209,7 +209,8 @@ export interface GameStateUpdate {
     | "companionJoined"
     | "companionUpdate"
     | "playerDied"
-    | "mapReveal";
+    | "mapReveal"
+    | "adventureComplete";
   data: Record<string, unknown>;
 }
 

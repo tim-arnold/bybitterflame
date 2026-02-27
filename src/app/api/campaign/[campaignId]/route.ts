@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { characters, campaigns, sessions } from "@/lib/db/schema";
+import { getSession } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 
@@ -11,12 +12,17 @@ export const runtime = "nodejs";
  * Load campaign data, character, and message history.
  */
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ campaignId: string }> },
 ) {
   const { campaignId } = await params;
 
   try {
+    const session = await getSession(request);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { env } = await getCloudflareContext({ async: true });
     const db = getDb(env.DB);
 
@@ -30,6 +36,10 @@ export async function GET(
       return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
     }
 
+    if (campaign.userId && campaign.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const [character] = await db
       .select()
       .from(characters)
@@ -40,7 +50,7 @@ export async function GET(
       return NextResponse.json({ error: "Character not found" }, { status: 404 });
     }
 
-    const [session] = await db
+    const [gameSession] = await db
       .select({ messages: sessions.messages, sessionNumber: sessions.sessionNumber })
       .from(sessions)
       .where(eq(sessions.campaignId, campaignId))
@@ -63,8 +73,8 @@ export async function GET(
         moduleId: campaign.moduleId ?? null,
         adventureId: campaign.adventureId ?? null,
       },
-      sessionNumber: session?.sessionNumber ?? 1,
-      messages: session ? JSON.parse(session.messages) : [],
+      sessionNumber: gameSession?.sessionNumber ?? 1,
+      messages: gameSession ? JSON.parse(gameSession.messages) : [],
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal server error";
@@ -90,17 +100,26 @@ export async function DELETE(
   const target = url.searchParams.get("target") ?? "adventure";
 
   try {
+    const session = await getSession(request);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { env } = await getCloudflareContext({ async: true });
     const db = getDb(env.DB);
 
     const [campaign] = await db
-      .select({ characterId: campaigns.characterId })
+      .select({ characterId: campaigns.characterId, userId: campaigns.userId })
       .from(campaigns)
       .where(eq(campaigns.id, campaignId))
       .limit(1);
 
     if (!campaign) {
       return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+    }
+
+    if (campaign.userId && campaign.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Delete in FK-safe order: sessions → campaign → (optionally) character

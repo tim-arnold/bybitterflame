@@ -121,6 +121,13 @@ function extractUpdates(
       data: parsed.mapReveal as Record<string, unknown>,
     });
   }
+
+  if (parsed.adventureComplete) {
+    updates.push({
+      type: "adventureComplete",
+      data: parsed.adventureComplete as Record<string, unknown>,
+    });
+  }
 }
 
 /**

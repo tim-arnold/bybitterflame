@@ -211,6 +211,24 @@ Do NOT wait for the player to ask. The GM initiates this automatically.
 
 When emitting `talents`, always include the full array (existing talents plus the new one). When a talent grants a stat change (e.g., +2 STR), also emit the updated stat in `characterUpdates`.
 
+## Adventure Completion
+
+When the player has accomplished all stated adventure goals AND has returned to a place of safety and rest, emit:
+
+```gamestate
+{ "adventureComplete": { "summary": "A 1–3 sentence narrative wrap-up of what was accomplished." } }
+```
+
+**Trigger conditions (ALL must be true):**
+- The adventure's stated goal is achieved (boss defeated, artifact retrieved, prisoners freed, etc.)
+- The party is in a place of safety — not mid-combat, not fleeing, not in immediate danger
+- The character has had a moment of rest or reflection
+
+**Rules:**
+- Emit this **once only**. Do not re-emit on subsequent turns.
+- The summary should read like a saga closing line — what was accomplished, what it cost, what it means.
+- After emitting, narrate a natural scene closing. The game system handles the end screen.
+
 ## Quick Reference: GM Checklist Per Session
 
 1. Track light sources and timers.

@@ -11,6 +11,7 @@ import { SessionControls } from "@/components/game/SessionControls";
 import { TravelersJournal } from "@/components/game/TravelersJournal";
 import { CompanionPanel } from "@/components/game/CompanionPanel";
 import { DeathScreen } from "@/components/game/DeathScreen";
+import { AdventureCompleteScreen } from "@/components/game/AdventureCompleteScreen";
 import { WorldConditions } from "@/components/game/WorldConditions";
 import { MapViewer } from "@/components/game/MapViewer";
 import { GameLayout } from "@/components/layout/GameLayout";
@@ -58,6 +59,7 @@ export default function PlayPage() {
   const [companions, setCompanions] = useState<Companion[]>([]);
   const [isDead, setIsDead] = useState(false);
   const [deathData, setDeathData] = useState<DeathData | null>(null);
+  const [adventureCompleteData, setAdventureCompleteData] = useState<{ summary: string } | null>(null);
   const torchTimerRef = useRef<TorchTimerHandle>(null);
 
   // Adventure module state
@@ -439,6 +441,13 @@ export default function PlayPage() {
           // Handle character complete in gm-create mode
           if (update.type === "notification" && update.data.type === "characterComplete" && isGmCreateMode) {
             setIsGmCreateMode(false);
+          }
+          if (update.type === "adventureComplete") {
+            const summary = update.data.summary as string;
+            setAdventureCompleteData({ summary });
+            fetch(`/api/campaign/${campaignId}/complete`, { method: "POST" }).catch(
+              (err) => console.error("Complete failed:", err)
+            );
           }
         }
 
@@ -827,6 +836,13 @@ export default function PlayPage() {
           deathData={deathData}
           onInherit={handleCompanionInherit}
           onCampaignEnd={handleCampaignEnd}
+        />
+      )}
+
+      {adventureCompleteData && (
+        <AdventureCompleteScreen
+          summary={adventureCompleteData.summary}
+          characterName={character.name ?? "Your character"}
         />
       )}
     </>

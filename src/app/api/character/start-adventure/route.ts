@@ -1,41 +1,82 @@
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
-import { campaigns } from "@/lib/db/schema";
+import { campaigns, characters } from "@/lib/db/schema";
+import { getSession } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 
 /**
  * POST /api/character/start-adventure
  * Create a new campaign for an existing character to play a specific adventure module.
- * Copies the character reference from the source campaign.
+ * Accepts either sourceCampaignId (copies character from that campaign) or
+ * characterId directly (looks up character, inherits most recent gmPersona).
  */
 export async function POST(request: Request) {
   try {
+    const session = await getSession(request);
+
     const body = await request.json() as {
-      sourceCampaignId: string;
+      sourceCampaignId?: string;
+      characterId?: string;
       moduleId: string;
       adventureId: string;
     };
-    const { sourceCampaignId, moduleId, adventureId } = body;
+    const { sourceCampaignId, characterId: directCharacterId, moduleId, adventureId } = body;
 
-    if (!sourceCampaignId || !moduleId || !adventureId) {
+    if ((!sourceCampaignId && !directCharacterId) || !moduleId || !adventureId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     const { env } = await getCloudflareContext({ async: true });
     const db = getDb(env.DB);
 
-    // Look up the source campaign to get the characterId
-    const [sourceCampaign] = await db
-      .select()
-      .from(campaigns)
-      .where(eq(campaigns.id, sourceCampaignId))
-      .limit(1);
+    let resolvedCharacterId: string;
+    let campaignName: string;
+    let gmPersona = "";
 
-    if (!sourceCampaign) {
-      return NextResponse.json({ error: "Source campaign not found" }, { status: 404 });
+    if (sourceCampaignId) {
+      // Path A: copy from source campaign
+      const [sourceCampaign] = await db
+        .select()
+        .from(campaigns)
+        .where(eq(campaigns.id, sourceCampaignId))
+        .limit(1);
+
+      if (!sourceCampaign) {
+        return NextResponse.json({ error: "Source campaign not found" }, { status: 404 });
+      }
+
+      resolvedCharacterId = sourceCampaign.characterId;
+      campaignName = sourceCampaign.name;
+      gmPersona = sourceCampaign.gmPersona ?? "";
+    } else {
+      // Path B: direct characterId
+      const [character] = await db
+        .select()
+        .from(characters)
+        .where(eq(characters.id, directCharacterId!))
+        .limit(1);
+
+      if (!character) {
+        return NextResponse.json({ error: "Character not found" }, { status: 404 });
+      }
+
+      resolvedCharacterId = character.id;
+      campaignName = character.name;
+
+      // Inherit gmPersona from most recent campaign for this character
+      const [recentCampaign] = await db
+        .select({ gmPersona: campaigns.gmPersona })
+        .from(campaigns)
+        .where(eq(campaigns.characterId, character.id))
+        .orderBy(desc(campaigns.updatedAt))
+        .limit(1);
+
+      if (recentCampaign) {
+        gmPersona = recentCampaign.gmPersona ?? "";
+      }
     }
 
     const campaignId = crypto.randomUUID();
@@ -43,10 +84,11 @@ export async function POST(request: Request) {
 
     await db.insert(campaigns).values({
       id: campaignId,
-      characterId: sourceCampaign.characterId,
-      name: sourceCampaign.name,
+      userId: session?.user.id ?? null,
+      characterId: resolvedCharacterId,
+      name: campaignName,
       state: "active",
-      gmPersona: sourceCampaign.gmPersona ?? "",
+      gmPersona,
       worldState: JSON.stringify({
         currentLocation: "",
         visitedLocations: [],

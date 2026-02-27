@@ -4,6 +4,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { characters, campaigns } from "@/lib/db/schema";
 import type { Companion, WorldState } from "@/lib/game/types";
+import { getSession } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,11 @@ export async function POST(
   const { campaignId } = await params;
 
   try {
+    const session = await getSession(request);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json() as {
       companion: Companion;
       legacyTalent?: string;
@@ -35,6 +41,20 @@ export async function POST(
 
     const { env } = await getCloudflareContext({ async: true });
     const db = getDb(env.DB);
+
+    const [campaignRow] = await db
+      .select({ userId: campaigns.userId })
+      .from(campaigns)
+      .where(eq(campaigns.id, campaignId))
+      .limit(1);
+
+    if (!campaignRow) {
+      return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+    }
+
+    if (campaignRow.userId && campaignRow.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const now = new Date().toISOString();
     const newCharacterId = crypto.randomUUID();

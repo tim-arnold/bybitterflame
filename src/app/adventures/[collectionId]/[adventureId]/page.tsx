@@ -1,9 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getAdventure, getCollection } from "@/lib/adventures/index";
+
+interface RosterCharacter {
+  id: string;
+  name: string;
+  class: string;
+  ancestry: string;
+  level: number;
+  lastCampaignState: string;
+  lastAdventureTitle: string | null;
+  lastPlayedAt: string;
+}
 
 const GM_QUESTIONS = [
   {
@@ -39,6 +50,20 @@ export default function AdventureDetailPage() {
   // GM create interview state
   const [showInterview, setShowInterview] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  // Existing character roster
+  const [roster, setRoster] = useState<RosterCharacter[]>([]);
+  const [rosterLoaded, setRosterLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/characters")
+      .then((r) => r.json())
+      .then((data: { characters?: RosterCharacter[] }) => {
+        setRoster(data.characters ?? []);
+      })
+      .catch(() => {})
+      .finally(() => setRosterLoaded(true));
+  }, []);
 
   const collection = getCollection(collectionId);
   const adventure = getAdventure(collectionId, adventureId);
@@ -78,6 +103,22 @@ export default function AdventureDetailPage() {
         JSON.stringify(answers),
       );
 
+      router.push(`/play/${campaignId}`);
+    } catch {
+      setIsCreating(false);
+    }
+  }
+
+  async function handleSelectExistingCharacter(characterId: string) {
+    setIsCreating(true);
+    try {
+      const res = await fetch("/api/character/start-adventure", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ characterId, moduleId: collectionId, adventureId }),
+      });
+      if (!res.ok) throw new Error("Failed to start adventure");
+      const { campaignId } = await res.json() as { campaignId: string };
       router.push(`/play/${campaignId}`);
     } catch {
       setIsCreating(false);
@@ -124,6 +165,7 @@ export default function AdventureDetailPage() {
 
         {/* Character options */}
         <div className="space-y-6">
+
           {/* Option A: create new character */}
           <div>
             <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-3">
@@ -139,6 +181,37 @@ export default function AdventureDetailPage() {
               </p>
             </Link>
           </div>
+
+          {/* Option B: play as existing character */}
+          {rosterLoaded && roster.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-3">
+                Play as an Existing Character
+              </h2>
+              <div className="space-y-2">
+                {roster.map((char) => (
+                  <button
+                    key={char.id}
+                    onClick={() => handleSelectExistingCharacter(char.id)}
+                    disabled={isCreating}
+                    className="w-full rounded-lg border border-stone-700 bg-stone-900 px-4 py-3 text-left transition-colors hover:border-stone-500 hover:bg-stone-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-semibold text-stone-100">{char.name}</span>
+                      <span className="text-xs text-stone-500 shrink-0">
+                        Lvl {char.level} {char.ancestry} {char.class}
+                      </span>
+                    </div>
+                    {char.lastAdventureTitle && (
+                      <p className="text-xs text-stone-500 mt-0.5 truncate">
+                        Last played: {char.lastAdventureTitle}
+                      </p>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Option C: GM creates character */}
           <div>
