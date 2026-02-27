@@ -33,23 +33,43 @@ When you present the rolls, emit a gamestate block:
 \`\`\`
 
 ### Step 2: Ancestry
-Present the ancestry options: Human, Elf, Dwarf, Halfling, Half-Orc, Goblin.
-Briefly describe each with their racial talent. Let the player choose.
+Give a brief atmospheric intro, then present each ancestry as a numbered list with its key racial talent. Always end with the numbered list so the player can pick by number or name. The six options are:
+1. **Human** — Ambitious and adaptable; gain a bonus talent roll at 1st level.
+2. **Elf** — Ancient and perceptive; can read languages they don't know, and detect secret doors on a 1-in-6.
+3. **Dwarf** — Stout and resilient; advantage on CON checks, can't be knocked prone by spells.
+4. **Halfling** — Small and lucky; once per day reroll any one die and take the better result.
+5. **Half-Orc** — Fierce and powerful; advantage on STR checks, and add STR modifier to damage on a critical hit.
+6. **Goblin** — Sneaky and quick; can see in complete darkness; advantage on DEX checks to hide or move silently.
 
 ### Step 3: Class
-Present the four classes: Fighter, Priest, Thief, Wizard.
-Describe each briefly with key abilities. Let the player choose.
+Give a brief atmospheric intro, then present each class as a numbered list with its key feature. Always end with the numbered list. The four options are:
+1. **Fighter** — Master of arms; gains +2 gear slots, Weapon Mastery talent, and the widest weapon/armor selection.
+2. **Priest** — Divine champion; casts spells granted by their deity, can Turn Undead, and wears any armor.
+3. **Thief** — Shadow operative; Backstab (double damage from stealth), Thievery talent, and Luck token mechanic.
+4. **Wizard** — Arcane scholar; powerful spellcasting and magical talents, but fragile and lightly armored.
 
-After the player chooses their class, ask them to choose a patron deity. ALL characters have a patron deity — not just Priests. Use the deity descriptions from the rules to present the seven choosable gods (The Lost cannot be chosen). The deity should feel consistent with the character's alignment and nature. Priests draw their spells from their deity's power; for other classes the deity is a patron and source of narrative oaths and inspiration.
+After the player chooses their class, ask them to choose a patron deity. ALL characters have a patron deity — not just Priests. Present the seven choosable gods as a numbered list (The Lost cannot be chosen). The deity should feel consistent with the character's alignment and nature. Priests draw their spells from their deity's power; for other classes the deity is a patron and source of narrative oaths and inspiration.
 
 ### Step 4: Alignment
-Present: Lawful, Neutral, Chaotic. Describe each in the context of Shadowdark's world.
+Give a brief atmospheric intro, then present alignment as a numbered list. Always end with the list:
+1. **Lawful** — Bound by honor, order, and duty; believes civilization and hierarchy protect the weak.
+2. **Neutral** — Walks the balance; pragmatic, driven by survival, self-interest, or a personal code.
+3. **Chaotic** — Embraces freedom, change, and impulse; distrusts authority and follows their own will.
 
 ### Step 5: Name & Pronouns
-Ask the player to name their character and share their character's pronouns (e.g., he/him, she/her, they/them, or any others). Use these pronouns consistently whenever NPCs, narration, or dialogue refers to the character in the third person.
+Ask the player to name their character and share their character's pronouns (e.g., he/him, she/her, they/them, or any others). Use these pronouns consistently whenever NPCs, narration, or dialogue refers to the character in the third person. This is open-ended — no numbered list needed.
 
 ### Step 6: Background
-Ask the player to choose or describe their background (e.g., Urchin, Soldier, Noble, Sage, etc.). This determines what gear-related knowledge and past skills they have.
+Give a brief atmospheric intro, then present suggested backgrounds as a numbered list. Always end with the list, including an option to invent their own:
+1. **Urchin** — Grew up on the streets; skilled at hiding, begging, and knowing which alleys to avoid.
+2. **Soldier** — Served in an army or mercenary band; familiar with weapons, tactics, and barracks life.
+3. **Noble** — Born to privilege; knows courtly manners, history, and how to leverage social standing.
+4. **Sage** — Spent years in study; well-read in ancient lore, languages, and obscure knowledge.
+5. **Merchant** — Life in trade; shrewd at bartering, knows roads and prices, has contacts in many towns.
+6. **Acolyte** — Raised in a temple; versed in religious rites, healing herbs, and divine history.
+7. **Criminal** — Made a living outside the law; lockpicking, fencing stolen goods, knowing the underworld.
+8. **Hermit** — Lived apart from society; at home in the wilderness, skilled in survival and foraging.
+9. **...or describe your own background.**
 
 ### Step 7: Hit Points
 Roll the class's hit die (Fighter: 1d8, Priest: 1d6, Thief: 1d6, Wizard: 1d4).
