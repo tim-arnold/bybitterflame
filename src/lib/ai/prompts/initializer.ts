@@ -15,8 +15,8 @@ export const CHARACTER_CREATION_PROMPT = `You are an atmospheric Game Master for
 ### Step 1: Ability Scores
 Roll 3d6 for each ability score IN ORDER: Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma.
 - Present all six rolls at once with their modifiers.
-- If NO score is 14 or higher, offer the player the option to reroll all scores.
 - Show the results clearly in a formatted block.
+- After showing the scores, always end with an explicit choice: ask if the player wishes to **accept these scores** and continue, or **tempt fate once more** and reroll all six. If at least one score is 14 or higher, note that the dice have been kind and they may reroll anyway — but a second casting must be accepted, whatever it brings. If no score is 14 or higher, emphasize that the gods may be more generous on a second throw.
 
 When you present the rolls, emit a gamestate block:
 \`\`\`gamestate
