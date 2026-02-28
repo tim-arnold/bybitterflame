@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { MobileNav } from "./MobileNav";
 import { UserNav } from "@/components/UserNav";
 import { HowToPlayModal } from "@/components/HowToPlayModal";
+import { authClient } from "@/lib/auth/client";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface GameLayoutProps {
   leftPanel: React.ReactNode;
@@ -13,6 +16,81 @@ interface GameLayoutProps {
   rightTitle?: string;
   title?: string;
   isSaved?: boolean;
+}
+
+function MobileMenu({ onHowToPlay }: { onHowToPlay: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    if (open) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  async function handleSignOut() {
+    setOpen(false);
+    await authClient.signOut();
+    router.push("/login");
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex h-7 w-7 items-center justify-center rounded border border-stone-700 text-stone-400 hover:border-stone-500 hover:text-white transition-colors cursor-pointer"
+        aria-label="Menu"
+      >
+        <svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor">
+          <rect width="14" height="1.5" rx="0.75" />
+          <rect y="5.25" width="14" height="1.5" rx="0.75" />
+          <rect y="10.5" width="14" height="1.5" rx="0.75" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-9 z-50 min-w-[140px] rounded border border-stone-700 bg-stone-900 py-1 shadow-xl">
+          <button
+            onClick={() => { setOpen(false); onHowToPlay(); }}
+            className="w-full px-4 py-2 text-left text-sm text-stone-300 hover:bg-stone-800 hover:text-white transition-colors cursor-pointer"
+          >
+            How to Play
+          </button>
+          {session && (
+            <>
+              <Link
+                href="/account"
+                onClick={() => setOpen(false)}
+                className="block px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-white transition-colors"
+              >
+                Settings
+              </Link>
+              <div className="my-1 border-t border-stone-800" />
+              <button
+                onClick={handleSignOut}
+                className="w-full px-4 py-2 text-left text-sm text-stone-300 hover:bg-stone-800 hover:text-white transition-colors cursor-pointer"
+              >
+                Sign out
+              </button>
+            </>
+          )}
+          {!session && (
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-white transition-colors"
+            >
+              Sign in
+            </Link>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function GameLayout({
@@ -52,13 +130,18 @@ export function GameLayout({
           </div>
 
           {/* Center: campaign title */}
-          <span className="text-sm font-semibold text-[var(--color-gold)] tracking-wide text-center">
+          <span className="text-sm font-semibold text-[var(--color-gold)] tracking-wide text-center truncate px-2">
             {title}
           </span>
 
-          {/* Right: user nav */}
+          {/* Right: desktop full nav / mobile compact menu */}
           <div className="flex justify-end">
-            <UserNav onHowToPlay={() => setShowHowToPlay(true)} />
+            <div className="hidden md:block">
+              <UserNav onHowToPlay={() => setShowHowToPlay(true)} />
+            </div>
+            <div className="md:hidden">
+              <MobileMenu onHowToPlay={() => setShowHowToPlay(true)} />
+            </div>
           </div>
         </div>
       )}
