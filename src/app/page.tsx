@@ -130,7 +130,7 @@ export default function Home() {
       <div className="relative z-10 flex flex-col items-center">
       <div className="mb-2 flex items-center justify-center gap-3">
         <h1 className="text-5xl font-bold tracking-tight text-[var(--color-gold)]">
-          ShadowDork
+          By Torchlight
         </h1>
         <span className="rounded border border-[var(--color-gold-dim)] px-2 py-0.5 text-xs font-semibold uppercase tracking-widest text-[var(--color-gold)] opacity-70">
           Beta
@@ -145,7 +145,7 @@ export default function Home() {
         <div className="mb-8 max-w-sm rounded-lg border border-stone-700 bg-stone-900/70 px-5 py-4 text-sm text-stone-400 backdrop-blur-sm">
           <p className="mb-1 font-semibold text-stone-200">Join the Beta</p>
           <p>
-            ShadowDork is in early access. Request an account and start playing — no
+            By Torchlight is in early access. Request an account and start playing — no
             experience with Shadowdark RPG required.
           </p>
           <a
@@ -359,7 +359,7 @@ export default function Home() {
           />
         </a>
         <p className="text-xs text-stone-500 max-w-sm leading-relaxed text-center">
-          ShadowDork is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
+          By Torchlight is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
         </p>
       </div>
       </div>

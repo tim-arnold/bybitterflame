@@ -67,12 +67,12 @@ export async function GET(request: Request) {
   const forgotPasswordUrl = `${process.env.BETTER_AUTH_URL}/forgot-password`;
   const resend = new Resend(process.env.RESEND_API_KEY);
   void resend.emails.send({
-    from: "noreply@tim52.io",
+    from: "gm@bytorchlight.com",
     to: req.email,
-    subject: "Your ShadowDork account is ready",
+    subject: "Your By Torchlight account is ready",
     html: `
       <p>Hi ${req.name},</p>
-      <p>Your ShadowDork account has been approved!</p>
+      <p>Your By Torchlight account has been approved!</p>
       <p>Click below to set your password and start playing:</p>
       <p>
         <a href="${forgotPasswordUrl}" style="display:inline-block;padding:10px 20px;background:#b5a642;color:#1a1a1a;text-decoration:none;border-radius:4px;font-weight:bold;">

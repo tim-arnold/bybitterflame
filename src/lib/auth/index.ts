@@ -28,11 +28,11 @@ export async function getAuth() {
       enabled: true,
       sendResetPassword: async ({ user, url }) => {
         void resend.emails.send({
-          from: "noreply@tim52.io",
+          from: "gm@bytorchlight.com",
           to: user.email,
-          subject: "Reset your ShadowDork password",
+          subject: "Reset your By Torchlight password",
           html: `
-            <p>You requested a password reset for your ShadowDork account.</p>
+            <p>You requested a password reset for your By Torchlight account.</p>
             <p><a href="${url}">Click here to reset your password</a></p>
             <p>This link expires in 1 hour. If you didn't request this, you can safely ignore it.</p>
           `,

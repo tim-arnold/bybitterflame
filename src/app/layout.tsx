@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Shadowdark RPG - AI Game Master",
+  title: "By Torchlight — AI Game Master for Shadowdark RPG",
   description:
     "An AI-powered Game Master for Shadowdark RPG. Create a character and explore deadly dungeons.",
 };

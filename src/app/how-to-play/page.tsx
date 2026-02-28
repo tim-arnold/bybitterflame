@@ -13,7 +13,7 @@ export default function HowToPlayPage() {
             <h1 className="text-3xl font-bold tracking-tight text-[var(--color-gold)]">
               How to Play
             </h1>
-            <p className="mt-1 text-sm text-stone-400">ShadowDork AI Game Master</p>
+            <p className="mt-1 text-sm text-stone-400">By Torchlight — AI Game Master</p>
           </div>
           <Link
             href="/"

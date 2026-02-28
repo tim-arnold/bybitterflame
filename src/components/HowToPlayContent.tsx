@@ -9,7 +9,7 @@ export function HowToPlayContent() {
           The Game Master
         </h2>
         <p>
-          ShadowDork&apos;s AI Game Master runs the{" "}
+          By Torchlight&apos;s AI Game Master runs the{" "}
           <span className="text-stone-200">Shadowdark RPG</span> rules on your behalf. It
           generates the world, plays every NPC and monster, and adjudicates outcomes — exactly
           as a human GM would at a table. You don&apos;t need to know the rules; the GM handles

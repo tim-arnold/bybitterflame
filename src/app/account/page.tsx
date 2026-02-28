@@ -20,7 +20,7 @@ export default function AccountPage() {
         </div>
 
         <h1 className="mb-1 text-center text-3xl font-bold tracking-tight text-[var(--color-gold)]">
-          ShadowDork
+          By Torchlight
         </h1>
         <p className="mb-8 text-center text-sm text-stone-400">Account Settings</p>
 

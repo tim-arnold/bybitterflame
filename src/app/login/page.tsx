@@ -114,7 +114,7 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-sm px-4">
         <h1 className="mb-1 text-center text-3xl font-bold tracking-tight text-[var(--color-gold)]">
-          ShadowDork
+          By Torchlight
         </h1>
         <p className="mb-8 text-center text-sm text-stone-400">AI-Powered Game Master</p>
 
@@ -128,7 +128,7 @@ export default function LoginPage() {
           </Link>
         </div>
         <p className="mt-8 text-xs text-stone-700 text-center leading-relaxed">
-          ShadowDork is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
+          By Torchlight is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
         </p>
       </div>
     </div>
