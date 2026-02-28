@@ -6,15 +6,15 @@ Traps add peril and surprise to dungeon crawling. Characters typically get to ma
 
 ### Finding Traps
 
-Characters who **search a specific area or object** for a trap automatically find it. If there is time pressure or the trap requires a great deal of skill to deactivate, the GM might call for a stat check.
+A character who deliberately examines a specific area or object for traps will find any trap present. Only call for a check when time pressure is severe or the mechanism is genuinely exceptional.
 
 ### Disabling Traps
 
-Thieves and characters who are trained in tinkering can describe how they disable or circumvent a trap. If the character has enough time and uses a reasonable method, the character succeeds.
+Any character with tinkering training, or a thief, can attempt to neutralize a trap by describing their method. Given adequate time and a plausible approach, they succeed without a roll.
 
 ### A Tell
 
-Most traps should have a hint or tell. Be careful not to make traps too frequent or the game pace will suffer.
+Give most traps a discoverable hint. Too many hidden, unmarked traps slow the game and frustrate players rather than creating genuine tension.
 
 ### Traps Table (d12)
 
@@ -37,14 +37,14 @@ Most traps should have a hint or tell. Be careful not to make traps too frequent
 
 ## Hazards
 
-Hazards add passive danger to the adventuring environment. There is often no way to defeat or permanently disable them. Unlike traps, most hazards are **obvious from the start**.
+Hazards are persistent environmental dangers that characters must navigate around rather than defeat. They typically cannot be destroyed or removed. Unlike hidden traps, hazards are generally apparent to anyone paying attention.
 
 ### Hazard Types
 
-- **Movement Restriction.** Some hazards inhibit or prevent movement, such as quicksand pools or slippery ice. Hazards can even fully entrap characters.
-- **Damage.** Some hazards deal ongoing damage, such as toxic spores or acid rain.
-- **Weakening.** Certain hazards weaken or hamper the characters, such as antimagic zones or vapors that sap physical strength.
-- **Combining.** The most insidious hazards combine one or more of these types into a single threat.
+- **Movement Restriction.** Hazards that slow, stop, or redirect movement — pools that drag characters down, ice that sends them sprawling, tangles that hold them in place.
+- **Damage.** Hazards that deal continuing harm — corrosive runoff, toxic air, violent ambient energy.
+- **Weakening.** Hazards that erode capability — zones that suppress magic, fumes that drain physical strength, effects that dull senses.
+- **Combined.** The worst hazards stack multiple effects, creating layered threats that compound each other.
 
 ### Hazards Table (d12)
 

@@ -348,7 +348,7 @@ export default function Home() {
         )}
       </div>
 
-      <p className="mt-6 text-xs text-stone-600 max-w-sm leading-relaxed">
+      <p className="mt-6 text-xs text-stone-400 max-w-sm leading-relaxed">
         ShadowDork is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
       </p>
       </div>

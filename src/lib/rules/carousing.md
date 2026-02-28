@@ -10,13 +10,13 @@ Each participant pays the chosen cost. The cost determines the bonus added to th
 
 | Cost | Event | Roll Bonus |
 |------|-------|-----------|
-| 30 gp | A worthy night of drinking and festivity | +0 |
-| 100 gp | A full day and night of revelry, gambling, and recounting your exploits | +1 |
-| 300 gp | Two days of crawling dozens of taverns to sing, buy rounds, and celebrate | +2 |
-| 600 gp | A three-day voyage into the finest food, drink, and gambling you can find | +3 |
-| 900 gp | A hazy, weeklong bender that runs multiple well-known taverns dry | +4 |
-| 1,200 gp | A spirited fete lasting ten days that attracts hordes of revelers and takes over an entire town or city district | +5 |
-| 1,800 gp | Two legendary weeks of drinking and debauchery widespread enough to take over a whole city, attracting countless celebrants including famous nobles and bards | +6 |
+| 30 gp | One night of drinks and company at your favorite haunt | +0 |
+| 100 gp | A day and night of gambling, boasting, and buying rounds | +1 |
+| 300 gp | Two days of bar-hopping every establishment worth visiting | +2 |
+| 600 gp | Three days of feasting, wagering, and the finest drink coin can buy | +3 |
+| 900 gp | A week-long revel that empties the cellars of half the taverns in town | +4 |
+| 1,200 gp | Ten days of celebration that draws crowds and shuts down an entire district | +5 |
+| 1,800 gp | Two weeks of legendary excess spanning a whole city, drawing nobles, famous bards, and everyone seeking a story to tell | +6 |
 
 ### Step 2 — Roll Outcome (1d8 + event bonus)
 
@@ -24,20 +24,20 @@ Each character gains the XP noted for their result along with any other ill or p
 
 | Roll | Outcome | Benefit |
 |------|---------|---------|
-| 1 | You wake up blearily in your bed | Gain 2 XP |
-| 2 | You're locked in the stocks for 1d4 days and fined 20% of your total wealth for setting a building on fire | Gain 2 XP |
-| 3 | You wake up in a gutter with 15% of your total wealth spent | Gain 3 XP |
-| 4 | You hazily remember donating 10% of your total wealth to a glib priest | Gain 3 XP and a priest ally |
-| 5 | You're fined 10% of your total wealth for starting a full-tavern brawl | Gain 3 XP and be barred from a tavern |
-| 6 | The Thieves' Guild bilked you for 5% of your total wealth | Gain 4 XP |
-| 7 | You led an entire tavern in a wildly insulting song about a disliked noble | Gain 4 XP and a famous bard ally |
-| 8 | You survived a blindfolded knife-throwing demonstration unscathed | Gain 4 XP and a luck token |
-| 9 | By talent (50%) or trickery (50%), you beat a rival crawler in a test of skill | Gain 5 XP and an NPC ally or enemy |
-| 10 | An angry wizard cast a deadly spell at you, but you reflected it off your cup | Gain 5 XP and a luck token |
-| 11 | You performed a humiliating prank on a despised and corrupt merchant | Gain 5 XP and an ally in the City Watch |
-| 12 | You defeated a noble in a highly wagered drinking contest | Gain 5 XP and a debt owed by the noble |
-| 13 | You pulled off an ill-advised heist inside a feared sorcerer's tower | Gain 6 XP and an 80–100 item from the treasure table |
-| 14+ | You wake up deep inside the local ruler's stronghold holding one of their priceless family heirlooms. Footsteps approach | Gain 6 XP and a 90–100 treasure item, if you escape |
+| 1 | You surface the next morning with no memory of where the night went | Gain 2 XP |
+| 2 | A fire you may or may not have started puts you in the stocks for 1d4 days; fined 20% of total wealth | Gain 2 XP |
+| 3 | You come to in an alley, 15% of total wealth unaccounted for | Gain 3 XP |
+| 4 | A silver-tongued priest talked you into donating 10% of total wealth to a worthy cause | Gain 3 XP and a priest ally |
+| 5 | A brawl you started clears the tavern and costs you 10% of total wealth in damages | Gain 3 XP and be barred from a tavern |
+| 6 | Quick fingers in the crowd relieved you of 5% of total wealth before you noticed | Gain 4 XP |
+| 7 | A scathing ballad you composed about a hated noble became the night's anthem | Gain 4 XP and a famous bard ally |
+| 8 | Pressed into service as the target in a blindfolded blade act, you walked away without a scratch | Gain 4 XP and a luck token |
+| 9 | A public contest with a rival crawler ended with you on top — by skill or by cunning | Gain 5 XP and an NPC ally or enemy |
+| 10 | A wizard hurled a lethal spell your way; it deflected off your raised cup and vanished | Gain 5 XP and a luck token |
+| 11 | A brazen scheme ended with a corrupt merchant thoroughly embarrassed in front of a crowd | Gain 5 XP and a City Watch ally |
+| 12 | You outdrankeda noble in a very public, very expensive contest — and they owe you for it | Gain 5 XP and a debt owed by the noble |
+| 13 | A reckless heist inside a sorcerer's keep somehow went off without getting you killed | Gain 6 XP and an 80–100 item from the treasure table |
+| 14+ | Three days later you surface inside the local ruler's fortress, clutching one of their priceless heirlooms. Boots echo in the corridor | Gain 6 XP and a 90–100 treasure item, if you escape |
 
 ## Learning (Downtime)
 

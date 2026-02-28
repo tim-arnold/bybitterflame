@@ -110,5 +110,5 @@ scattered across forests, mountains, deserts, and deep underground. These places
 hold treasure, danger, and secrets that predate living memory.
 
 The Shadowdark — any place where danger and darkness hold sway — is everywhere.
-It clutches ancient secrets and dusty treasures in its rotting claws. Adventurers
-are among the few who dare enter it.
+It hoards forgotten knowledge and lost wealth in its depths. Adventurers
+are among the few willing to enter it.

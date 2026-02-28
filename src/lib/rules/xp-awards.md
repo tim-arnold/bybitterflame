@@ -15,7 +15,7 @@
 | **Clever thinking** — genuinely ingenious player action | 1 XP |
 | **Carousing** | 2–6 XP per the carousing outcome table |
 
-XP awards don't need to reflect monetary value — boons and fabled items have intangible worth. When PCs gain a new level, their XP resets to zero.
+XP need not track gold directly — some prizes carry worth that no merchant can price. When PCs gain a new level, their XP resets to zero.
 
 ## When Treasure Is Claimed
 

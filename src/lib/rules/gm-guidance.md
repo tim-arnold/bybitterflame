@@ -2,53 +2,47 @@
 
 ## Core Ethos of Shadowdark
 
-These are Shadowdark RPG's core principles and foundations. Internalize them in every decision as GM.
+These are the foundational principles that drive every GM decision. Keep them in mind at all times.
 
 ### Time
-The most important resource. It must haunt the characters' every decision. They don't have time to search every floor tile for a trap.
+The clock is always running. Resource depletion and time pressure shape every player decision. Characters won't have the luxury of exhaustive searching when darkness is closing in.
 
 ### Darkness
-Respect the darkness. It is the true foe. Few things can hold it at bay, and nothing must make those prized tools obsolete.
+Darkness is an adversary, not mere ambiance. Only a handful of tools can hold it back — never let those tools become trivial.
 
 ### Gear
-Gear is precious and limited. Give value and utility to all of it.
+Equipment is scarce and valuable. Every item should matter; resource scarcity gives individual pieces of gear real weight.
 
 ### Action Economy
-PCs get just one action per turn. Make it count. Use multitasking for boring small stuff.
+Each PC takes one action per turn — no more. Reserve multitasking only for trivially small tasks that don't warrant separate actions.
 
 ### Information
-Dispense information freely. If the characters test the floor where there's a trap, they find it.
+Share what characters can discover. A deliberate search of a trapped area reveals the trap.
 
 ### Distance
-Close, near, and far distances are loose and don't require precise measurement. Nobody wants to miss firing an arrow into a dragon's eye because of a mere 5-foot deficit.
+Close, near, and far are approximate ranges, not measurements requiring exact arithmetic. Sound judgment beats obsessive calculation.
 
 ### Danger
-Casting spells comes with great risk. Magic items are volatile. Fights are fast and unfair. Monsters are insidious.
+Spells carry genuine risk. Magic items can turn treacherous. Combat is brutal and rarely fair. Treat monsters as real threats.
 
 ### Rewarding Investment
-Honor what has been earned. If a character learns a new language, make it matter. Allow new titles or iconic deeds to have an impact on the characters' lives.
+Respect what characters have earned. When a PC learns a language, acquires a title, or completes an iconic deed, let it matter in the world around them.
 
 ### Stat Checks
-The characters automatically succeed at what they are trained to do. Only use stat checks when there is time pressure and failure has dire consequences.
+Trained characters succeed at their specialties without rolling. Reserve checks for moments where time is short and failure has real stakes.
 
 ## On Balance
 
 ### Be Unpredictable
-Typical and average adventuring is not the goal. The numbers in this game are calibrations so you know where to start — use them to feel out the rudder of your game and know what makes something easy or hard. Then become unpredictable.
+Predictable, average adventuring drains tension. Treat difficulty numbers as starting calibrations — use them to get a feel for the game's range, then break away from the expected. When players feel certain they'll win every fight, they stop being afraid. They stop being careful. They stop using their wits. When all loot is roughly equal, there are no prizes worth coveting.
 
-If the players think they can win every fight, they won't feel fear. They won't be careful. They won't use their wits. If all treasure is similar in value, there will be no epic trophies to pursue. No motivation.
-
-Instead, fill the world with stark dangers and stunning treasures. The most glorious victories are the hard-earned ones.
+Give the world real dangers and genuine rewards. The victories that matter are the ones that were hard-won.
 
 ### Telegraph Danger
-When you remove predictability, add a replacement ingredient: telegraphing danger. Don't make threats a secret (unless the players utterly failed to gather information).
-
-If the characters are getting close to a manticore's cave, describe the crushed skulls and bones, the reek of rotting meat, and the silence of the birds.
+Unpredictability needs a counterweight: warn players of real threats without concealing them (unless they failed to gather information). Approaching a basilisk's territory? The undergrowth turns oddly still. Stone debris litters the path. Something in the air smells wrong. Give players the chance to read the situation before it's too late.
 
 ### Choices Matter
-A choice between two identical options ("Which door do you open, the one on the left or the right?") is not actually a choice. Players need a way to gather information about their options and make an informed decision. That creates interesting choices.
-
-Careful players should be able to find the deep claw marks on one of the doors or catch the low snoring on the other side.
+"Left door or right?" is not a real decision if both options are identical. Players need accessible information to make meaningful choices. Attentive characters should be able to discover something that distinguishes one option from another — old scorch marks on one door's surface, the faint sound of movement behind the other.
 
 ## Setting Difficulty Classes
 
@@ -117,22 +111,22 @@ When the player has accomplished all stated adventure goals AND has returned to 
 
 ## Luck Tokens
 
-Sometimes the GM awards a **luck token** to a player for exceptional roleplaying, heroism, or just plain coolness. Big sacrifices, moving speeches, or incredibly daring maneuvers might be worthy of luck tokens, whether or not the characters' actions were successful.
+The GM may grant a **luck token** when a player does something exceptional — a rousing speech, a wild gamble, a meaningful sacrifice, or just something memorably daring. Success isn't required; it's about the spirit of the action.
 
 ### Rules
 
-- Each player can only have **one luck token at a time**.
-- A player can **cash in a luck token** to reroll any roll they just made. They must use the new result.
-- A player can also **give their luck token to a companion**.
+- Each player can hold **one luck token at a time**.
+- Spending a token lets the player **reroll any roll they just made** and keep the new result.
+- A player may also **pass their token to another character**.
 
 ### How Many to Give?
 
-- In a pulpy, heroic session: award **2–3 new luck tokens per player** over the course of a session.
-- In a grim, difficult, dark session: the GM might **not give out any** new luck tokens.
+- In a pulpy, action-forward session: roughly **2–3 tokens per player** across the session.
+- In a dark, survival-focused session: the GM may hand out **none at all**.
 
 ### D6 Decider
 
-If there is a random chance for an outcome (such as whether a dropped torch goes out), roll a d6. A **1–3** results in the worse outcome for the players; a **4–6** results in the better one.
+For ambiguous binary outcomes — does a dropped torch stay lit? — roll a d6. A **1–3** favors the worse outcome; a **4–6** favors the better one.
 
 ## Quick Reference: GM Checklist Per Session
 
