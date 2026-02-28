@@ -888,7 +888,7 @@ export default function PlayPage() {
       )}
 
       {showHowToPlay && (
-        <HowToPlayModal onClose={() => setShowHowToPlay(false)} />
+        <HowToPlayModal onClose={() => setShowHowToPlay(false)} showDismiss />
       )}
     </>
   );

@@ -6,9 +6,10 @@ import { authClient } from "@/lib/auth/client";
 
 interface UserNavProps {
   onHowToPlay?: () => void;
+  onSettings?: () => void;
 }
 
-export function UserNav({ onHowToPlay }: UserNavProps = {}) {
+export function UserNav({ onHowToPlay, onSettings }: UserNavProps = {}) {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
 
@@ -76,12 +77,15 @@ export function UserNav({ onHowToPlay }: UserNavProps = {}) {
       <span className="hidden sm:block text-stone-600">·</span>
       {howToPlayInlineEl}
       <span className="text-stone-600">·</span>
-      <Link
-        href="/account"
-        className="text-stone-400 hover:text-stone-100 transition-colors"
-      >
-        Settings
-      </Link>
+      {onSettings ? (
+        <button onClick={onSettings} className="text-stone-400 hover:text-stone-100 transition-colors cursor-pointer">
+          Settings
+        </button>
+      ) : (
+        <Link href="/account" className="text-stone-400 hover:text-stone-100 transition-colors">
+          Settings
+        </Link>
+      )}
       <span className="text-stone-600">·</span>
       <button
         onClick={handleSignOut}

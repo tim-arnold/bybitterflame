@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import { MobileNav } from "./MobileNav";
 import { UserNav } from "@/components/UserNav";
 import { HowToPlayModal } from "@/components/HowToPlayModal";
+import { SettingsModal } from "@/components/SettingsModal";
 import { authClient } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -18,7 +19,7 @@ interface GameLayoutProps {
   isSaved?: boolean;
 }
 
-function MobileMenu({ onHowToPlay }: { onHowToPlay: () => void }) {
+function MobileMenu({ onHowToPlay, onSettings }: { onHowToPlay: () => void; onSettings: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -62,13 +63,12 @@ function MobileMenu({ onHowToPlay }: { onHowToPlay: () => void }) {
           </button>
           {session && (
             <>
-              <Link
-                href="/account"
-                onClick={() => setOpen(false)}
-                className="block px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-white transition-colors"
+              <button
+                onClick={() => { setOpen(false); onSettings(); }}
+                className="w-full px-4 py-2 text-left text-sm text-stone-300 hover:bg-stone-800 hover:text-white transition-colors cursor-pointer"
               >
                 Settings
-              </Link>
+              </button>
               <div className="my-1 border-t border-stone-800" />
               <button
                 onClick={handleSignOut}
@@ -104,6 +104,7 @@ export function GameLayout({
 }: GameLayoutProps) {
   const [mobileTab, setMobileTab] = useState<"left" | "center" | "right">("center");
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const tooltip = isSaved
     ? "Your session is saved — safe to leave."
@@ -137,10 +138,10 @@ export function GameLayout({
           {/* Right: desktop full nav / mobile compact menu */}
           <div className="flex justify-end">
             <div className="hidden md:block">
-              <UserNav onHowToPlay={() => setShowHowToPlay(true)} />
+              <UserNav onHowToPlay={() => setShowHowToPlay(true)} onSettings={() => setShowSettings(true)} />
             </div>
             <div className="md:hidden">
-              <MobileMenu onHowToPlay={() => setShowHowToPlay(true)} />
+              <MobileMenu onHowToPlay={() => setShowHowToPlay(true)} onSettings={() => setShowSettings(true)} />
             </div>
           </div>
         </div>
@@ -160,6 +161,7 @@ export function GameLayout({
       </div>
 
       {showHowToPlay && <HowToPlayModal onClose={() => setShowHowToPlay(false)} />}
+      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
 
       {/* Mobile layout */}
       <div className="md:hidden flex flex-col flex-1 overflow-hidden">
