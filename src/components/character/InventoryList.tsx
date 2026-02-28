@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { EquipmentItem } from "@/lib/game/types";
+import { enrichEquipment } from "@/lib/game/equipment-lookup";
 
 interface InventoryListProps {
   items: (EquipmentItem | string)[];
@@ -12,8 +13,8 @@ interface InventoryListProps {
 }
 
 function normalize(item: EquipmentItem | string): EquipmentItem {
-  if (typeof item === "string") return { name: item, type: "gear" };
-  return item;
+  const base: EquipmentItem = typeof item === "string" ? { name: item, type: "gear" } : item;
+  return enrichEquipment(base);
 }
 
 const TYPE_LABELS: Record<EquipmentItem["type"], string> = {
@@ -108,11 +109,13 @@ function ItemRow({ item }: { item: EquipmentItem | string }) {
 export function InventoryList({ items, gold, silver, copper, maxSlots }: InventoryListProps) {
   const normalized = items.map(normalize);
 
-  // Items with slots === 0 are worn/small and don't occupy pack space.
-  // Items without a slots field default to 1 slot.
-  const slotted = normalized.filter((i) => (i.slots ?? 1) > 0);
+  const weapons = normalized.filter((i) => i.type === "weapon" && (i.slots ?? 1) > 0);
+  const gear = normalized.filter((i) => i.type !== "weapon" && (i.slots ?? 1) > 0);
   const worn = normalized.filter((i) => i.slots === 0);
-  const slotsUsed = slotted.reduce((sum, i) => sum + (i.slots ?? 1), 0);
+
+  const slotsUsed = normalized
+    .filter((i) => (i.slots ?? 1) > 0)
+    .reduce((sum, i) => sum + (i.slots ?? 1), 0);
 
   const slotLabel = maxSlots !== undefined
     ? `${slotsUsed} of ${maxSlots} gear slots used`
@@ -121,32 +124,42 @@ export function InventoryList({ items, gold, silver, copper, maxSlots }: Invento
   const overEncumbered = maxSlots !== undefined && slotsUsed > maxSlots;
 
   return (
-    <div className="space-y-3">
-      <div>
-        <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Equipment</h3>
-        {(gold !== undefined || silver !== undefined || copper !== undefined) && (
-          <div className="flex gap-3 mb-2 font-mono text-sm">
-            {gold !== undefined && gold > 0 && (
-              <span><span className="text-[var(--color-gold)]">{gold}</span> <span className="text-stone-500">gp</span></span>
-            )}
-            {silver !== undefined && silver > 0 && (
-              <span><span className="text-stone-300">{silver}</span> <span className="text-stone-500">sp</span></span>
-            )}
-            {copper !== undefined && copper > 0 && (
-              <span><span className="text-orange-400">{copper}</span> <span className="text-stone-500">cp</span></span>
-            )}
-          </div>
-        )}
-        <ul className="space-y-1">
-          {slotted.map((item, i) => (
-            <ItemRow key={i} item={item} />
-          ))}
-        </ul>
-        <p className={`text-xs mt-1 ${overEncumbered ? "text-red-500" : "text-stone-600"}`}>
-          {slotLabel}
-          {overEncumbered && " — over encumbered!"}
-        </p>
-      </div>
+    <div className="space-y-4">
+      {(gold !== undefined || silver !== undefined || copper !== undefined) && (
+        <div className="flex gap-3 font-mono text-sm">
+          {gold !== undefined && gold > 0 && (
+            <span><span className="text-[var(--color-gold)]">{gold}</span> <span className="text-stone-500">gp</span></span>
+          )}
+          {silver !== undefined && silver > 0 && (
+            <span><span className="text-stone-300">{silver}</span> <span className="text-stone-500">sp</span></span>
+          )}
+          {copper !== undefined && copper > 0 && (
+            <span><span className="text-orange-400">{copper}</span> <span className="text-stone-500">cp</span></span>
+          )}
+        </div>
+      )}
+
+      {weapons.length > 0 && (
+        <div>
+          <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Weapons</h3>
+          <ul className="space-y-1">
+            {weapons.map((item, i) => (
+              <ItemRow key={i} item={item} />
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {gear.length > 0 && (
+        <div>
+          <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Gear</h3>
+          <ul className="space-y-1">
+            {gear.map((item, i) => (
+              <ItemRow key={i} item={item} />
+            ))}
+          </ul>
+        </div>
+      )}
 
       {worn.length > 0 && (
         <div>
@@ -158,6 +171,11 @@ export function InventoryList({ items, gold, silver, copper, maxSlots }: Invento
           </ul>
         </div>
       )}
+
+      <p className={`text-xs ${overEncumbered ? "text-red-500" : "text-stone-600"}`}>
+        {slotLabel}
+        {overEncumbered && " — over encumbered!"}
+      </p>
     </div>
   );
 }

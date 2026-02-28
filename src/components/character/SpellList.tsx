@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 import type { Spell } from "@/lib/game/types";
+import { enrichSpell } from "@/lib/game/spells";
 
 interface SpellListProps {
   spells: (Spell | string)[];
 }
 
 function normalize(spell: Spell | string): Spell {
-  if (typeof spell === "string") return { name: spell, tier: 1, range: "", duration: "", description: "" };
-  return spell;
+  const base: Spell = typeof spell === "string"
+    ? { name: spell, tier: 1, range: "", duration: "", description: "" }
+    : spell;
+  return enrichSpell(base);
 }
 
 function SpellRow({ spell }: { spell: Spell | string }) {
