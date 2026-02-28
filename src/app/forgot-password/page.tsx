@@ -40,7 +40,7 @@ function ForgotPasswordForm() {
         </p>
         <Link
           href="/login"
-          className="mt-6 inline-block text-sm text-stone-400 hover:text-stone-200 transition-colors"
+          className="mt-6 inline-block text-sm text-stone-400 hover:text-white transition-colors"
         >
           Back to sign in
         </Link>
@@ -56,7 +56,7 @@ function ForgotPasswordForm() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
-          <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-500">
+          <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-400">
             Email
           </label>
           <input
@@ -89,7 +89,7 @@ function ForgotPasswordForm() {
       <div className="mt-5 text-center">
         <Link
           href="/login"
-          className="text-sm text-stone-400 hover:text-stone-200 transition-colors"
+          className="text-sm text-stone-400 hover:text-white transition-colors"
         >
           Back to sign in
         </Link>
@@ -112,13 +112,19 @@ export default function ForgotPasswordPage() {
 
         <Suspense
           fallback={
-            <div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6 text-center text-stone-500">
+            <div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6 text-center text-stone-400">
               Loading…
             </div>
           }
         >
           <ForgotPasswordForm />
         </Suspense>
+
+        <div className="mt-4 text-center">
+          <Link href="/" className="text-sm text-stone-400 hover:text-white transition-colors">
+            ← Home
+          </Link>
+        </div>
       </div>
     </div>
   );

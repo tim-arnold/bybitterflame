@@ -24,7 +24,7 @@ function ResetPasswordForm() {
         </p>
         <Link
           href="/forgot-password"
-          className="mt-6 inline-block text-sm text-stone-400 hover:text-stone-200 transition-colors"
+          className="mt-6 inline-block text-sm text-stone-400 hover:text-white transition-colors"
         >
           Request new link
         </Link>
@@ -69,7 +69,7 @@ function ResetPasswordForm() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
-          <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-500">
+          <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-400">
             New Password
           </label>
           <input
@@ -85,7 +85,7 @@ function ResetPasswordForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-500">
+          <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-400">
             Confirm Password
           </label>
           <input
@@ -131,13 +131,19 @@ export default function ResetPasswordPage() {
 
         <Suspense
           fallback={
-            <div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6 text-center text-stone-500">
+            <div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6 text-center text-stone-400">
               Loading…
             </div>
           }
         >
           <ResetPasswordForm />
         </Suspense>
+
+        <div className="mt-4 text-center">
+          <Link href="/" className="text-sm text-stone-400 hover:text-white transition-colors">
+            ← Home
+          </Link>
+        </div>
       </div>
     </div>
   );

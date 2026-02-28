@@ -12,12 +12,20 @@ export function UserNav() {
 
   if (!session) {
     return (
-      <a
-        href="/login"
-        className="rounded border border-stone-600 bg-stone-900/90 px-3 py-1.5 text-xs font-medium text-stone-200 hover:border-stone-400 hover:text-white transition-colors backdrop-blur-sm"
-      >
-        Sign in
-      </a>
+      <div className="flex items-center gap-2">
+        <a
+          href="/request-access"
+          className="rounded border border-stone-700 bg-stone-900/90 px-3 py-1.5 text-xs font-medium text-stone-400 hover:border-stone-500 hover:text-white transition-colors backdrop-blur-sm"
+        >
+          Request access
+        </a>
+        <a
+          href="/login"
+          className="rounded border border-stone-600 bg-stone-900/90 px-3 py-1.5 text-xs font-medium text-stone-200 hover:border-stone-400 hover:text-white transition-colors backdrop-blur-sm"
+        >
+          Sign in
+        </a>
+      </div>
     );
   }
 

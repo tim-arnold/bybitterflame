@@ -41,7 +41,7 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
-          <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-500">
+          <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-400">
             Email
           </label>
           <input
@@ -58,12 +58,12 @@ function LoginForm() {
 
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <label className="block text-xs uppercase tracking-widest text-stone-500">
+            <label className="block text-xs uppercase tracking-widest text-stone-400">
               Password
             </label>
             <Link
               href="/forgot-password"
-              className="text-xs text-stone-500 hover:text-stone-300 transition-colors"
+              className="text-xs text-stone-400 hover:text-white transition-colors"
             >
               Forgot password?
             </Link>
@@ -97,7 +97,7 @@ function LoginForm() {
       <div className="mt-5 text-center">
         <Link
           href="/request-access"
-          className="text-sm text-stone-500 hover:text-stone-300 transition-colors"
+          className="text-sm text-stone-400 hover:text-white transition-colors"
         >
           Need an account? Request access →
         </Link>
@@ -118,9 +118,15 @@ export default function LoginPage() {
         </h1>
         <p className="mb-8 text-center text-sm text-stone-400">AI-Powered Game Master</p>
 
-        <Suspense fallback={<div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6 text-center text-stone-500">Loading…</div>}>
+        <Suspense fallback={<div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6 text-center text-stone-400">Loading…</div>}>
           <LoginForm />
         </Suspense>
+
+        <div className="mt-4 text-center">
+          <Link href="/" className="text-sm text-stone-400 hover:text-white transition-colors">
+            ← Home
+          </Link>
+        </div>
       </div>
     </div>
   );
