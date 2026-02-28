@@ -51,8 +51,8 @@ export async function POST(request: Request) {
 
   const resend = new Resend(process.env.RESEND_API_KEY);
   void resend.emails.send({
-    from: "noreply@tim52.io",
-    to: "tim@tim52.io",
+    from: "gm@bytorchlight.com",
+    to: "gm@bytorchlight.com",
     subject: `New account request: ${name} (${email})`,
     html: `
       <p><strong>Name:</strong> ${name}</p>
