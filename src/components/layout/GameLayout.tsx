@@ -115,8 +115,11 @@ export function GameLayout({
       {/* Title bar */}
       {title && (
         <div className="shrink-0 border-b border-stone-800 bg-stone-950 px-4 py-2 grid grid-cols-3 items-center">
-          {/* Left: save indicator */}
+          {/* Left: home link + save indicator */}
           <div className="flex items-center gap-2">
+            <Link href="/" className="text-xs text-stone-500 hover:text-stone-300 transition-colors" aria-label="Home">
+              ← Home
+            </Link>
             <div className="relative group">
               <span className="flex h-4 w-4 items-center justify-center rounded-full border border-stone-600 text-[10px] text-stone-500 cursor-default select-none group-hover:border-stone-400 group-hover:text-stone-300 transition-colors">
                 i
