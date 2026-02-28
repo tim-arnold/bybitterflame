@@ -834,14 +834,18 @@ export default function PlayPage() {
         rightPanel={
           <>
             {adventure && (
-              <div className="flex gap-1 border-b border-stone-800 pb-2 -mt-1">
+              <div role="tablist" aria-label="Right panel" className="flex gap-1 border-b border-stone-800 pb-2 -mt-1">
                 <button
+                  role="tab"
+                  aria-selected={activeRightTab === "tools"}
                   onClick={() => setActiveRightTab("tools")}
                   className={`text-xs px-3 py-1 rounded transition-colors ${activeRightTab === "tools" ? "bg-stone-700 text-stone-100" : "text-stone-500 hover:text-stone-300"}`}
                 >
                   Tools
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={activeRightTab === "map"}
                   onClick={() => {
                     setActiveRightTab("map");
                     setMapHasNewReveal(false);
@@ -850,7 +854,7 @@ export default function PlayPage() {
                 >
                   Map
                   {mapHasNewReveal && activeRightTab !== "map" && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--color-gold)]" />
+                    <span aria-label="New map reveal" className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[var(--color-gold)]" />
                   )}
                 </button>
               </div>

@@ -26,13 +26,19 @@ function SpellRow({ spell }: { spell: Spell | string }) {
     <li className="bg-stone-900 rounded border border-stone-800 overflow-hidden">
       <button
         onClick={() => hasDetails && setOpen((o) => !o)}
+        aria-expanded={hasDetails ? open : undefined}
         className={`w-full flex items-center gap-2 px-3 py-1.5 text-left ${hasDetails ? "cursor-pointer hover:bg-stone-800/60 transition-colors" : "cursor-default"}`}
       >
-        <span className="text-purple-400 shrink-0">&#x2726;</span>
+        <span aria-hidden="true" className="text-purple-400 shrink-0">&#x2726;</span>
         <span className="text-sm text-stone-300 flex-1 min-w-0">{s.name}</span>
-        <span className="text-[10px] text-stone-500 shrink-0">T{s.tier} · DC {castDc}</span>
+        <span className="text-[10px] text-stone-500 shrink-0">
+          <span className="sr-only">Tier </span>T{s.tier}
+          <span aria-hidden="true"> · </span>
+          <span className="sr-only">, cast DC </span>DC {castDc}
+        </span>
         {hasDetails && (
           <svg
+            aria-hidden="true"
             className={`w-3.5 h-3.5 text-stone-500 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
             fill="none"
             viewBox="0 0 24 24"

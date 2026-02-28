@@ -101,10 +101,22 @@ export const TorchTimer = forwardRef<TorchTimerHandle, TorchTimerProps>(
 
         {isActive ? (
           <>
-            <div className={`text-center text-2xl font-mono font-bold ${urgency}`}>
+            <div
+              className={`text-center text-2xl font-mono font-bold ${urgency}`}
+              aria-label={`${minutes} minutes ${seconds} seconds remaining`}
+              aria-live={pct <= 25 ? "polite" : "off"}
+              aria-atomic="true"
+            >
               {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
             </div>
-            <div className="w-full h-1.5 bg-stone-800 rounded-full mt-2">
+            <div
+              role="progressbar"
+              aria-label="Torch remaining"
+              aria-valuenow={Math.round(pct)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              className="w-full h-1.5 bg-stone-800 rounded-full mt-2"
+            >
               <div
                 className={`h-full rounded-full transition-all duration-1000 ${
                   pct <= 10 ? "bg-red-600" : pct <= 25 ? "bg-red-500" : pct <= 50 ? "bg-yellow-600" : "bg-[var(--color-gold)]"
@@ -114,7 +126,7 @@ export const TorchTimer = forwardRef<TorchTimerHandle, TorchTimerProps>(
             </div>
           </>
         ) : (
-          <div className="text-center text-stone-600 text-sm py-2">No torch lit</div>
+          <div className="text-center text-stone-600 text-sm py-2" role="status">No torch lit</div>
         )}
       </div>
     );

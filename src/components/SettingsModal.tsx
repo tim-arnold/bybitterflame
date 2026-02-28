@@ -5,10 +5,15 @@ import { SettingsContent } from "@/components/SettingsContent";
 export function SettingsModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/60 backdrop-blur-sm p-4">
-      <div className="relative flex max-h-[90vh] w-full max-w-xl flex-col rounded-lg border border-stone-700 bg-stone-950 shadow-2xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-title"
+        className="relative flex max-h-[90vh] w-full max-w-xl flex-col rounded-lg border border-stone-700 bg-stone-950 shadow-2xl"
+      >
         {/* Header */}
         <div className="flex-shrink-0 border-b border-stone-800 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold tracking-tight text-[var(--color-gold)]">
+          <h2 id="settings-title" className="text-lg font-bold tracking-tight text-[var(--color-gold)]">
             Settings
           </h2>
           <button

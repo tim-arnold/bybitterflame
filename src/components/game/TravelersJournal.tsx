@@ -75,6 +75,8 @@ export function TravelersJournal({ entries, onAddEntry, onEditEntry, onDeleteEnt
     <div className="bg-stone-900 border border-stone-700 rounded-lg p-3">
       <button
         onClick={() => setIsOpen((o) => !o)}
+        aria-expanded={isOpen}
+        aria-controls="journal-entries"
         className="w-full flex items-center justify-between"
       >
         <h3 className="text-xs uppercase tracking-wider text-stone-500">
@@ -82,14 +84,14 @@ export function TravelersJournal({ entries, onAddEntry, onEditEntry, onDeleteEnt
         </h3>
         <span className="flex items-center gap-2">
           {entries.length > 0 && (
-            <span className="text-xs text-stone-500 font-mono">{entries.length}</span>
+            <span className="text-xs text-stone-500 font-mono" aria-label={`${entries.length} entries`}>{entries.length}</span>
           )}
-          <span className="text-stone-600 text-xs">{isOpen ? "▲" : "▼"}</span>
+          <span aria-hidden="true" className="text-stone-600 text-xs">{isOpen ? "▲" : "▼"}</span>
         </span>
       </button>
 
       {isOpen && (
-        <div className="mt-2 space-y-1">
+        <div id="journal-entries" className="mt-2 space-y-1">
           {entries.length === 0 && formMode !== "add" && (
             <p className="text-stone-600 text-xs py-1">No entries yet.</p>
           )}
@@ -107,6 +109,7 @@ export function TravelersJournal({ entries, onAddEntry, onEditEntry, onDeleteEnt
                   onClick={() => {
                     if (!isEditing) setExpandedId(isExpanded ? null : entry.id);
                   }}
+                  aria-expanded={isExpanded}
                   className="w-full flex items-center justify-between px-2 py-1.5 text-left"
                 >
                   <span className="text-stone-300 text-xs truncate flex-1 mr-2">
@@ -219,21 +222,27 @@ function EntryForm({
   const canSave = form.title.trim().length > 0 && form.body.trim().length > 0;
   return (
     <div className="p-2 space-y-2">
+      <label className="sr-only" htmlFor="journal-entry-title">Entry title</label>
       <input
+        id="journal-entry-title"
         type="text"
         placeholder="Title"
         value={form.title}
         onChange={(e) => onChange({ ...form, title: e.target.value })}
         className="w-full bg-stone-800 border border-stone-700 rounded px-2 py-1 text-xs text-stone-200 placeholder-stone-600 focus:outline-none focus:border-stone-500"
       />
+      <label className="sr-only" htmlFor="journal-entry-body">Notes</label>
       <textarea
+        id="journal-entry-body"
         placeholder="Notes..."
         value={form.body}
         onChange={(e) => onChange({ ...form, body: e.target.value })}
         rows={3}
         className="w-full bg-stone-800 border border-stone-700 rounded px-2 py-1 text-xs text-stone-200 placeholder-stone-600 focus:outline-none focus:border-stone-500 resize-none"
       />
+      <label className="sr-only" htmlFor="journal-entry-category">Category</label>
       <select
+        id="journal-entry-category"
         value={form.category}
         onChange={(e) => onChange({ ...form, category: e.target.value as JournalEntry["category"] })}
         className="w-full bg-stone-800 border border-stone-700 rounded px-2 py-1 text-xs text-stone-300 focus:outline-none focus:border-stone-500"

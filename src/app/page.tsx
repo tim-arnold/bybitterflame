@@ -313,14 +313,15 @@ export default function Home() {
               <p className="font-semibold text-stone-100 mb-3">Let the GM Decide</p>
               <div className="space-y-4">
                 {GM_QUESTIONS.map((q) => (
-                  <div key={q.id}>
-                    <p className="text-sm text-stone-300 mb-2">{q.question}</p>
+                  <div key={q.id} role="group" aria-labelledby={`gm-q-${q.id}`}>
+                    <p id={`gm-q-${q.id}`} className="text-sm text-stone-300 mb-2">{q.question}</p>
                     <div className="grid grid-cols-1 gap-1.5">
                       {q.options.map((opt) => {
                         const selected = gmAnswers[q.id] === opt;
                         return (
                           <button
                             key={opt}
+                            aria-pressed={selected}
                             onClick={() => setGmAnswers((prev) => ({ ...prev, [q.id]: opt }))}
                             disabled={isStartingGm}
                             className={`w-full rounded border px-3 py-2 text-left text-sm transition-colors cursor-pointer ${

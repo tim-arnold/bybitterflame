@@ -44,10 +44,11 @@ function mod(score: number): string {
 
 function LoyaltyPips({ loyalty }: { loyalty: number }) {
   return (
-    <div className="flex gap-0.5 items-center">
+    <div className="flex gap-0.5 items-center" aria-label={`Loyalty: ${loyalty} out of 10`}>
       {Array.from({ length: 10 }, (_, i) => (
         <span
           key={i}
+          aria-hidden="true"
           className={`inline-block w-2 h-2 rounded-full ${
             i < loyalty ? "bg-[var(--color-gold)]" : "bg-stone-700"
           }`}
@@ -66,6 +67,7 @@ function CompanionCard({ companion }: { companion: Companion }) {
       {/* Header row */}
       <button
         onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
         className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-stone-800/50 transition-colors"
       >
         <span className="flex items-center gap-2">
@@ -76,7 +78,7 @@ function CompanionCard({ companion }: { companion: Companion }) {
             {companion.status}
           </span>
         </span>
-        <span className="text-stone-500 text-xs">{expanded ? "▲" : "▼"}</span>
+        <span aria-hidden="true" className="text-stone-500 text-xs">{expanded ? "▲" : "▼"}</span>
       </button>
 
       {/* HP bar (always visible) */}

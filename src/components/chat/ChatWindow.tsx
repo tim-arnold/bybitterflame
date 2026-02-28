@@ -50,7 +50,14 @@ export function ChatWindow({
 
   return (
     <div className="flex flex-col h-full">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
+      <div
+        ref={scrollRef}
+        role="log"
+        aria-label="Adventure log"
+        aria-live="polite"
+        aria-relevant="additions"
+        className="flex-1 overflow-y-auto px-4 py-6 space-y-2"
+      >
         {displayMessages.map((msg, i) => (
           <ChatMessage
             key={i}
@@ -60,8 +67,8 @@ export function ChatWindow({
           />
         ))}
         {isLoading && !streamingContent && (
-          <div className="flex items-center gap-2 text-stone-500">
-            <div className="flex gap-1">
+          <div role="status" aria-label="Game Master is responding" className="flex items-center gap-2 text-stone-500">
+            <div aria-hidden="true" className="flex gap-1">
               <span className="w-2 h-2 bg-[var(--color-gold-dim)] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
               <span className="w-2 h-2 bg-[var(--color-gold-dim)] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
               <span className="w-2 h-2 bg-[var(--color-gold-dim)] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />

@@ -36,9 +36,10 @@ function ItemRow({ item }: { item: EquipmentItem | string }) {
     <li className="bg-stone-900 rounded border border-stone-800 overflow-hidden">
       <button
         onClick={() => hasDetails && setOpen((o) => !o)}
+        aria-expanded={hasDetails ? open : undefined}
         className={`w-full flex items-center gap-2 px-3 py-1.5 text-left ${hasDetails ? "cursor-pointer hover:bg-stone-800/60 transition-colors" : "cursor-default"}`}
       >
-        <span className="text-stone-600 shrink-0">&#x25AA;</span>
+        <span aria-hidden="true" className="text-stone-600 shrink-0">&#x25AA;</span>
         <span className="text-sm text-stone-300 flex-1 min-w-0">
           {eq.quantity && eq.quantity > 1 ? `${eq.quantity}× ` : ""}
           {eq.name}
@@ -50,6 +51,7 @@ function ItemRow({ item }: { item: EquipmentItem | string }) {
         )}
         {hasDetails && (
           <svg
+            aria-hidden="true"
             className={`w-3.5 h-3.5 text-stone-500 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
             fill="none"
             viewBox="0 0 24 24"

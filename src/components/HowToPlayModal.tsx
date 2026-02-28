@@ -20,11 +20,16 @@ export function HowToPlayModal({ onClose, showDismiss = false }: { onClose: () =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/60 backdrop-blur-sm p-4">
-      <div className="relative flex max-h-[90vh] w-full max-w-xl flex-col rounded-lg border border-stone-700 bg-stone-950 shadow-2xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="how-to-play-title"
+        className="relative flex max-h-[90vh] w-full max-w-xl flex-col rounded-lg border border-stone-700 bg-stone-950 shadow-2xl"
+      >
         {/* Header */}
         <div className="flex-shrink-0 border-b border-stone-800 px-6 py-4 flex items-start justify-between">
           <div>
-            <h2 className="text-lg font-bold tracking-tight text-[var(--color-gold)]">
+            <h2 id="how-to-play-title" className="text-lg font-bold tracking-tight text-[var(--color-gold)]">
               How to Play
             </h2>
             <p className="mt-0.5 text-xs text-stone-500">Read this before you begin</p>

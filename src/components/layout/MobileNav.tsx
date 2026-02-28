@@ -20,20 +20,24 @@ export function MobileNav({
   ];
 
   return (
-    <nav className="flex border-t border-stone-800 bg-stone-950">
-      {tabs.map((tab) => (
-        <button
-          key={tab.key}
-          onClick={() => onTabChange(tab.key)}
-          className={`flex-1 py-3 text-xs uppercase tracking-wider font-semibold transition-colors ${
-            activeTab === tab.key
-              ? "text-[var(--color-gold)] border-t-2 border-[var(--color-gold)]"
-              : "text-stone-500 hover:text-stone-300"
-          }`}
-        >
-          {tab.label}
-        </button>
-      ))}
+    <nav aria-label="Game panels">
+      <div role="tablist" className="flex border-t border-stone-800 bg-stone-950">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            role="tab"
+            aria-selected={activeTab === tab.key}
+            onClick={() => onTabChange(tab.key)}
+            className={`flex-1 py-3 text-xs uppercase tracking-wider font-semibold transition-colors ${
+              activeTab === tab.key
+                ? "text-[var(--color-gold)] border-t-2 border-[var(--color-gold)]"
+                : "text-stone-500 hover:text-stone-300"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
     </nav>
   );
 }
