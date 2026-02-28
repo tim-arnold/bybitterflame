@@ -91,6 +91,10 @@ function CreateCharacterPageInner() {
           setStreamingContent(fullResponse);
         }
 
+        // Strip token sentinel appended by the streaming client
+        const sentinelIdx = fullResponse.indexOf("\x00TOKENS:");
+        if (sentinelIdx !== -1) fullResponse = fullResponse.slice(0, sentinelIdx);
+
         // Parse gamestate updates from the response
         const { updates } = parseGameState(fullResponse);
 
