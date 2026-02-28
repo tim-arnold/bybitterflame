@@ -11,8 +11,6 @@ function LoginForm() {
   const redirect = searchParams.get("redirect") ?? "/";
   const wasReset = searchParams.get("reset") === "1";
 
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -23,20 +21,11 @@ function LoginForm() {
     setError(null);
     setLoading(true);
 
-    if (mode === "signup") {
-      const { error } = await authClient.signUp.email({ name, email, password });
-      if (error) {
-        setError(error.message ?? "Sign up failed");
-        setLoading(false);
-        return;
-      }
-    } else {
-      const { error } = await authClient.signIn.email({ email, password });
-      if (error) {
-        setError(error.message ?? "Sign in failed");
-        setLoading(false);
-        return;
-      }
+    const { error } = await authClient.signIn.email({ email, password });
+    if (error) {
+      setError(error.message ?? "Sign in failed");
+      setLoading(false);
+      return;
     }
 
     router.push(redirect);
@@ -50,50 +39,7 @@ function LoginForm() {
         </p>
       )}
 
-      {/* Mode toggle */}
-      <div className="mb-6 flex rounded-md border border-stone-800 bg-stone-900 p-1">
-        <button
-          type="button"
-          onClick={() => { setMode("signin"); setError(null); }}
-          className={`flex-1 rounded py-1.5 text-sm font-medium transition-colors cursor-pointer ${
-            mode === "signin"
-              ? "bg-stone-700 text-stone-100"
-              : "text-stone-500 hover:text-stone-300"
-          }`}
-        >
-          Sign In
-        </button>
-        <button
-          type="button"
-          onClick={() => { setMode("signup"); setError(null); }}
-          className={`flex-1 rounded py-1.5 text-sm font-medium transition-colors cursor-pointer ${
-            mode === "signup"
-              ? "bg-stone-700 text-stone-100"
-              : "text-stone-500 hover:text-stone-300"
-          }`}
-        >
-          Create Account
-        </button>
-      </div>
-
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {mode === "signup" && (
-          <div>
-            <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-500">
-              Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              autoComplete="name"
-              className="w-full rounded border border-stone-700 bg-stone-900 px-3 py-2 text-sm text-stone-100 placeholder-stone-600 focus:border-stone-500 focus:outline-none"
-              placeholder="Your name"
-            />
-          </div>
-        )}
-
         <div>
           <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-500">
             Email
@@ -103,6 +49,7 @@ function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            autoFocus
             autoComplete="email"
             className="w-full rounded border border-stone-700 bg-stone-900 px-3 py-2 text-sm text-stone-100 placeholder-stone-600 focus:border-stone-500 focus:outline-none"
             placeholder="you@example.com"
@@ -114,21 +61,19 @@ function LoginForm() {
             <label className="block text-xs uppercase tracking-widest text-stone-500">
               Password
             </label>
-            {mode === "signin" && (
-              <Link
-                href="/forgot-password"
-                className="text-xs text-stone-500 hover:text-stone-300 transition-colors"
-              >
-                Forgot password?
-              </Link>
-            )}
+            <Link
+              href="/forgot-password"
+              className="text-xs text-stone-500 hover:text-stone-300 transition-colors"
+            >
+              Forgot password?
+            </Link>
           </div>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            autoComplete={mode === "signup" ? "new-password" : "current-password"}
+            autoComplete="current-password"
             className="w-full rounded border border-stone-700 bg-stone-900 px-3 py-2 text-sm text-stone-100 placeholder-stone-600 focus:border-stone-500 focus:outline-none"
             placeholder="••••••••"
           />
@@ -145,11 +90,18 @@ function LoginForm() {
           disabled={loading}
           className="mt-1 rounded border border-[var(--color-gold)] bg-transparent px-4 py-2.5 text-sm font-semibold text-[var(--color-gold)] transition-colors hover:bg-[var(--color-gold)] hover:text-stone-950 disabled:opacity-50 cursor-pointer"
         >
-          {loading
-            ? mode === "signup" ? "Creating account…" : "Signing in…"
-            : mode === "signup" ? "Create Account" : "Sign In"}
+          {loading ? "Signing in…" : "Sign In"}
         </button>
       </form>
+
+      <div className="mt-5 text-center">
+        <Link
+          href="/request-access"
+          className="text-sm text-stone-500 hover:text-stone-300 transition-colors"
+        >
+          Need an account? Request access →
+        </Link>
+      </div>
     </div>
   );
 }

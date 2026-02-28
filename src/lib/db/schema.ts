@@ -88,6 +88,15 @@ export const verifications = sqliteTable("verification", {
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
+export const accountRequests = sqliteTable("account_requests", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  token: text("token").notNull().unique(),
+  status: text("status").notNull().default("pending"), // "pending" | "approved"
+  createdAt: integer("created_at").notNull(),
+});
+
 // ── Game tables ───────────────────────────────────────────────────────────────
 
 export const campaigns = sqliteTable("campaigns", {
