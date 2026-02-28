@@ -3,7 +3,6 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { Resend } from "resend";
 import { getDb } from "@/lib/db/client";
 import { accountRequests } from "@/lib/db/schema";
-import { getAuth } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -43,28 +42,14 @@ export async function GET(request: Request) {
     return htmlPage("Already Approved", "This account has already been approved.");
   }
 
-  // Create the user account via BetterAuth
-  const auth = await getAuth();
-  try {
-    await auth.api.signUpEmail({
-      body: {
-        email: req.email,
-        name: req.name,
-        password: crypto.randomUUID(),
-      },
-    });
-  } catch {
-    // User may already exist (race condition) — continue
-  }
-
-  // Mark request as approved
+  // Mark request as approved (user account created when they set their password)
   await db
     .update(accountRequests)
     .set({ status: "approved" })
     .where(eq(accountRequests.token, token));
 
-  // Send notification email to requester
-  const forgotPasswordUrl = `${env.BETTER_AUTH_URL}/forgot-password`;
+  // Send setup email — link goes directly to the create-password page
+  const setupUrl = `${env.BETTER_AUTH_URL}/create-password?token=${req.token}`;
   const resend = new Resend(env.RESEND_API_KEY);
   await resend.emails.send({
     from: "gm@bytorchlight.com",
@@ -72,14 +57,13 @@ export async function GET(request: Request) {
     subject: "Your By Torchlight account is ready",
     html: `
       <p>Hi ${req.name},</p>
-      <p>Your By Torchlight account has been approved!</p>
-      <p>Click below to set your password and start playing:</p>
+      <p>Your By Torchlight account has been approved! Click below to choose your password and start playing:</p>
       <p>
-        <a href="${forgotPasswordUrl}" style="display:inline-block;padding:10px 20px;background:#b5a642;color:#1a1a1a;text-decoration:none;border-radius:4px;font-weight:bold;">
-          Set Your Password
+        <a href="${setupUrl}" style="display:inline-block;padding:10px 20px;background:#b5a642;color:#1a1a1a;text-decoration:none;border-radius:4px;font-weight:bold;">
+          Set Up Your Account
         </a>
       </p>
-      <p style="font-size:0.85em;color:#666;">Or visit: ${forgotPasswordUrl}</p>
+      <p style="font-size:0.85em;color:#666;">Or copy this link: ${setupUrl}</p>
     `,
   });
 
