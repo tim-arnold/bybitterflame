@@ -43,6 +43,9 @@ next-env.d.ts
 docs/reference/shadowdark-raw.txt
 *.pdf
 
+# Favicon source — used to generate favicons, not deployed
+public/favicon-source.png
+
 # IDE
 .idea/
 
