@@ -12,7 +12,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "Strange fungal spores seep from the city's storm drains, driving those exposed to madness. The city council offers a reward for anyone brave enough to descend into the undercity and destroy the source.",
       hook: "Unsettling spores have begun seeping from the city's storm drains, causing hallucinations and violent madness in those exposed. The city is offering 50gp for any bold soul willing to investigate.",
-      pcMapFile: "Spores-Undercity-PC.png",
+      pcMapFile: "Spores-Undercity-PC.webp",
       mapLayout:
         "TWO-LEVEL DUNGEON connected by a central staircase (map has two panels; N = up). UPPER LEVEL (top panel): The sewer complex. A long west entry corridor (~40 ft long × 20 ft wide, the drain pipe) leads east into a rounded antechamber (~20×20 ft), then into the main sewer hall (~80×80 ft rectangular) with a central raised disc feature. The hall has: a north corridor (~20 ft) to a small round alcove room; an east wing with a large columned storage room (~30×40 ft) and a smaller locked side chamber to the far east; and two utility side-rooms to the south (~20×30 ft each with furnishings). LOWER LEVEL (bottom panel): Reached via a staircase descending from the main upper hall. The Spore Garden: a large circular cave chamber (~100 ft diameter) with the Mycelial Core glowing at center. A west cave passage (~30 ft) leads to Freya's Camp alcove. An east cave passage (~40 ft) is partially flooded. North is up.",
       locations: [
@@ -87,7 +87,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A nobleman's crypt has flooded with brackish water from an underground spring, disturbing the restless dead within. Tomb robbers sent to retrieve a family heirloom never returned — now the family is offering a reward.",
       hook: "The Voss family crypt has flooded after a spring burst through its foundation. Their hired delvers vanished inside. The family matriarch will pay 75gp for the safe return of the Voss signet ring — and begs that their ancestors be laid to rest.",
-      pcMapFile: "Flooded-Crypt-VTT-PC-22x14.png",
+      pcMapFile: "Flooded-Crypt-VTT-PC-22x14.webp",
       mapLayout:
         "A single-level rectangular crypt (22×14 grid = 220×140 ft total). ENTRANCE (west): Stone stairs descend from ground level into the crypt's western end. A short entry passage (~10 ft wide) leads east. ANTECHAMBER (center): The main hall (~80×60 ft) runs east-west through the center of the crypt. Standing water fills the hall; four raised sarcophagus platforms stand above the waterline on stone plinths. Burial alcoves line the north and south walls. Iron door at the east end leads deeper. FLOODED VAULT (east): The eastern chamber (~60×80 ft) is fully submerged. A stone pedestal stands at the far east end. The Voss Wight guards this space. THE SPRING SOURCE: A crack in the east wall at floor level. North is up.",
       locations: [
@@ -163,7 +163,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A once-celebrated botanical garden has been consumed by a monstrous carnivorous plant called the Rafflesia. Villagers who tried to burn it have vanished. A herbalist desperately needs a rare blossom from the garden's heart.",
       hook: "The village herbalist, old Torben, needs a Moonbloom flower from the estate gardens to cure a plague spreading through the village — but the gardens have become a nightmare of carnivorous growth and missing people.",
-      pcMapFile: "Rotting-Gardens-Rafflesia-PC.png",
+      pcMapFile: "Rotting-Gardens-Rafflesia-PC.webp",
       mapLayout:
         "An outdoor garden estate shown in isometric perspective (not a precise grid; approximate distances only). ENTRANCE (south): An iron arch gate hung with rose vines and skulls opens onto a stone path leading north. WEST GARDEN: A sunken rose garden with a tall stone obelisk/spike; carnivorous plants fill the beds and paths. EAST TERRACE: A raised stone terrace with weathered statues and a ritual altar; stone steps connect it to the central path. OLD GREENHOUSE (center-west, along the path): A shattered glass structure (~40×30 ft) choked with vines; the cocooned villagers are inside. RAFFLESIA HEART (north-center): The ancient Rafflesia bloom (~10 ft diameter) dominates the garden's north end. The Moonbloom Hollow is beneath its root mass. The map is illustrative art — exact room sizes are approximate. North is toward the top of the image.",
       locations: [
@@ -242,7 +242,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "Beneath a crumbling black stone bridge lies a maze built by a mad architect centuries ago. A merchant's son vanished exploring it on a dare. The maze still shifts — walls slide and doors lock themselves.",
       hook: "Young Aldric Thorne went exploring the legendary shifting maze beneath Blackbridge and hasn't returned in three days. His father, a wealthy merchant, offers 150gp for Aldric alive — or 50gp for his signet ring.",
-      pcMapFile: "Blackbridge-Labyrinth-PC.png",
+      pcMapFile: "Blackbridge-Labyrinth-PC.webp",
       mapLayout:
         "A multi-zone labyrinth beneath the bridge (north = up). ENTRANCE TOWER (upper-left): A stone tower at the bridge's northern base with a portcullis and descending stairs; the iron door opens south into the maze antechamber. THE MAZE (center-left): A dense network of 10-ft-wide shifting stone corridors occupying ~120×100 ft. No single straight path traverses it; corridors dead-end and reconnect. THE CHAMBER OF MIRRORS (lower-center): Three connected circular alcoves (~20 ft diameter each) joined by short passages at the maze's southern end; walls entirely black glass. ALDRIC'S PRISON (lower-right): A small rectangular locked room (~20×20 ft) accessible from the mirror chamber or maze's southeast corner. THE ARCHITECT'S VAULT (upper-right): A large circular chamber (~60 ft diameter) connected to the maze's east side by a narrow 10-ft corridor; the sarcophagus stands at center. Note: the maze physically shifts every 10 exploration turns — corridors that existed before may be closed or rerouted.",
       locations: [
@@ -329,7 +329,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "The iron fortress of Cear Ferros fell to a demonic curse three generations ago. Now the curse has begun spreading to the surrounding farmland. A paladin order has tasked adventurers with entering the fortress, descending to its cursed well, and purifying it.",
       hook: "Crops around the old iron fortress are rotting on the vine, and livestock are born wrong. The Iron Hand paladins believe the Doom Well beneath Cear Ferros has begun to overflow its binding. They'll pay 300gp to see it sealed.",
-      pcMapFile: "Doom-Cear-Ferros-PC-main.png",
+      pcMapFile: "Doom-Cear-Ferros-PC-main.webp",
       mapLayout:
         "TWO-LEVEL DUNGEON: fortress above, sealed well chamber below. FORTRESS LEVEL (main map, north = up): A large rectangular iron keep (~80×120 ft) set into rocky terrain. The approach is from the west through a gatehouse entry with portcullis. COURTYARD: the open grounds between the outer gate and the keep entrance; iron trees line the path (~40×60 ft open area). GREAT HALL: the keep's large central chamber (~60×50 ft) with a long stone table and a ritual circle on the floor. Northern interior rooms: smaller barracks and storage chambers accessible via north doorways. NW tower (~20×20 ft): a watchtower with interior stairs. SE corner: a spiral staircase descending to the Doom Well level. East exterior: additional tower rooms with murder-holes (the sentinels patrol between these). WELL LEVEL (well map): A single chamber (~80×60 ft) reached via the spiral stair. The massive iron well stands at the center, surrounded by a carved binding-circle floor pattern. The two dashed circles on the well map indicate the well mouth and the ritual boundary. North is up.",
       locations: [
@@ -410,7 +410,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A young mage's summoning experiment went catastrophically wrong, binding four elementals to four floors of a tower and sealing all the exits. The mage is trapped inside. The tower's owner wants it cleared — and the mage retrieved.",
       hook: "Smoke pours from the windows of Teldris's Tower and strange lights flash within. The mage's apprentice ran out screaming about 'elementals everywhere.' The tower owner is offering 200gp to clear the mess and retrieve young Teldris alive.",
-      pcMapFile: "Elemental-Mistakes-VTT-PC-12x41.png",
+      pcMapFile: "Elemental-Mistakes-VTT-PC-12x41.webp",
       mapLayout:
         "A four-story circular tower (~60 ft diameter per floor, total height ~50 ft above ground). The map shows all four floors stacked vertically (ground at bottom, roof at top). Each floor is connected by a central spiral staircase that runs through all levels. A secondary map (Elemental-Mistakes-Stairs-PC.png) shows the staircase cross-section. FLOOR 1 - GROUND (Earth Elemental): Entry door on the ground-level exterior wall (south or west face); the floor has erupted with stone and earth — rubble fills the corners. The mage's desk is buried in the southwest quadrant. The earth elemental circles the staircase. FLOOR 2 (Water Elemental): Ankle-deep water covers the entire floor; a potions lab lines the east wall; windows on two sides. FLOOR 3 (Air Elemental): Windows blown out on east and west; furniture caught in a vortex; Teldris is tied near the north wall. ROOF (Fire Elemental): Open circular platform; the master summoning circle is chalked near center, half-burned. North is up.",
       locations: [
@@ -489,7 +489,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A small island off the coast has been taken over by a cult that worships a hydra they believe to be a divine serpent. The cult has been raiding coastal ships for sacrifices. A shipping guild wants the cult destroyed and their captured sailors freed.",
       hook: "Three merchant vessels have been taken by cultists from an island shrine. The Saltwater Guild offers 250gp per sailor rescued and 500gp for proof the cult has been destroyed. The cult's leader reportedly controls the hydra.",
-      pcMapFile: "Forgotten-Isle-Hydra-Cult-PC.png",
+      pcMapFile: "Forgotten-Isle-Hydra-Cult-PC.webp",
       mapLayout:
         "A cave complex occupying a small rocky island, approached by boat from the south (north = up). BOAT LANDING (south): A narrow cave mouth at the island's south shoreline where a boat can moor; a 'Boat' marker is shown on the map. NORTH APPROACH CORRIDOR: A straight east-west passage running along the island's north interior (~10 ft wide, ~80 ft long); two guard positions (star icons) are at the west end and near-center, with a third point marked at the east. SEA CAVES (northwest): A rectangular carved cave chamber (~40×30 ft) with four stone pillars; iron rings in the walls hold the chained sailors. Connected to the north corridor by a short south-north passage. SHRINE OF THE SERPENT (center): A large hexagonal ritual chamber (~50 ft across) with a central altar. Accessible from the north corridor (north side) and the Hydra's Grotto (south/east). HYDRA'S GROTTO (southeast): A large irregular sea cave (~60×80 ft) with water access on the east coast. Connected to the shrine via a passage to the west/north. North is up.",
       locations: [
@@ -568,7 +568,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "High in the northern peaks, an ancient warlord's tomb has been discovered by miners — and something inside has frozen the mountain pass, trapping a village in perpetual winter. The village needs the source of the unnatural cold found and destroyed.",
       hook: "It is midsummer, but the mountain pass has been buried in snow for three months. The village of Harrwick is running out of food. The miners who opened the old tomb never came back — and the cold started the same week.",
-      pcMapFile: "Frozen-Tomb-VTT-PC-16x18.png",
+      pcMapFile: "Frozen-Tomb-VTT-PC-16x18.webp",
       mapLayout:
         "A roughly hexagonal cavern-and-chamber complex cut into mountain rock (16×18 grid squares = ~160×180 ft total; north = up). The VTT map uses colored marker tokens to indicate key features. ENTRANCE (north face): A carved arch descends from the mountain surface into the tomb. The entry passage (~20 ft wide) runs south into the Burial Hall. BURIAL HALL (center-upper): A wide east-west corridor (~120 ft long × 20 ft wide) flanked by wall niches housing sarcophagi; the floor is entirely iced over. Ice 'sculptures' (frozen creatures) line the path. A single doorway at the east end leads into the Frost Heart Chamber. SOLARIUM ALCOVE (side chamber, accessible via a north-facing door midway along the Burial Hall, west side): A smaller room (~20×30 ft) with a shaft angled through the ceiling toward the surface; currently ice-plugged. FROST HEART CHAMBER (east end): The innermost chamber (~40×40 ft) where the warlord's cracked sarcophagus stands; the blue Frost Heart floats above it; the frost lich tends it here. LOWER PASSAGES: Natural cave tunnels beneath the main structure connect to the exterior (emergency exit, heavily iced). North is up.",
       locations: [
@@ -644,7 +644,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A thieves' guild has been using an old city sewer network as a warehouse — and has accidentally unleashed something in the tunnels that is now killing their members. The guild, desperate, has hired outside help to clear the threat without involving the city watch.",
       hook: "A hooded figure slides a purse across the table: 100gp if you clear out 'a small pest problem' in the Undermere tunnels. The guild can't use their own people — half are missing and the rest refuse to go back.",
-      pcMapFile: "Ill-Gotten-Gains-PC.png",
+      pcMapFile: "Ill-Gotten-Gains-PC.webp",
       mapLayout:
         "Four zones connected by an underground cavern system. NORTHERN STRUCTURE (top of map): A fortified stone storehouse complex (~60×80 ft total) entered from the west via a hidden surface door. Has a main hall with two western side-rooms, an eastern barrel-storage room, and a narrow antechamber at the far north end. A south-facing archway leads down into the Central Cavern. CENTRAL CAVERN (middle): A large irregular natural cave (~120×100 ft) with an underground lake filling the center. A wooden dock platform sits mid-lake. A small domed shrine stands on the west bank. Sewer tunnels (10 ft wide) run south through the cavern, connecting the Northern Structure to the Southern Structure; webs coat these passages. SOUTHERN STRUCTURE (bottom of map): A larger rectangular complex (~80×100 ft) accessible from the north via the sewer tunnels. The cave fishers have colonized the open central area and flanking chambers here. A western alcove room and eastern rooms with a rocky interior pool feature. A south passage exits to street level. EASTERN ISLAND (right side of map): A separate two-room structure on an island in the underground lake (~30×60 ft), accessible only by boat or raft from the Central Cavern dock (~60 ft of open water). Contains the guild's hidden treasure cache behind a false wall in the inner chamber.",
       locations: [
@@ -724,7 +724,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "The miners of Gloomwind Shaft struck something ancient three weeks ago — and the mine went silent. The mining company is offering hazard pay for anyone willing to go in, rescue survivors, and identify what was found.",
       hook: "Gloomwind Mine has gone dark. Forty miners are unaccounted for. The Ironfeld Mining Company will pay 50gp per survivor rescued, and 200gp for a full report on what happened in the deep shaft.",
-      pcMapFile: "Mines-of-Gloomwind-PC.png",
+      pcMapFile: "Mines-of-Gloomwind-PC.webp",
       mapLayout:
         "An organic multi-chamber mine complex shown as irregular natural cave shapes connected by tunnels (north = up; approximate scale, not a precise grid). ELEVATOR SHAFT (upper-left, surface level): The head-frame and elevator cage at the surface; the cage hangs midway down the shaft. At the bottom of the shaft, a narrow entry passage leads east into the mine. UPPER SHAFTS (center-left cluster): Four or five interconnected cave chambers with timber-framed tunnel ceilings; partially collapsed in several sections. The barricaded survivor supply room is in a side chamber roughly east of the shaft bottom (~60 ft into the upper shaft network). Central traversal passage runs east from the upper shafts. DEEP SHAFT BRANCH (center, branching south): A newer, narrower tunnel cut south from the central passage — smooth drill-cut walls, faint violet glow. THE FIND (south end of the deep shaft branch): The deepest chamber (~40×30 ft) where the vault door was breached; the Void Creature occupies this space. North is up.",
       locations: [
@@ -802,7 +802,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A village has been terrorized by something living in the basement of an old wizard's tower. Three people have gone missing. But the monster isn't what anyone expects — and the real danger is the tower itself.",
       hook: "Three villagers have vanished near the old Meldrath Tower. The village headman begs for help. 'The tower has been empty for twenty years,' he says, 'but something has moved in.'",
-      pcMapFile: "Monster-under-Tower-PC.png",
+      pcMapFile: "Monster-under-Tower-PC.webp",
       mapLayout:
         "A cross-section illustration of Meldrath's Tower showing all vertical levels (not a top-down grid; the map is a side-view cutaway). The tower is circular, ~20 ft diameter, set on a low hill. EXTERIOR: The hill with a dead herb garden; the front door is at ground level on the south face. FLOOR 1 (GROUND): Entry room with the central spiral staircase (hugs the outer wall) going up, and a cellar hatch in the floor (southeast corner) going down. Magical hazards throughout the room. FLOOR 2: The laboratory; active experiments (cauldron of acid slime, throwing bookshelf). Staircase continues up. FLOOR 3 (TOP HABITABLE): More experiments; the false wall to Meldrath's Hidden Study is on the north-facing interior wall (INT DC 13 to detect). The staircase continues to a roof access hatch. BASEMENT (below grade): Accessed via hatch and wooden stairs from the ground floor. A ~30 ft diameter cave chamber with mud-and-water floor; the displacer beast den. Each floor is ~12 ft tall; total tower height ~50 ft. North is the hill's upslope direction.",
       locations: [
@@ -876,7 +876,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A demonic cyst has ruptured beneath a crossroads shrine, spilling minor demons into the surrounding area. A temple of Mitra has dispatched a team to seal it — but their team hasn't reported back. A warpriest needs a reliable group to complete the sealing.",
       hook: "Strange shadows and whispered fears have gripped the crossroads village of Thornmeet. The shrine of Mitra is cracked and bleeding black ichor. Warpriest Calandria sent her best people two days ago — silence since.",
-      pcMapFile: "Terror-Demon-Cyst-PC.png",
+      pcMapFile: "Terror-Demon-Cyst-PC.webp",
       mapLayout:
         "TWO ZONES: an above-ground shrine building and a below-ground cyst chamber (north = up). THORNMEET SHRINE (above): A stone shrine building with a large circular nave (~50 ft diameter); a bell tower rises from the north side. The main entrance is from the south. Side alcoves flank the nave east (~20×20 ft) and west (~20×20 ft). The crack in the nave floor weeps black ichor — this is the access point to the Cyst Chamber below. Shadow demons lurk in the bell tower (north). FALLEN TEAM LOCATION: The templars fell in the nave near the floor crack; Aldus is still alive here. CYST CHAMBER (below, accessible via the cracked floor opening): Two sub-chambers beneath the shrine. A debris-and-rubble cave to the southwest (~30 ft across, partially collapsed) — where the fallen templars' gear is scattered. A circular stone chamber to the southeast (~40 ft diameter) where the 15-ft Demon Cyst floats at center. The Cyst Warden orbits the cyst. The Manifestation Chamber is this same space if the worst occurs. North is up.",
       locations: [
@@ -953,7 +953,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A once-fertile apple orchard is dying — fruit rotting on the vine, trees burning from the inside with no visible flame. The village relies on the orchard for trade. The source is a fire sprite colony that has taken up residence in the ancient heartwood tree at the orchard's center.",
       hook: "The Brambleton orchard — source of half the region's apple trade — is dying in a manner that defies explanation. Fruit smolders. The oldest tree is warm to the touch and glows at night. The orchardist will give anything to save it.",
-      pcMapFile: "The-Scorchard-PC.jpeg",
+      pcMapFile: "The-Scorchard-PC.webp",
       locations: [
         {
           id: "orchard-edge",
@@ -1001,7 +1001,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "An ancient tar pit at the edge of the moors has been active for centuries — but something ancient has awoken in its depths, and now tar-men walk the moors at night, dragging travelers into the pit.",
       hook: "Three travelers have disappeared on the north road. The innkeeper at Fenwick Post swears she saw a man-shaped thing made of black tar drag the last one off the road. The road is the only route to the northern market — and the merchant guilds are furious.",
-      pcMapFile: "The-Tarwell-PC.png",
+      pcMapFile: "The-Tarwell-PC.webp",
       mapLayout:
         "The map shows a large interior space that is the Tarwell Inn — a waystation on the North Road — plus the tar pit moor location nearby (north = up). TARWELL INN (map building): A rectangular hall (~200×140 ft, 20×14 squares) with: a west end featuring a curved apse room (the inn's tap room/hearth alcove); a large central hall with three rows of long benches/tables; small side rooms along the north and south walls (sleeping quarters, storage); a barrel room in the northeast corner. This is where the party meets the innkeeper and hears about the disappearances. THE TAR PIT (outdoor, adjacent to the north road ~10 min from the inn): An ancient 200-ft-wide depression in the moorland filled with black tar. The rim is a 10-ft-wide ring around the edge. Two tar golems patrol the rim. SUBMERGED RUINS: 6 ft below the tar surface, roughly at the pit's center. MATRIARCH'S CHAMBER: At the lowest point of the pit (~15 ft below surface, center-south). North is up.",
       locations: [
@@ -1077,7 +1077,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A legendary vault sealed by three mages three hundred years ago has had its first seal mysteriously broken. The Arcane Council fears what might escape if the remaining seals fail. They're offering a substantial sum for the party to enter, identify the threat, and reinforce the seals.",
       hook: "The first seal on the Vault of Three Mages has cracked. The Arcane Council is offering 400gp to a party willing to enter the vault, assess the threat, and prevent the remaining seals from breaking — by any means necessary.",
-      pcMapFile: "Thrice-Sealed-PC.png",
+      pcMapFile: "Thrice-Sealed-PC.webp",
       mapLayout:
         "A four-wing sealed vault complex (north = up). The map shows four parallel wings running north-south, each ~200 ft long × 40 ft wide, separated by impenetrable vault walls of solid stone. The wings are connected at their south ends by a single east-west corridor (~160 ft long × 20 ft wide). The north ends of each wing terminate in the individual seal chambers. Dense stone fill (shown as cross-hatching) occupies the spaces between wings and is impassable. WING 1 (westmost): The exterior approach and entry; the vault door with three seals faces north. WING 2: The First Seal (Gold) wing; a complex of inner passages leading to the summoning chamber at the north end. WING 3: The Second Seal (Silver) wing; similar inner passage structure leading to the stasis chamber. WING 4 (eastmost): The Third Seal (Iron) wing; the most protected; inner passages lead to the innermost chamber at the north end. Movement between wings requires traveling south to the connecting corridor. North is up.",
       locations: [
@@ -1153,7 +1153,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "The legendary thief Aldara Pell hid her greatest haul in a private vault when she retired — then died without telling anyone where it was. Now her estate is being sold, and the estate's new owner has discovered the vault entrance. She's hiring a delve team — at 20% of whatever they find.",
       hook: "The estate of retired thief Aldara Pell has sold, and the new owner found a hidden door in the cellar. She's offering 20% of whatever's inside to a trustworthy delve team. Aldara was known for her love of traps.",
-      pcMapFile: "Vault-Once-Great-Thief-PC.png",
+      pcMapFile: "Vault-Once-Great-Thief-PC.webp",
       mapLayout:
         "A single-level underground vault beneath an estate cellar (north = up). CELLAR ENTRANCE (west): A stone arch entry passage (~20 ft) from the wine cellar above, triggered by a specific bottle on the wine rack. Leads east into the trap corridor. THE HALL OF ALDARA'S PRIDE (center, running east-west): A long trap corridor (~120 ft long × 20 ft wide) with six distinct trap sections; each section has different floor markings or architecture. The traps run west-to-east: pressure plates → tripwires → false floor → spinning blade wall → gas nozzle → mirror illusion. A door midway along the north wall leads into the Puzzle Room. THE PUZZLE ROOM (north, mid-corridor): A square room (~30×40 ft) with walls entirely covered in tiny drawers. A door in the east wall leads to the Final Vault (requires the key from the puzzle). THE FINAL VAULT (east end): A sealed room (~40×30 ft) behind a locked door. A rocky built-in strongbox is set into the northeast corner wall. North is up.",
       locations: [
@@ -1227,7 +1227,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "The goblin tribe known as the Rot-Tooth has been launching increasingly organized raids under the leadership of a goblin king called the Deepwood King. A town has hired adventurers to end the raids — but the Deepwood King may be a symptom of a larger problem.",
       hook: "The village of Millhaven has been raided four times in six weeks. The raids are well-organized — someone is directing the Rot-Tooth goblins. The town council offers 200gp to stop the raids permanently.",
-      pcMapFile: "Warrens-Deepwood-King-PC.png",
+      pcMapFile: "Warrens-Deepwood-King-PC.webp",
       mapLayout:
         "A cross-section illustration showing both the surface forest and the underground warren (not a top-down grid; the map is a cutaway side-view). SURFACE: A large ancient deepwood tree with spreading branches; goblin scout pairs patrol the forest between the trees in a ~200 ft radius. The tree's roots reach deep into the earth. WARREN ENTRANCE: A hole in the ground at the tree's root base (~5 ft wide), partially disguised with brush. An earth ramp descends ~10 ft into the main tunnel. ENTRY TUNNELS (immediately inside): Earth-and-timber tunnels (~5-6 ft tall, 4-5 ft wide) reinforced with wooden beams; crude barricades and crossbow-slot walls near the entrance. WEST CAVE (left of map): A large natural cave chamber (~40×40 ft) with mushroom growth and goblin bedding/common area. THRONE ROOM (right/east of map): A separate cave chamber (~30×30 ft) decorated with stolen furniture and trophies; the Deepwood King's throne is at the far east wall; goblin champions flank. HIDDEN MEETING ROOM: A small concealed side tunnel (~15×15 ft) branching south from the Throne Room's south wall (INT/WIS DC 14 to find the door). North is the surface/upward direction.",
       locations: [
@@ -1303,7 +1303,7 @@ export const SHOTS_IN_THE_DARK_1: AdventureCollection = {
       synopsis:
         "A strange creature called the Word-Eating Wyrm has taken up residence beneath a great library. Every book the wyrm consumes grants it new knowledge — and it is growing rapidly in power. The library's head archivist needs it removed before it consumes the entire collection.",
       hook: "Books are disappearing from the Grand Archivum overnight, with no signs of entry or theft. But the night guard reports hearing something large moving beneath the floor. Head Archivist Petra will pay generously to identify and remove the threat without destroying the library.",
-      pcMapFile: "Word-Eating-Wyrm-PC.png",
+      pcMapFile: "Word-Eating-Wyrm-PC.webp",
       mapLayout:
         "A multi-level library building (north = up; map shows the main floor plan, ~250×150 ft). MAIN FLOOR (ground level, shown on map): A large rectangular library with four primary shelving wings running north-south (visible as long rows of wooden shelves). A central reading room occupies the middle (~60×40 ft open space with reading tables). Entry doors on the west face. Side offices and storage rooms along the south wall. Staircase towers in the northeast and northwest corners connect to upper floors. RESTRICTED SECTION (northeast corner of main floor, behind a locked iron gate): A walled-off section (~50×50 ft) with the most dangerous texts; the floor has the largest wyrm-holes here. A hidden floor panel in the restricted section (INT DC 12 to find) descends to the sub-basement. UPPER FLOORS 2-5: Accessible via the corner staircases; progressively smaller shelving sections and reading galleries; similar layout to the ground floor. WYRM TUNNELS: Circular holes (~3 ft diameter) appear in floors throughout the building — the wyrm travels between floors through these. SUB-BASEMENT (below the main floor): A single circular chamber (~40 ft diameter) eaten from the foundation stone; surrounded by digested book-dust. The wyrm's nest is here.",
       locations: [
