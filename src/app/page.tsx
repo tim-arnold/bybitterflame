@@ -348,9 +348,20 @@ export default function Home() {
         )}
       </div>
 
-      <p className="mt-6 text-xs text-stone-400 max-w-sm leading-relaxed">
-        ShadowDork is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
-      </p>
+      <div className="mt-6 flex flex-col items-center gap-3">
+        <a href="https://thearcanelibrary.com" target="_blank" rel="noopener noreferrer">
+          <img
+            src="/shadowdark-third-party-logo.webp"
+            alt="Shadowdark RPG Third-Party Product"
+            width={200}
+            height={83}
+            className="opacity-70 hover:opacity-100 transition-opacity"
+          />
+        </a>
+        <p className="text-xs text-stone-500 max-w-sm leading-relaxed text-center">
+          ShadowDork is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
+        </p>
+      </div>
       </div>
     </div>
   );
