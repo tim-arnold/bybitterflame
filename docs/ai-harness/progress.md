@@ -32,7 +32,7 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **Token optimization** — companion rules block gated on companions.length > 0 (~1.5KB/turn); exploration.md split into light-and-darkness.md (always) + exploration-mechanics.md (conditional); spellcasting.md split into core + per-tier files T1–T5, only tiers ≤ character's max loaded (~10KB saved for low-level casters)
 
 **What doesn't work yet:**
-- Session management with AI-generated summaries (long-term memory across many sessions)
+- Session summarization — `sessions.summary` exists in DB but never populated; no End Session UI; no summary injection on resume; no campaign arc tracking (`gmNotes`)
 - Combat tracker UI
 
 ## DB Setup
@@ -50,6 +50,31 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - Live URL: https://dark.tim52.io (also https://shadowdark.tim-arnold.workers.dev)
 
 ## Recent Work
+
+### Session 10 (2026-02-28)
+
+**World bible + session summarization planning:**
+
+- Created `src/lib/rules/world.md` — setting reference covering tone, tech level, ancestries (6 playable), gods (7 named + The Lost), magic, and society. Derived from Shadowdark manual (`docs/reference/shadowdark-raw.txt`). Prevents anachronisms across all campaigns.
+- Added `world.md` to `ALWAYS_LOAD` in `rules-loader.ts` (~1,315 tokens always injected).
+- Reviewed and discussed `docs/plans/session-summarization.md` — ready to implement Phase 1.
+
+**Session summarization — Phase 1 plan (NOT YET IMPLEMENTED):**
+
+Ready to build in next session. Implementation order:
+
+1. **DB migration** — add `gmNotes TEXT` to `campaigns` table (campaign arc tracking)
+2. **Gamestate support** — `gmNotesUpdate` parsed in `state-parser.ts`; save to campaigns table in save route; inject into session prompt as GM-only section
+3. **Fix campaign GET** — currently `limit(1)` with no ordering (bug); needs to load most recent session's messages + previous sessions' summaries separately
+4. **Session lifecycle** — current session = most recent row without summary; on "End Session" write summary, next play creates new session row
+5. **`POST /api/campaign/[campaignId]/summarize`** — calls Claude Haiku with compact prompt, writes plain-text summary to `sessions.summary`, returns it
+6. **"End Session" button** — in right panel Tools tab; confirmation → call summarize → show result → redirect home
+7. **Session resume** — campaign GET returns `sessionSummaries: string[]` from past sessions; injected via existing `buildSummaryBlock()`
+
+**Design decisions locked:**
+- Summary stored as plain formatted text (not parsed JSON) — narrative paragraph + bullet key events
+- Load last 3–5 session summaries only (drop older ones)
+- `gmNotes` is GM-only, never shown to player, updated by AI via `gmNotesUpdate` gamestate block
 
 ### Session 9 (2026-02-27)
 
