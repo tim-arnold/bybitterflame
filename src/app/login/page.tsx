@@ -109,7 +109,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
-      <div className="absolute inset-0 bg-[url('/cover.webp')] bg-cover bg-center" />
+      <div className="absolute inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
       <div className="absolute inset-0 bg-stone-950/85" />
 
       <div className="relative z-10 w-full max-w-sm px-4">

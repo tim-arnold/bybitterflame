@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface AdventureCompleteScreenProps {
   summary: string;
@@ -26,9 +26,8 @@ export function AdventureCompleteScreen({ summary, characterName }: AdventureCom
     >
       {/* Background image */}
       <div className="fixed inset-0">
-        <Image src="/cover.webp" alt="Adventure complete" fill className="object-cover" priority />
+        <Image src="/dungeon-background.webp" alt="" fill className="object-cover" priority />
       </div>
-
       {/* Dark overlay */}
       <div className="fixed inset-0 bg-black/85" />
 
