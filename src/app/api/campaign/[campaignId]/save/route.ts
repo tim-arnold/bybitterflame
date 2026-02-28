@@ -93,6 +93,7 @@ export async function POST(
         .set({
           worldState: JSON.stringify(campaignData.worldState ?? {}),
           gmPersona: campaignData.gmPersona ?? "",
+          ...(campaignData.gmNotes !== undefined && { gmNotes: campaignData.gmNotes }),
           updatedAt: now,
         })
         .where(eq(campaigns.id, campaignId));

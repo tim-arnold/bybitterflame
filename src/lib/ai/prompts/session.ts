@@ -74,10 +74,14 @@ When the player's character fails their final death save and dies permanently:
     ? `\n## Your Persona\nYou must embody the following Game Master identity consistently. Stay in character — same name, same mannerisms, same voice:\n${campaign.gmPersona}\n`
     : "";
 
+  const gmNotesBlock = campaign?.gmNotes
+    ? `\n## Campaign Arc Notes (GM only — never share with player)\n${campaign.gmNotes}\n`
+    : "";
+
   const adventureBlock = adventure ? `\n${buildAdventureBlock(adventure)}\n` : "";
 
   return `You are the Game Master for a Shadowdark RPG session. You control the world, NPCs, and all creatures. The player controls their character.
-${personaBlock}${adventureBlock}
+${personaBlock}${gmNotesBlock}${adventureBlock}
 ## Your Role
 - Narrate in second person ("You step into the darkness...")
 - Describe environments with vivid sensory detail — sound, smell, temperature, light
@@ -201,6 +205,13 @@ Emit \`\`\`gamestate JSON when any tracked state changes. ALWAYS emit \`campaign
 \`\`\`
 
 Only include the fields that actually changed. Don't repeat unchanged state.
+
+### GM Arc Notes
+Use \`gmNotesUpdate\` to record private campaign-level observations — foreshadowing threads, villain plans, world consequences, NPC secrets — that you want to remember across sessions. This is NEVER shown to the player. Update it whenever something significant happens that should shape the long-term arc. Replace the entire notes string; keep it under 300 words.
+
+\`\`\`gamestate
+{ "gmNotesUpdate": { "notes": "The party is being tracked by agents of the Iron Compact since looting the Ashvault. Mira's pendant is actually a locator artifact. If loyalty with Rella drops below 3, she'll sell them out." } }
+\`\`\`
 
 ### Traveler's Journal
 Emit a \`journalEntry\` gamestate block when:

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ANTHROPIC_INPUT_COST_PER_TOKEN, ANTHROPIC_OUTPUT_COST_PER_TOKEN } from "@/lib/config";
 
 interface SessionControlsProps {
@@ -7,6 +8,7 @@ interface SessionControlsProps {
   onSaveSession: () => void;
   sessionNumber: number;
   isLoading?: boolean;
+  isPausing?: boolean;
   sessionInputTokens?: number;
   sessionOutputTokens?: number;
 }
@@ -16,6 +18,7 @@ export function SessionControls({
   onSaveSession,
   sessionNumber,
   isLoading,
+  isPausing,
   sessionInputTokens = 0,
   sessionOutputTokens = 0,
 }: SessionControlsProps) {
@@ -30,18 +33,27 @@ export function SessionControls({
       <div className="flex flex-col gap-1.5">
         <button
           onClick={onSaveSession}
-          disabled={isLoading}
+          disabled={isLoading || isPausing}
           className="w-full rounded bg-stone-800 border border-stone-700 px-3 py-1.5 text-sm text-stone-300 hover:border-stone-600 transition-colors disabled:opacity-50"
         >
           Save Progress
         </button>
-        <button
-          onClick={onEndSession}
-          disabled={isLoading}
-          className="w-full rounded bg-stone-800 border border-red-900/50 px-3 py-1.5 text-sm text-red-400 hover:bg-red-900/20 transition-colors disabled:opacity-50"
-        >
-          Pause Session
-        </button>
+        {isPausing && !isLoading ? (
+          <Link
+            href="/"
+            className="w-full rounded bg-amber-900/30 border border-amber-700/60 px-3 py-1.5 text-sm text-amber-300 hover:bg-amber-900/50 transition-colors text-center"
+          >
+            Return Home
+          </Link>
+        ) : (
+          <button
+            onClick={onEndSession}
+            disabled={isLoading || isPausing}
+            className="w-full rounded bg-stone-800 border border-red-900/50 px-3 py-1.5 text-sm text-red-400 hover:bg-red-900/20 transition-colors disabled:opacity-50"
+          >
+            Pause Session
+          </button>
+        )}
       </div>
 
       {totalTokens > 0 && (

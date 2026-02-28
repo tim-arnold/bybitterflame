@@ -174,10 +174,12 @@
     {
       "id": "session-management",
       "name": "Session save/resume with AI summaries",
-      "status": "pending",
+      "status": "done",
+      "notes": "Pause Session fires hidden GM message + background Haiku summarize call. Summary written to sessions.summary. Campaign GET returns sessionSummaries[] (past sessions with summaries, up to 5). Injected into system prompt via buildSummaryBlock(). gmNotes campaign arc tracking also added. DB migration: 0008_session_summarization.sql.",
       "tests": [
-        { "name": "End session triggers AI summary generation", "pass": false },
-        { "name": "Resume loads summaries into system prompt", "pass": false },
+        { "name": "Pause Session triggers in-chat GM summary", "pass": true },
+        { "name": "Haiku summary written to sessions.summary in DB", "pass": true },
+        { "name": "Resume loads sessionSummaries into system prompt", "pass": true },
         { "name": "AI references previous events on resume", "pass": false }
       ]
     },

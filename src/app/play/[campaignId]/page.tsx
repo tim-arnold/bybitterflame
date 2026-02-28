@@ -51,6 +51,7 @@ export default function PlayPage() {
   const [character, setCharacter] = useState<Partial<Character>>({});
   const [campaign, setCampaign] = useState<Partial<Campaign>>({});
   const [sessionNumber, setSessionNumber] = useState(1);
+  const [sessionSummaries, setSessionSummaries] = useState<string[]>([]);
   const [isInCombat, setIsInCombat] = useState(false);
   const [combatants, setCombatants] = useState<
     { name: string; initiative: number; isPlayer: boolean; isActive: boolean }[]
@@ -75,6 +76,7 @@ export default function PlayPage() {
   const [activeRightTab, setActiveRightTab] = useState<"tools" | "map">("tools");
   const [isGmCreateMode, setIsGmCreateMode] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [isPausing, setIsPausing] = useState(false);
 
   const campaignTitle = adventure?.title ?? campaign.name ?? "";
 
@@ -114,10 +116,12 @@ export default function PlayPage() {
         const loadedCampaign = data.campaign || {};
         const loadedSessionNumber: number = data.sessionNumber || 1;
         const loadedMessages: Message[] = data.messages || [];
+        const loadedSessionSummaries: string[] = data.sessionSummaries || [];
 
         setCharacter(loadedCharacter);
         setCampaign(loadedCampaign);
         setSessionNumber(loadedSessionNumber);
+        setSessionSummaries(loadedSessionSummaries);
         setJournalEntries(loadedCampaign.worldState?.journalEntries ?? []);
         // Deduplicate companions by name on load; also exclude current character
         // (guards against stale DB state after soul transfer)
@@ -187,6 +191,7 @@ export default function PlayPage() {
             messages: [{ role: "user", content: triggerMsg.content }],
             character: loadedCharacter,
             campaign: loadedCampaign,
+            sessionSummaries: loadedSessionSummaries,
             mode: chatMode,
           }),
           signal: controller.signal,
@@ -364,6 +369,7 @@ export default function PlayPage() {
             messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
             character: activeCharacter,
             campaign: activeCampaign,
+            sessionSummaries,
             mode: isGmCreateMode ? "adventure-create" : "play",
           }),
         });
@@ -487,6 +493,10 @@ export default function PlayPage() {
             fetch(`/api/campaign/${campaignId}/complete`, { method: "POST" }).catch(
               (err) => console.error("Complete failed:", err)
             );
+          }
+          if (update.type === "gmNotesUpdate") {
+            const notes = update.data.notes as string;
+            if (notes) updatedCampaign = { ...updatedCampaign, gmNotes: notes };
           }
         }
 
@@ -722,7 +732,14 @@ export default function PlayPage() {
   }
 
   function handleEndSession() {
+    setIsPausing(true);
     sendMessage("[SYSTEM: The player wants to end this session. Please provide a summary of what happened.]", { hidden: true });
+    // Fire-and-forget: generate compact Haiku summary and persist it
+    fetch(`/api/campaign/${campaignId}/summarize`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionNumber }),
+    }).catch((err) => console.error("Summarize failed:", err));
   }
 
   function handleSaveSession() {
@@ -861,6 +878,7 @@ export default function PlayPage() {
                   onEndSession={handleEndSession}
                   onSaveSession={handleSaveSession}
                   isLoading={isLoading}
+                  isPausing={isPausing}
                   sessionInputTokens={sessionInputTokens}
                   sessionOutputTokens={sessionOutputTokens}
                 />

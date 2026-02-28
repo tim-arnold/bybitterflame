@@ -111,6 +111,7 @@ export const campaigns = sqliteTable("campaigns", {
     .default("active"),
   gmPersona: text("gm_persona").notNull().default(""),
   worldState: text("world_state").notNull().default("{}"),
+  gmNotes: text("gm_notes"),
   campaignType: text("campaign_type").notNull().default("standard"),
   moduleId: text("module_id"),
   adventureId: text("adventure_id"),

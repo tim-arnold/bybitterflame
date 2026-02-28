@@ -128,6 +128,13 @@ function extractUpdates(
       data: parsed.adventureComplete as Record<string, unknown>,
     });
   }
+
+  if (parsed.gmNotesUpdate) {
+    updates.push({
+      type: "gmNotesUpdate",
+      data: parsed.gmNotesUpdate as Record<string, unknown>,
+    });
+  }
 }
 
 /**

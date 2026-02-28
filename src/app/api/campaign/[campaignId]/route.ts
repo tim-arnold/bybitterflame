@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { characters, campaigns, sessions } from "@/lib/db/schema";
@@ -50,11 +50,21 @@ export async function GET(
       return NextResponse.json({ error: "Character not found" }, { status: 404 });
     }
 
-    const [gameSession] = await db
-      .select({ messages: sessions.messages, sessionNumber: sessions.sessionNumber })
+    // Load all sessions ordered by number — newest last
+    const allSessions = await db
+      .select({ messages: sessions.messages, sessionNumber: sessions.sessionNumber, summary: sessions.summary })
       .from(sessions)
       .where(eq(sessions.campaignId, campaignId))
-      .limit(1);
+      .orderBy(desc(sessions.sessionNumber));
+
+    // Most recent session (highest sessionNumber) = current active session
+    const currentSession = allSessions[0];
+    // Past sessions = all but the current; only include those with a summary
+    const pastSessions = allSessions.slice(1).reverse(); // chronological order
+    const sessionSummaries = pastSessions
+      .filter((s) => s.summary)
+      .slice(-5) // at most 5 past summaries
+      .map((s) => s.summary as string);
 
     return NextResponse.json({
       campaignId,
@@ -68,13 +78,15 @@ export async function GET(
       },
       campaign: {
         ...campaign,
+        gmNotes: campaign.gmNotes ?? null,
         worldState: JSON.parse(campaign.worldState),
         campaignType: campaign.campaignType ?? "standard",
         moduleId: campaign.moduleId ?? null,
         adventureId: campaign.adventureId ?? null,
       },
-      sessionNumber: gameSession?.sessionNumber ?? 1,
-      messages: gameSession ? JSON.parse(gameSession.messages) : [],
+      sessionNumber: currentSession?.sessionNumber ?? 1,
+      messages: currentSession ? JSON.parse(currentSession.messages) : [],
+      sessionSummaries,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Internal server error";

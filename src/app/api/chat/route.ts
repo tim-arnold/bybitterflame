@@ -19,7 +19,7 @@ export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as ChatRequest;
-    const { messages, character, campaign, mode } = body;
+    const { messages, character, campaign, sessionSummaries = [], mode } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "messages array is required" }), {
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
       systemPrompt = buildSessionPrompt({
         character: character ?? {},
         campaign: campaign ?? {},
-        sessionSummaries: [],
+        sessionSummaries,
         rules,
         adventure,
       });

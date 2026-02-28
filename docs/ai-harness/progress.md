@@ -30,9 +30,10 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **Adventure modules** — Shots in the Dark #1 (18 oneshots); /adventures browser; adventure brief in session prompt; mapReveal → Map tab; GM character creation mode; pending DB migration for production
 - **Auth** — BetterAuth v1.4.19 with D1 adapter; email+password sign up/in; session cookie; middleware (proxy.ts) redirects unauthenticated users; campaigns scoped to userId; UserNav pill in header; lazy singleton pattern for D1 binding
 - **Token optimization** — companion rules block gated on companions.length > 0 (~1.5KB/turn); exploration.md split into light-and-darkness.md (always) + exploration-mechanics.md (conditional); spellcasting.md split into core + per-tier files T1–T5, only tiers ≤ character's max loaded (~10KB saved for low-level casters)
+- **Session summarization** — "Pause Session" fires hidden GM summary message + background Haiku call that writes compact summary to `sessions.summary`; campaign GET fixed to order by sessionNumber DESC and return `sessionSummaries[]` from past sessions (last 5 with summaries); `sessionSummaries` passed to `/api/chat` and injected into system prompt via `buildSummaryBlock()`; `gmNotes` column added to campaigns table; `gmNotesUpdate` gamestate type parsed and persisted; `gmNotes` injected as GM-only section in session prompt; "Return Home" button appears after AI finishes responding to pause request; DB migration: `migrations/0008_session_summarization.sql`
 
 **What doesn't work yet:**
-- Session summarization — `sessions.summary` exists in DB but never populated; no End Session UI; no summary injection on resume; no campaign arc tracking (`gmNotes`)
+- Combat tracker UI
 - Combat tracker UI
 
 ## DB Setup
@@ -50,6 +51,17 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - Live URL: https://dark.tim52.io (also https://shadowdark.tim-arnold.workers.dev)
 
 ## Recent Work
+
+### Session 11 (2026-02-28)
+
+**Session summarization — fully implemented:**
+
+- `migrations/0008_session_summarization.sql` — `gm_notes TEXT` column on campaigns
+- `POST /api/campaign/[campaignId]/summarize` — Haiku call (claude-haiku-4-5), compact system prompt, strips gamestate blocks from chat log, writes to `sessions.summary`
+- Campaign GET fixed: `orderBy(desc(sessions.sessionNumber))` — was unordered (bug); returns `sessionSummaries[]` from all past sessions that have a summary (last 5)
+- `sessionSummaries` added to `ChatRequest` type; passed from play page state through both the opening-scene fetch and `sendMessage`; used in `buildSessionPrompt` (was hardcoded `[]`)
+- `gmNotesUpdate` gamestate type added to parser and type union; handled in play page update loop; persisted via save route; injected into session prompt as GM-only section with format instructions
+- "Pause Session" flow: sets `isPausing` state, fires hidden message + background summarize fetch; `SessionControls` swaps button to "Return Home" link when `isPausing && !isLoading`
 
 ### Session 10 (2026-02-28)
 
