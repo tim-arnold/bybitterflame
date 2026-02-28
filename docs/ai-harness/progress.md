@@ -4,9 +4,9 @@ Current state of the project and recent work. Read this at the start of each ses
 
 ## Current State
 
-**Production deployment is live at https://dark.tim52.io** (Cloudflare Workers + D1).
+**Production is live at https://bytorchlight.com** (Cloudflare Workers + D1).
 
-Full end-to-end persistence is working. Character creation, gameplay loop, autosave, and session resume all work. Companion NPC and soul transfer mechanics are implemented (code complete, not yet manually verified in production). Verified live character creation → play flow in production after fixing the `/api/character` 500 error.
+Full end-to-end persistence is working. Character creation, gameplay loop, autosave, session resume, companion NPCs, soul transfer, adventure modules, and session summarization all work in production.
 
 **What works:**
 - **App is rebranded to "By Torchlight"** — all UI copy, email sender (`gm@bytorchlight.com`), page title updated; domain bytorchlight.com purchased (DNS not yet switched; prod still at dark.tim52.io)
@@ -39,7 +39,6 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 
 **What doesn't work yet:**
 - Combat tracker UI
-- Combat tracker UI
 
 ## DB Setup
 
@@ -53,9 +52,23 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - Build: `npx @opennextjs/cloudflare build` → `.open-next/worker.js` + `.open-next/assets/`
 - Deploy: `wrangler deploy` (uses `wrangler.toml` — binding `DB`, assets, `ANTHROPIC_API_KEY` secret)
 - `.open-next/` is gitignored (build artifact)
-- Live URL: https://dark.tim52.io (also https://shadowdark.tim-arnold.workers.dev)
+- Live URL: https://bytorchlight.com (also https://shadowdark.tim-arnold.workers.dev)
 
 ## Recent Work
+
+### Session 13 (2026-02-28)
+
+**Account request flow fixes + create-password page:**
+
+- Fixed `process.env` → `env.*` for all Cloudflare secrets (`RESEND_API_KEY`, `BETTER_AUTH_URL`) in both account-request routes — secrets set via `wrangler secret put` are only available on the Cloudflare `env` object, not `process.env`
+- Added all secrets to `CloudflareEnv` type in `src/env.d.ts`
+- Changed `void resend.emails.send()` to `await` in both routes so errors surface
+- Fixed email addresses: `from` and `to` both updated to `gm@bytorchlight.com`
+- Replaced 3-step approval flow (approve → forgot-password → another email → reset) with direct create-password flow:
+  - Approve route no longer creates BetterAuth user; marks request `approved` and emails `/create-password?token=<token>`
+  - New `/create-password` page: enter password + confirm → creates account → auto-signs in → redirects to `/`
+  - New `POST /api/account-request/set-password` route: validates token (must be `approved`, not `completed`), creates BetterAuth user, marks token `completed`
+- SPF fix noted: root `bytorchlight.com` SPF needs `include:spf.resend.com` added (Resend IPs not currently authorized — causes Gmail softfail)
 
 ### Session 12 (2026-02-28)
 
