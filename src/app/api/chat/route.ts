@@ -12,10 +12,9 @@ import { getDb } from "@/lib/db/client";
 import { users } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
 import type { ChatRequest, GameContext, LocationType } from "@/lib/game/types";
+import { SERVER_KEY_TURN_LIMIT } from "@/lib/config";
 
 export const runtime = "nodejs";
-
-const SERVER_KEY_TURN_LIMIT = 20;
 
 export async function POST(request: NextRequest) {
   try {

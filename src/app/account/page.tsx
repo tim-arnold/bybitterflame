@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-
-const SERVER_KEY_TURN_LIMIT = 20;
+import { SERVER_KEY_TURN_LIMIT } from "@/lib/config";
 
 export default function AccountPage() {
   const [hasKey, setHasKey] = useState(false);
