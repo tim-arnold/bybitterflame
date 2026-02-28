@@ -6,10 +6,28 @@ export function HowToPlayContent() {
 
       <section>
         <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-500">
+          This Is a Chat Game
+        </h2>
+        <p className="mb-3">
+          By Torchlight is a <span className="text-stone-200">freeform text adventure</span> — not a
+          choose-your-own-adventure with buttons to click. There are no menus, no pre-written options,
+          no right answers. You type what your character does, and the GM responds.
+        </p>
+        <p>
+          That means you can do <span className="text-stone-200">anything</span>:{" "}
+          <em>&ldquo;I try to bluff my way past the guard,&rdquo;</em>{" "}
+          <em>&ldquo;I search the room for a hidden door,&rdquo;</em>{" "}
+          <em>&ldquo;I run.&rdquo;</em>{" "}
+          The GM will handle the rules, roll the dice, and tell you what happens next.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-500">
           The Game Master
         </h2>
         <p>
-          By Torchlight&apos;s AI Game Master runs the{" "}
+          The AI Game Master runs the{" "}
           <span className="text-stone-200">Shadowdark RPG</span> rules on your behalf. It
           generates the world, plays every NPC and monster, and adjudicates outcomes — exactly
           as a human GM would at a table. You don&apos;t need to know the rules; the GM handles
@@ -49,9 +67,10 @@ export function HowToPlayContent() {
         <p>
           The GM describes the world and the consequences of your actions, but{" "}
           <span className="text-stone-200">what you do is entirely up to you</span>. The GM will
-          never decide your actions for you, and you are never locked into a path. Describe your
-          actions in as much or as little detail as you like — <em>"I attack"</em> works just
-          as well as a paragraph of vivid description.
+          never present you with a list of options or decide your actions for you. Just say what
+          you do — <em>&ldquo;I attack&rdquo;</em> works just as well as a paragraph of vivid
+          description. If the GM ever offers numbered choices, you can ignore them entirely and
+          do something else.
         </p>
       </section>
 
