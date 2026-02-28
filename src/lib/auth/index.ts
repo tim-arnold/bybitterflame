@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { Resend } from "resend";
 import { getDb } from "@/lib/db/client";
 import * as schema from "@/lib/db/schema";
 
@@ -11,6 +12,7 @@ export async function getAuth() {
 
   const { env } = await getCloudflareContext({ async: true });
   const db = getDb(env.DB);
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   _auth = betterAuth({
     database: drizzleAdapter(db, {
@@ -24,6 +26,18 @@ export async function getAuth() {
     }),
     emailAndPassword: {
       enabled: true,
+      sendResetPassword: async ({ user, url }) => {
+        void resend.emails.send({
+          from: "noreply@tim52.io",
+          to: user.email,
+          subject: "Reset your ShadowDork password",
+          html: `
+            <p>You requested a password reset for your ShadowDork account.</p>
+            <p><a href="${url}">Click here to reset your password</a></p>
+            <p>This link expires in 1 hour. If you didn't request this, you can safely ignore it.</p>
+          `,
+        });
+      },
     },
   });
 

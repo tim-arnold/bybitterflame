@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
 
@@ -8,6 +9,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") ?? "/";
+  const wasReset = searchParams.get("reset") === "1";
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
@@ -42,6 +44,12 @@ function LoginForm() {
 
   return (
     <div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6">
+      {wasReset && (
+        <p className="mb-5 rounded border border-green-900 bg-green-950/50 px-3 py-2 text-sm text-green-400">
+          Password reset! Sign in with your new password.
+        </p>
+      )}
+
       {/* Mode toggle */}
       <div className="mb-6 flex rounded-md border border-stone-800 bg-stone-900 p-1">
         <button
@@ -102,9 +110,19 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-500">
-            Password
-          </label>
+          <div className="mb-1.5 flex items-center justify-between">
+            <label className="block text-xs uppercase tracking-widest text-stone-500">
+              Password
+            </label>
+            {mode === "signin" && (
+              <Link
+                href="/forgot-password"
+                className="text-xs text-stone-500 hover:text-stone-300 transition-colors"
+              >
+                Forgot password?
+              </Link>
+            )}
+          </div>
           <input
             type="password"
             value={password}
