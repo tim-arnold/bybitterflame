@@ -47,10 +47,10 @@ export async function POST(request: Request) {
 
   await db.insert(accountRequests).values({ id, name, email, token, status: "pending", createdAt: now });
 
-  const approvalUrl = `${process.env.BETTER_AUTH_URL}/api/account-request/approve?token=${token}`;
+  const approvalUrl = `${env.BETTER_AUTH_URL}/api/account-request/approve?token=${token}`;
 
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  void resend.emails.send({
+  const resend = new Resend(env.RESEND_API_KEY);
+  await resend.emails.send({
     from: "gm@bytorchlight.com",
     to: "gm@bytorchlight.com",
     subject: `New account request: ${name} (${email})`,

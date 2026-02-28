@@ -64,9 +64,9 @@ export async function GET(request: Request) {
     .where(eq(accountRequests.token, token));
 
   // Send notification email to requester
-  const forgotPasswordUrl = `${process.env.BETTER_AUTH_URL}/forgot-password`;
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  void resend.emails.send({
+  const forgotPasswordUrl = `${env.BETTER_AUTH_URL}/forgot-password`;
+  const resend = new Resend(env.RESEND_API_KEY);
+  await resend.emails.send({
     from: "gm@bytorchlight.com",
     to: req.email,
     subject: "Your By Torchlight account is ready",
