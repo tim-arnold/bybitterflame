@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserNav } from "@/components/UserNav";
+import { authClient } from "@/lib/auth/client";
 
 interface CampaignSummary {
   campaignId: string;
@@ -46,6 +47,7 @@ const GM_QUESTIONS = [
 
 export default function Home() {
   const router = useRouter();
+  const { data: session } = authClient.useSession();
   const [campaigns, setCampaigns] = useState<CampaignSummary[]>([]);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -251,17 +253,17 @@ export default function Home() {
         {!showNewOptions ? (
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
-              onClick={() => setShowNewOptions(true)}
+              onClick={() => session ? setShowNewOptions(true) : router.push("/login")}
               className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-8 py-3 text-lg font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800 cursor-pointer"
             >
               Begin New Adventure
             </button>
-            <Link
-              href="/adventures"
-              className="rounded-lg border border-stone-600 bg-stone-900 px-8 py-3 text-lg font-semibold text-stone-300 transition-colors hover:border-stone-400 hover:bg-stone-800"
+            <button
+              onClick={() => session ? router.push("/adventures") : router.push("/login")}
+              className="rounded-lg border border-stone-600 bg-stone-900 px-8 py-3 text-lg font-semibold text-stone-300 transition-colors hover:border-stone-400 hover:bg-stone-800 cursor-pointer"
             >
               Choose an Adventure
-            </Link>
+            </button>
           </div>
         ) : (
           <div className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-5 py-5 text-left space-y-5">
