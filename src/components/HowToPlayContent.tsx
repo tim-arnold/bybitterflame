@@ -53,7 +53,7 @@ export function HowToPlayContent() {
         </p>
         <ul className="mt-2 ml-4 list-disc space-y-1 text-stone-400">
           <li>Reach for your <span className="text-stone-200">real dice</span> and report your result to the GM</li>
-          <li>Use the <span className="text-stone-200">Dice Roller</span> in the right sidebar</li>
+          <li>Use the <span className="text-stone-200">in-game Dice Roller</span></li>
         </ul>
         <p className="mt-2 text-stone-400">
           Either way, tell the GM what you rolled and the story continues.
