@@ -8,6 +8,9 @@ compatibility_flags = ["nodejs_compat"]
 directory = ".open-next/assets"
 binding = "ASSETS"
 
+[vars]
+NEXT_PUBLIC_ASSETS_URL = "https://images.bytorchlight.com"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "shadowdark"

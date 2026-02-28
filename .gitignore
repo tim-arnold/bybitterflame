@@ -46,6 +46,9 @@ docs/reference/shadowdark-raw.txt
 # Favicon source — used to generate favicons, not deployed
 public/favicon-source.png
 
+# Adventure maps — served from Cloudflare R2 (images.bytorchlight.com)
+public/adventures/
+
 # IDE
 .idea/
 

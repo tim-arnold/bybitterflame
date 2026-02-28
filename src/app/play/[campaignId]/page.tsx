@@ -19,6 +19,7 @@ import { HowToPlayModal, shouldShowHowToPlay } from "@/components/HowToPlayModal
 import { parseGameState } from "@/lib/game/state-parser";
 import { trackEvent } from "@/lib/analytics";
 import { getAdventure } from "@/lib/adventures/index";
+import { assetUrl } from "@/lib/config";
 import type { Adventure } from "@/lib/adventures/types";
 import type { Character, Campaign, JournalEntry, Companion, LegacyCharacter } from "@/lib/game/types";
 
@@ -261,7 +262,7 @@ export default function PlayPage() {
           }
           if (update.type === "mapReveal" && loadedAdventure && loadedCampaign.moduleId) {
             const locationName = update.data.locationName as string;
-            const mapFile = `/adventures/${loadedCampaign.moduleId}/${loadedAdventure.pcMapFile}`;
+            const mapFile = assetUrl(`adventures/${loadedCampaign.moduleId}/${loadedAdventure.pcMapFile}`);
             setCurrentMapFile(mapFile);
             setCurrentMapLocationName(locationName);
             setMapHasNewReveal(true);
@@ -333,7 +334,7 @@ export default function PlayPage() {
     // Ensure the revealed location actually has a PC map marker
     const hasMapLocation = adv.locations.some((l) => l.hasPcMap);
     if (!hasMapLocation) return null;
-    return `/adventures/${collectionId}/${adv.pcMapFile}`;
+    return assetUrl(`adventures/${collectionId}/${adv.pcMapFile}`);
   }
 
   const sendMessage = useCallback(
