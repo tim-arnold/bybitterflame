@@ -38,7 +38,7 @@ export default function AdventuresPage() {
     <div className="relative min-h-screen text-stone-100">
       {/* Background */}
       <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
-      <div className="fixed inset-0 bg-stone-950/85" />
+
 
       {/* User nav */}
       <div className="fixed top-4 right-4 z-20">

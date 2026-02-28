@@ -29,7 +29,7 @@ export function AdventureCompleteScreen({ summary, characterName }: AdventureCom
         <Image src="/dungeon-background.webp" alt="" fill className="object-cover" priority />
       </div>
       {/* Dark overlay */}
-      <div className="fixed inset-0 bg-black/85" />
+
 
       {/* Content */}
       <div className="relative z-10 px-4 py-12">

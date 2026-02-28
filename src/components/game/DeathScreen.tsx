@@ -73,7 +73,7 @@ export function DeathScreen({
         <Image src="/dungeon-background.webp" alt="" fill className="object-cover" priority />
       </div>
       {/* Dark overlay — fixed too */}
-      <div className="fixed inset-0 bg-black/85" />
+
 
       {/* Content — scrolls naturally */}
       <div className="relative z-10 px-4 py-12">
