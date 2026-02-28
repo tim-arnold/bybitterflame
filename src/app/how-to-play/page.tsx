@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { HowToPlayContent } from "@/components/HowToPlayContent";
 
+export const metadata: Metadata = {
+  title: "How to Play",
+  description:
+    "Learn how to play By Torchlight — the AI-powered Game Master for Shadowdark RPG. Create a character, explore dungeons, and survive by torchlight.",
+};
+
 export default function HowToPlayPage() {
   return (
-    <div className="relative min-h-screen">
+    <main className="relative min-h-screen">
       <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
 
 
@@ -27,6 +34,6 @@ export default function HowToPlayPage() {
           <HowToPlayContent />
         </div>
       </div>
-    </div>
+    </main>
   );
 }

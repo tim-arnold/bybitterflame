@@ -3,9 +3,49 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "By Torchlight — AI Game Master for Shadowdark RPG",
+  metadataBase: new URL("https://bytorchlight.com"),
+  title: {
+    default: "By Torchlight — AI Game Master for Shadowdark RPG",
+    template: "%s | By Torchlight",
+  },
   description:
-    "An AI-powered Game Master for Shadowdark RPG. Create a character and explore deadly dungeons.",
+    "An AI-powered Game Master for Shadowdark RPG. Create a character and explore deadly dungeons guided by Claude AI — no experience required.",
+  keywords: [
+    "Shadowdark RPG",
+    "AI dungeon master",
+    "AI game master",
+    "tabletop RPG",
+    "solo RPG",
+    "dungeon crawler",
+    "By Torchlight",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "By Torchlight",
+    title: "By Torchlight — AI Game Master for Shadowdark RPG",
+    description:
+      "An AI-powered Game Master for Shadowdark RPG. Create a character and explore deadly dungeons guided by Claude AI.",
+    url: "https://bytorchlight.com",
+    images: [
+      {
+        url: "/dungeon-background.png",
+        width: 1536,
+        height: 1024,
+        alt: "A torchlit dungeon corridor — By Torchlight AI Game Master",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "By Torchlight — AI Game Master for Shadowdark RPG",
+    description:
+      "An AI-powered Game Master for Shadowdark RPG. Create a character and explore deadly dungeons.",
+    images: ["/dungeon-background.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

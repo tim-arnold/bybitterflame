@@ -118,7 +118,7 @@ export default function Home() {
   const allAnswered = GM_QUESTIONS.every((q) => gmAnswers[q.id]);
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center text-center">
+    <main className="relative flex min-h-screen flex-col items-center justify-center text-center">
       {/* Background */}
       <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
 
@@ -365,6 +365,6 @@ export default function Home() {
         </p>
       </div>
       </div>
-    </div>
+    </main>
   );
 }
