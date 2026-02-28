@@ -9,6 +9,11 @@ Current state of the project and recent work. Read this at the start of each ses
 Full end-to-end persistence is working. Character creation, gameplay loop, autosave, and session resume all work. Companion NPC and soul transfer mechanics are implemented (code complete, not yet manually verified in production). Verified live character creation → play flow in production after fixing the `/api/character` 500 error.
 
 **What works:**
+- **App is rebranded to "By Torchlight"** — all UI copy, email sender (`gm@bytorchlight.com`), page title updated; domain bytorchlight.com purchased (DNS not yet switched; prod still at dark.tim52.io)
+- **GA4 analytics** — G-285WWGVN6Z; `trackEvent()` utility wired to 10 events across the funnel (request_access, adventure_started, character_created, api_key_added, free_turns_exhausted, session_paused, adventure_completed, character_died, soul_transferred, companion_joined); guide at `docs/guides/ga4-events.md`
+- **Shadowdark Third-Party logo** — footer of home page, links to thearcanelibrary.com
+- **schema.sql** — single unified DB schema replacing drizzle/ and migrations/ directories; use `wrangler d1 execute shadowdark --remote --file=schema.sql` to restore prod
+- **Lifetime token usage tracking** — `total_input_tokens` / `total_output_tokens` on users table; shown in /account
 - Character creation at `/create` — full 9-step chat flow with Claude as GM
 - Dice roll animations with phased narrative reveal (gamestate block → dice tumble → flavor text → Continue → scores)
 - Streaming AI responses with gamestate suppression during dice rolls
@@ -40,7 +45,7 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 
 - Local D1 SQLite: `.wrangler/state/v3/d1/` (populated via `wrangler d1 migrations apply shadowdark --local`)
 - Production D1: `shadowdark` DB (`aae22728-e098-4c3e-811e-aa1c73d33fbb`) in Cloudflare account
-- Migration applied via `wrangler d1 execute shadowdark --remote --file=drizzle/0000_eager_firebrand.sql`
+- **Source of truth: `schema.sql`** — run `wrangler d1 execute shadowdark --remote --file=schema.sql` to restore prod from scratch
 - `initOpenNextCloudflareForDev()` in `next.config.ts` provides D1 binding during `npm run dev`
 
 ## Deployment
@@ -51,6 +56,21 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - Live URL: https://dark.tim52.io (also https://shadowdark.tim-arnold.workers.dev)
 
 ## Recent Work
+
+### Session 12 (2026-02-28)
+
+**Rebrand, license compliance, analytics, and housekeeping:**
+
+- **Rules license compliance** — rewrote all verbatim Shadowdark creative text across 6 files (`gm-guidance.md`, `carousing.md`, `deities.md`, `traps-and-hazards.md`, `world.md`, `xp-awards.md`); mechanics preserved, flavor text rewritten
+- **Rebrand: "By Torchlight"** — all UI, email sender (`gm@bytorchlight.com`), page title updated across 11 files; `BETTER_AUTH_URL` needs updating when DNS switches to bytorchlight.com
+- **Background image** — replaced copyrighted Shadowdark cover with new `dungeon-background.webp` (162KB); dark overlays removed (image is intentionally dark); all 9 pages + 2 components updated
+- **Shadowdark Third-Party logo** — converted to WebP (13KB), added to home page footer with link to thearcanelibrary.com
+- **Home link in game title bar** — `← Home` link added left of save indicator in `GameLayout.tsx`
+- **Prod DB cleanup** — deleted 2 orphaned campaigns with null user_id; applied missing `total_input_tokens`/`total_output_tokens` columns to prod users table
+- **schema.sql** — single unified DB schema file replaces duplicate migrations/ and drizzle/ dirs
+- **How to Play content** — added "This Is a Chat Game" section; companion NPCs mention; API key cost section using `SERVER_KEY_TURN_LIMIT` const; `/account` link conditional on session
+- **`/account` route protected** — added to `src/middleware.ts` matcher
+- **GA4 analytics** — `src/lib/analytics.ts` typed `trackEvent()` utility; wired 10 events across request-access page, home page, adventure detail page, character creation, play page, and settings; setup guide at `docs/guides/ga4-events.md`
 
 ### Session 11 (2026-02-28)
 

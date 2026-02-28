@@ -184,6 +184,25 @@
       ]
     },
     {
+      "id": "analytics",
+      "name": "GA4 event tracking",
+      "status": "done",
+      "notes": "Property G-285WWGVN6Z. Typed trackEvent() utility in src/lib/analytics.ts. 10 events wired across the funnel. Setup guide at docs/guides/ga4-events.md.",
+      "tests": [
+        { "name": "GA4 script loads in layout.tsx", "pass": true },
+        { "name": "request_access fires on form submit", "pass": true },
+        { "name": "adventure_started fires with correct type (gm_decides/roll_own/module)", "pass": true },
+        { "name": "character_created fires in roll_own and gm-create paths", "pass": true },
+        { "name": "api_key_added fires on key save", "pass": true },
+        { "name": "free_turns_exhausted fires on 402 response", "pass": true },
+        { "name": "session_paused fires on End Session", "pass": true },
+        { "name": "adventure_completed fires on adventureComplete gamestate", "pass": true },
+        { "name": "character_died fires on playerDied gamestate", "pass": true },
+        { "name": "soul_transferred fires after successful inherit", "pass": true },
+        { "name": "companion_joined fires on first companionJoined gamestate", "pass": true }
+      ]
+    },
+    {
       "id": "combat-tracker",
       "name": "Combat tracking UI",
       "status": "pending",

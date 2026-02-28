@@ -8,6 +8,7 @@ import { CharacterSheet } from "@/components/character/CharacterSheet";
 import { DiceRoller } from "@/components/dice/DiceRoller";
 import { GameLayout } from "@/components/layout/GameLayout";
 import { parseGameState } from "@/lib/game/state-parser";
+import { trackEvent } from "@/lib/analytics";
 import type { Character, Campaign } from "@/lib/game/types";
 
 function CreateCharacterPageInner() {
@@ -40,6 +41,8 @@ function CreateCharacterPageInner() {
       });
       if (!res.ok) throw new Error("Failed to save character");
       const { campaignId } = await res.json() as { campaignId: string };
+      trackEvent({ name: "character_created" });
+      trackEvent({ name: "adventure_started", type: "roll_own" });
       router.push(`/play/${campaignId}`);
     } catch (saveError) {
       console.error("Failed to save character:", saveError);

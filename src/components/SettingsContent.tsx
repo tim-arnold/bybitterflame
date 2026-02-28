@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { SERVER_KEY_TURN_LIMIT, ANTHROPIC_INPUT_COST_PER_TOKEN, ANTHROPIC_OUTPUT_COST_PER_TOKEN } from "@/lib/config";
+import { trackEvent } from "@/lib/analytics";
 
 export function SettingsContent() {
   const [hasKey, setHasKey] = useState(false);
@@ -51,6 +52,7 @@ export function SettingsContent() {
       if (!res.ok) {
         setError(data.error ?? "Failed to save");
       } else {
+        if (key) trackEvent({ name: "api_key_added" });
         setHasKey(!!data.maskedKey);
         setMaskedKey(data.maskedKey);
         setInputKey("");

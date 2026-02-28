@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getAdventure, getCollection } from "@/lib/adventures/index";
+import { trackEvent } from "@/lib/analytics";
 
 interface RosterCharacter {
   id: string;
@@ -103,6 +104,7 @@ export default function AdventureDetailPage() {
         JSON.stringify(answers),
       );
 
+      trackEvent({ name: "adventure_started", type: "module" });
       router.push(`/play/${campaignId}`);
     } catch {
       setIsCreating(false);
@@ -119,6 +121,7 @@ export default function AdventureDetailPage() {
       });
       if (!res.ok) throw new Error("Failed to start adventure");
       const { campaignId } = await res.json() as { campaignId: string };
+      trackEvent({ name: "adventure_started", type: "module" });
       router.push(`/play/${campaignId}`);
     } catch {
       setIsCreating(false);

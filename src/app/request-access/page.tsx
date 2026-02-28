@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { trackEvent } from "@/lib/analytics";
 
 export default function RequestAccessPage() {
   const [name, setName] = useState("");
@@ -28,6 +29,7 @@ export default function RequestAccessPage() {
         return;
       }
 
+      trackEvent({ name: "request_access" });
       setSubmitted(true);
     } catch {
       setError("Something went wrong. Please try again.");

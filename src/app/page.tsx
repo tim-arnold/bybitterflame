@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserNav } from "@/components/UserNav";
 import { authClient } from "@/lib/auth/client";
+import { trackEvent } from "@/lib/analytics";
 
 interface CampaignSummary {
   campaignId: string;
@@ -107,6 +108,7 @@ export default function Home() {
       if (!res.ok) throw new Error("Failed to create campaign");
       const { campaignId } = await res.json() as { campaignId: string };
       sessionStorage.setItem(`gm-create-answers-${campaignId}`, JSON.stringify(gmAnswers));
+      trackEvent({ name: "adventure_started", type: "gm_decides" });
       router.push(`/play/${campaignId}`);
     } catch {
       setIsStartingGm(false);

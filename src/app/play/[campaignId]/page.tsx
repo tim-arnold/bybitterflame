@@ -17,6 +17,7 @@ import { MapViewer } from "@/components/game/MapViewer";
 import { GameLayout } from "@/components/layout/GameLayout";
 import { HowToPlayModal, shouldShowHowToPlay } from "@/components/HowToPlayModal";
 import { parseGameState } from "@/lib/game/state-parser";
+import { trackEvent } from "@/lib/analytics";
 import { getAdventure } from "@/lib/adventures/index";
 import type { Adventure } from "@/lib/adventures/types";
 import type { Character, Campaign, JournalEntry, Companion, LegacyCharacter } from "@/lib/game/types";
@@ -267,6 +268,7 @@ export default function PlayPage() {
           }
           // Handle character complete in gm-create mode — transition to play mode
           if (update.type === "notification" && update.data.type === "characterComplete" && needsGmCreate) {
+            trackEvent({ name: "character_created" });
             setIsGmCreateMode(false);
           }
         }
@@ -377,6 +379,7 @@ export default function PlayPage() {
         if (response.status === 402) {
           const errData = await response.json() as { error: string; turnsUsed: number; limit: number };
           if (errData.error === "api_key_required") {
+            trackEvent({ name: "free_turns_exhausted" });
             setMessages([
               ...newMessages,
               {
@@ -450,6 +453,7 @@ export default function PlayPage() {
               (c) => c.name.toLowerCase() === (data.name ?? "").toLowerCase()
             );
             if (!alreadyExists) {
+              trackEvent({ name: "companion_joined" });
               updatedCompanions = [...updatedCompanions, {
                 ...data,
                 status: data.status ?? "active",
@@ -467,6 +471,7 @@ export default function PlayPage() {
             companionsChanged = true;
           }
           if (update.type === "playerDied") {
+            trackEvent({ name: "character_died" });
             setIsDead(true);
             setDeathData({
               ...(update.data as unknown as DeathData),
@@ -485,9 +490,11 @@ export default function PlayPage() {
           }
           // Handle character complete in gm-create mode
           if (update.type === "notification" && update.data.type === "characterComplete" && isGmCreateMode) {
+            trackEvent({ name: "character_created" });
             setIsGmCreateMode(false);
           }
           if (update.type === "adventureComplete") {
+            trackEvent({ name: "adventure_completed" });
             const summary = update.data.summary as string;
             setAdventureCompleteData({ summary });
             fetch(`/api/campaign/${campaignId}/complete`, { method: "POST" }).catch(
@@ -602,6 +609,7 @@ export default function PlayPage() {
       }
 
       const { newCharacterId } = await res.json();
+      trackEvent({ name: "soul_transferred" });
 
       // Build new character from companion stats
       const talents = deathData?.legacyTalent
@@ -732,6 +740,7 @@ export default function PlayPage() {
   }
 
   function handleEndSession() {
+    trackEvent({ name: "session_paused" });
     setIsPausing(true);
     sendMessage("[SYSTEM: The player wants to end this session. Please provide a summary of what happened.]", { hidden: true });
     // Fire-and-forget: generate compact Haiku summary and persist it
