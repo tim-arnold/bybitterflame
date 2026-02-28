@@ -206,6 +206,36 @@ export default function AccountPage() {
               )}
             </div>
           )}
+
+          {/* Cost explainer */}
+          <div className="border-t border-stone-800 pt-4 flex flex-col gap-2">
+            <h2 className="text-sm font-semibold text-stone-200">How costs work</h2>
+            <p className="text-xs text-stone-500 leading-relaxed">
+              The AI Game Master runs on Claude, Anthropic&apos;s language model. Every turn sends
+              your action plus the full game context — character sheet, active rules, session
+              history, GM persona — to the API to generate the GM&apos;s response. That context
+              can be large, so each turn uses a meaningful number of tokens.
+            </p>
+            <p className="text-xs text-stone-500 leading-relaxed">
+              A typical session of 20–30 turns costs roughly <span className="text-stone-300">$0.50–$2.00</span>,
+              depending on context size. Combat and spellcasting turns load more rules and cost
+              more. Sessions get slightly more expensive as history grows.
+            </p>
+            <p className="text-xs text-stone-500 leading-relaxed">
+              When using your own key, <span className="text-stone-300">you are responsible for all charges.</span>{" "}
+              Anthropic does not offer refunds for API usage. You can set spend limits and see
+              the exact dollar amount your key has been charged at{" "}
+              <a
+                href="https://platform.claude.com/settings/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-stone-400 hover:text-stone-200 underline underline-offset-2"
+              >
+                platform.claude.com/settings/keys
+              </a>
+              .
+            </p>
+          </div>
         </div>
       </div>
     </div>
