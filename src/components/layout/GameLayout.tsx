@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { MobileNav } from "./MobileNav";
 import { UserNav } from "@/components/UserNav";
+import { HowToPlayModal } from "@/components/HowToPlayModal";
 
 interface GameLayoutProps {
   leftPanel: React.ReactNode;
@@ -25,6 +25,7 @@ export function GameLayout({
   isSaved = true,
 }: GameLayoutProps) {
   const [mobileTab, setMobileTab] = useState<"left" | "center" | "right">("center");
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   const tooltip = isSaved
     ? "Your session is saved — safe to leave."
@@ -35,14 +36,8 @@ export function GameLayout({
       {/* Title bar */}
       {title && (
         <div className="shrink-0 border-b border-stone-800 bg-stone-950 px-4 py-2 grid grid-cols-3 items-center">
-          {/* Left: home + info */}
+          {/* Left: save indicator */}
           <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="text-xs text-stone-500 hover:text-stone-200 transition-colors"
-            >
-              ← Home
-            </Link>
             <div className="relative group">
               <span className="flex h-4 w-4 items-center justify-center rounded-full border border-stone-600 text-[10px] text-stone-500 cursor-default select-none group-hover:border-stone-400 group-hover:text-stone-300 transition-colors">
                 i
@@ -63,7 +58,7 @@ export function GameLayout({
 
           {/* Right: user nav */}
           <div className="flex justify-end">
-            <UserNav />
+            <UserNav onHowToPlay={() => setShowHowToPlay(true)} />
           </div>
         </div>
       )}
@@ -80,6 +75,8 @@ export function GameLayout({
           {rightPanel}
         </aside>
       </div>
+
+      {showHowToPlay && <HowToPlayModal onClose={() => setShowHowToPlay(false)} />}
 
       {/* Mobile layout */}
       <div className="md:hidden flex flex-col flex-1 overflow-hidden">

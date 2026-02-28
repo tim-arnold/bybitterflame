@@ -66,6 +66,32 @@ export default function RequestAccessPage() {
               Enter your name and email to request access.
             </p>
 
+            <div className="mb-6 space-y-3 rounded border border-stone-700 bg-stone-900 px-4 py-4 text-sm text-stone-400">
+              <div>
+                <p className="font-semibold text-stone-200">Free trial — 20 turns included</p>
+                <p className="mt-1">
+                  Once your character is created, you get 20 AI turns on us. That&apos;s enough
+                  to explore a dungeon, fight a few encounters, and see how the GM plays.
+                </p>
+              </div>
+              <div>
+                <p className="font-semibold text-stone-200">Unlimited play with your own API key</p>
+                <p className="mt-1">
+                  After your free turns, bring your own{" "}
+                  <a
+                    href="https://console.anthropic.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-stone-300 underline hover:text-white transition-colors"
+                  >
+                    Anthropic API key
+                  </a>{" "}
+                  and play as much as you like. Keys are stored encrypted and never shared.
+                  A typical session costs a few cents.
+                </p>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div>
                 <label className="mb-1.5 block text-xs uppercase tracking-widest text-stone-400">

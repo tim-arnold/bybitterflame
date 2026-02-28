@@ -15,6 +15,7 @@ import { AdventureCompleteScreen } from "@/components/game/AdventureCompleteScre
 import { WorldConditions } from "@/components/game/WorldConditions";
 import { MapViewer } from "@/components/game/MapViewer";
 import { GameLayout } from "@/components/layout/GameLayout";
+import { HowToPlayModal, shouldShowHowToPlay } from "@/components/HowToPlayModal";
 import { parseGameState } from "@/lib/game/state-parser";
 import { getAdventure } from "@/lib/adventures/index";
 import type { Adventure } from "@/lib/adventures/types";
@@ -73,6 +74,7 @@ export default function PlayPage() {
   const [mapHasNewReveal, setMapHasNewReveal] = useState(false);
   const [activeRightTab, setActiveRightTab] = useState<"tools" | "map">("tools");
   const [isGmCreateMode, setIsGmCreateMode] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   const campaignTitle = adventure?.title ?? campaign.name ?? "";
 
@@ -146,6 +148,9 @@ export default function PlayPage() {
           setMessages(loadedMessages);
           return;
         }
+
+        // New campaign — show how-to-play modal if not dismissed
+        if (shouldShowHowToPlay()) setShowHowToPlay(true);
 
         // New campaign — generate the opening scene immediately
         // Pick the right GM-create mode: adventure-specific or generic
@@ -880,6 +885,10 @@ export default function PlayPage() {
           summary={adventureCompleteData.summary}
           characterName={character.name ?? "Your character"}
         />
+      )}
+
+      {showHowToPlay && (
+        <HowToPlayModal onClose={() => setShowHowToPlay(false)} />
       )}
     </>
   );

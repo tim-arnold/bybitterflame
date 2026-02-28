@@ -128,14 +128,34 @@ export default function Home() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center">
-      <h1 className="mb-2 text-5xl font-bold tracking-tight text-[var(--color-gold)]">
-        ShadowDork
-      </h1>
+      <div className="mb-2 flex items-center justify-center gap-3">
+        <h1 className="text-5xl font-bold tracking-tight text-[var(--color-gold)]">
+          ShadowDork
+        </h1>
+        <span className="rounded border border-[var(--color-gold-dim)] px-2 py-0.5 text-xs font-semibold uppercase tracking-widest text-[var(--color-gold)] opacity-70">
+          Beta
+        </span>
+      </div>
       <p className="mb-1 text-lg text-stone-300">AI-Powered Game Master</p>
-      <p className="narrative mb-10 max-w-md text-stone-500">
+      <p className="narrative mb-6 max-w-md text-stone-500">
         The torchlight flickers against damp stone walls. Something stirs in the
         darkness ahead. Will you press on?
       </p>
+      {!session && (
+        <div className="mb-8 max-w-sm rounded-lg border border-stone-700 bg-stone-900/70 px-5 py-4 text-sm text-stone-400 backdrop-blur-sm">
+          <p className="mb-1 font-semibold text-stone-200">Join the Beta</p>
+          <p>
+            ShadowDork is in early access. Request an account and start playing — no
+            experience with Shadowdark RPG required.
+          </p>
+          <a
+            href="/request-access"
+            className="mt-3 inline-block text-sm font-medium text-[var(--color-gold)] hover:text-white transition-colors"
+          >
+            Request access →
+          </a>
+        </div>
+      )}
 
       {campaigns.length > 0 && !showNewOptions && (
         <div className="mb-8 w-full max-w-md">
