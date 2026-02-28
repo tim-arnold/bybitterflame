@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     url: "https://bytorchlight.com",
     images: [
       {
-        url: "/dungeon-background.png",
+        url: "https://bytorchlight.com/dungeon-background.png",
         width: 1536,
         height: 1024,
         alt: "A torchlit dungeon corridor — By Torchlight AI Game Master",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "By Torchlight — AI Game Master for Shadowdark RPG",
     description:
       "An AI-powered Game Master for Shadowdark RPG. Create a character and explore deadly dungeons.",
-    images: ["/dungeon-background.png"],
+    images: ["https://bytorchlight.com/dungeon-background.png"],
   },
   robots: {
     index: true,
