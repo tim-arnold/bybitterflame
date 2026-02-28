@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { SERVER_KEY_TURN_LIMIT } from "@/lib/config";
+import { authClient } from "@/lib/auth/client";
 
 export function HowToPlayContent() {
+  const { data: session } = authClient.useSession();
+
   return (
     <div className="space-y-7 text-sm text-stone-300 leading-relaxed">
 
@@ -129,6 +135,38 @@ export function HowToPlayContent() {
             dies, you may have options — but there are no guaranteed saves.
           </li>
         </ul>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-500">
+          Cost &amp; API Keys
+        </h2>
+        <p className="mb-3">
+          By Torchlight uses the{" "}
+          <span className="text-stone-200">Anthropic API</span> to power the GM. Your first{" "}
+          <span className="text-stone-200">{SERVER_KEY_TURN_LIMIT} turns</span> are on us — no
+          setup required. After that, you&apos;ll need to bring your own Anthropic API key.
+        </p>
+        <p className="mb-3">
+          API keys are free to create at{" "}
+          <a
+            href="https://console.anthropic.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-stone-300 underline hover:text-white transition-colors"
+          >
+            console.anthropic.com
+          </a>
+          . You only pay for what you use — a typical session costs a few cents.{" "}
+          {session ? (
+            <>Add your key in <Link href="/account" className="text-stone-300 underline hover:text-white transition-colors">Account Settings</Link> and it will be used for all future turns.</>
+          ) : (
+            <>Add your key in Account Settings (sign in to access) and it will be used for all future turns.</>
+          )}
+        </p>
+        <p className="text-stone-500 text-xs">
+          Your key is stored encrypted and is only ever used to make requests on your behalf.
+        </p>
       </section>
 
       <p className="text-xs text-stone-600">
