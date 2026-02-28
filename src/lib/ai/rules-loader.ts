@@ -18,6 +18,7 @@ const CONTEXT_RULES: Record<keyof BooleanContextFlags, string[]> = {
 
 /** Files always loaded regardless of context */
 const ALWAYS_LOAD = [
+  "world.md",              // setting bible — tone, tech level, ancestries, gods, society
   "ability-scores.md",
   "deities.md",
   "light-and-darkness.md", // light/torch rules are critical every turn
