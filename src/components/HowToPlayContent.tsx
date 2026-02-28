@@ -33,6 +33,12 @@ export function HowToPlayContent() {
           as a human GM would at a table. You don&apos;t need to know the rules; the GM handles
           all of that behind the scenes.
         </p>
+        <p className="mt-3">
+          NPCs you meet — in town, on the road, or deep in a dungeon — can be persuaded, hired,
+          or rescued into joining your party as{" "}
+          <span className="text-stone-200">persistent companions</span> with their own stats,
+          personalities, and loyalties.
+        </p>
       </section>
 
       <section>
