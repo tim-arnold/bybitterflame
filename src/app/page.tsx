@@ -358,7 +358,7 @@ export default function Home() {
             className="opacity-70 hover:opacity-100 transition-opacity"
           />
         </a>
-        <p className="text-xs text-stone-500 max-w-sm leading-relaxed text-center">
+        <p className="text-xs text-stone-400 max-w-sm leading-relaxed text-center">
           By Torchlight is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
         </p>
       </div>

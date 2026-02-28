@@ -127,7 +127,7 @@ export default function LoginPage() {
             ← Home
           </Link>
         </div>
-        <p className="mt-8 text-xs text-stone-700 text-center leading-relaxed">
+        <p className="mt-8 text-xs text-stone-400 text-center leading-relaxed">
           By Torchlight is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
         </p>
       </div>
