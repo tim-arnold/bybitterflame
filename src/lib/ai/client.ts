@@ -25,17 +25,23 @@ function getAtmosphericError(error: unknown): string {
 const MODEL = "claude-sonnet-4-20250514";
 const MAX_TOKENS = 4096;
 
+export interface StreamResult {
+  text: string;
+  inputTokens: number;
+  outputTokens: number;
+}
+
 /**
  * Stream a chat completion from Claude.
  * Calls onChunk with each text delta as it arrives.
- * Returns the full assembled response text.
+ * Returns the full assembled response text plus token usage.
  */
 export async function streamChat(
   systemPrompt: string,
   messages: Message[],
   onChunk: (text: string) => void,
   apiKey?: string,
-): Promise<string> {
+): Promise<StreamResult> {
   const anthropic = new Anthropic({ apiKey: apiKey ?? process.env.ANTHROPIC_API_KEY });
   let fullText = "";
 
@@ -55,32 +61,37 @@ export async function streamChat(
   });
 
   const finalMessage = await stream.finalMessage();
+  const inputTokens = finalMessage.usage.input_tokens;
+  const outputTokens = finalMessage.usage.output_tokens;
 
-  if (finalMessage.stop_reason === "end_turn") {
-    return fullText;
-  }
-
-  // If the model stopped for another reason, still return what we have
-  return fullText;
+  return { text: fullText, inputTokens, outputTokens };
 }
 
 /**
  * Create a streaming Response suitable for Next.js API routes.
  * Returns a ReadableStream that emits text chunks.
+ * onComplete is called with token usage after the stream finishes successfully.
  */
 export function createStreamingResponse(
   systemPrompt: string,
   messages: Message[],
   apiKey?: string,
+  onComplete?: (usage: { inputTokens: number; outputTokens: number }) => void,
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
 
   return new ReadableStream({
     async start(controller) {
       try {
-        await streamChat(systemPrompt, messages, (chunk) => {
+        const result = await streamChat(systemPrompt, messages, (chunk) => {
           controller.enqueue(encoder.encode(chunk));
         }, apiKey);
+        // Append a sentinel for client-side session token tracking.
+        // Uses \x00 prefix so it's unambiguous and won't appear in rendered text.
+        controller.enqueue(encoder.encode(
+          `\x00TOKENS:${JSON.stringify({ in: result.inputTokens, out: result.outputTokens })}`
+        ));
+        onComplete?.({ inputTokens: result.inputTokens, outputTokens: result.outputTokens });
         controller.close();
       } catch (error) {
         console.error("[AI client] Stream error:", error);

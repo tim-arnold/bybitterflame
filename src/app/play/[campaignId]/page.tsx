@@ -62,6 +62,10 @@ export default function PlayPage() {
   const [adventureCompleteData, setAdventureCompleteData] = useState<{ summary: string } | null>(null);
   const torchTimerRef = useRef<TorchTimerHandle>(null);
 
+  // Session token usage (accumulated from \x00TOKENS: sentinels in the stream)
+  const [sessionInputTokens, setSessionInputTokens] = useState(0);
+  const [sessionOutputTokens, setSessionOutputTokens] = useState(0);
+
   // Adventure module state
   const [adventure, setAdventure] = useState<Adventure | null>(null);
   const [currentMapFile, setCurrentMapFile] = useState<string | null>(null);
@@ -71,6 +75,19 @@ export default function PlayPage() {
   const [isGmCreateMode, setIsGmCreateMode] = useState(false);
 
   const campaignTitle = adventure?.title ?? campaign.name ?? "";
+
+  /** Strip the \x00TOKENS sentinel from a stream response and accumulate session token counts. */
+  function extractTokens(response: string): string {
+    const match = response.match(/\x00TOKENS:(\{"in":\d+,"out":\d+\})/);
+    if (match) {
+      try {
+        const usage = JSON.parse(match[1]) as { in: number; out: number };
+        setSessionInputTokens((prev) => prev + usage.in);
+        setSessionOutputTokens((prev) => prev + usage.out);
+      } catch { /* ignore parse errors */ }
+    }
+    return response.replace(/\x00TOKENS:\{[^}]+\}/g, "");
+  }
 
   useEffect(() => {
     const parts = ["Shadowdark"];
@@ -181,8 +198,9 @@ export default function PlayPage() {
           const { done, value } = await reader.read();
           if (done) break;
           fullResponse += decoder.decode(value, { stream: true });
-          setStreamingContent(fullResponse);
+          setStreamingContent(fullResponse.replace(/\x00TOKENS:\{[^}]+\}/g, ""));
         }
+        fullResponse = extractTokens(fullResponse);
 
         const { updates } = parseGameState(fullResponse);
         let updatedCharacter = { ...loadedCharacter };
@@ -372,10 +390,10 @@ export default function PlayPage() {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          const chunk = decoder.decode(value, { stream: true });
-          fullResponse += chunk;
-          setStreamingContent(fullResponse);
+          fullResponse += decoder.decode(value, { stream: true });
+          setStreamingContent(fullResponse.replace(/\x00TOKENS:\{[^}]+\}/g, ""));
         }
+        fullResponse = extractTokens(fullResponse);
 
         // Parse gamestate updates
         const { narrative, updates } = parseGameState(fullResponse);
@@ -838,6 +856,8 @@ export default function PlayPage() {
                   onEndSession={handleEndSession}
                   onSaveSession={handleSaveSession}
                   isLoading={isLoading}
+                  sessionInputTokens={sessionInputTokens}
+                  sessionOutputTokens={sessionOutputTokens}
                 />
               </>
             )}

@@ -27,7 +27,12 @@ export async function GET(request: Request) {
   const db = getDb(env.DB);
 
   const [user] = await db
-    .select({ anthropicApiKey: users.anthropicApiKey, serverKeyTurnsUsed: users.serverKeyTurnsUsed })
+    .select({
+      anthropicApiKey: users.anthropicApiKey,
+      serverKeyTurnsUsed: users.serverKeyTurnsUsed,
+      totalInputTokens: users.totalInputTokens,
+      totalOutputTokens: users.totalOutputTokens,
+    })
     .from(users)
     .where(eq(users.id, session.user.id))
     .limit(1);
@@ -40,6 +45,8 @@ export async function GET(request: Request) {
     hasKey: !!user.anthropicApiKey,
     maskedKey: user.anthropicApiKey ? maskKey(user.anthropicApiKey) : null,
     turnsUsed: user.serverKeyTurnsUsed,
+    totalInputTokens: user.totalInputTokens,
+    totalOutputTokens: user.totalOutputTokens,
   });
 }
 

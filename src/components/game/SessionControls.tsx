@@ -1,13 +1,29 @@
 "use client";
 
+import { ANTHROPIC_INPUT_COST_PER_TOKEN, ANTHROPIC_OUTPUT_COST_PER_TOKEN } from "@/lib/config";
+
 interface SessionControlsProps {
   onEndSession: () => void;
   onSaveSession: () => void;
   sessionNumber: number;
   isLoading?: boolean;
+  sessionInputTokens?: number;
+  sessionOutputTokens?: number;
 }
 
-export function SessionControls({ onEndSession, onSaveSession, sessionNumber, isLoading }: SessionControlsProps) {
+export function SessionControls({
+  onEndSession,
+  onSaveSession,
+  sessionNumber,
+  isLoading,
+  sessionInputTokens = 0,
+  sessionOutputTokens = 0,
+}: SessionControlsProps) {
+  const totalTokens = sessionInputTokens + sessionOutputTokens;
+  const estimatedCost =
+    sessionInputTokens * ANTHROPIC_INPUT_COST_PER_TOKEN +
+    sessionOutputTokens * ANTHROPIC_OUTPUT_COST_PER_TOKEN;
+
   return (
     <div className="bg-stone-900 border border-stone-700 rounded-lg p-3 space-y-2">
       <h3 className="text-xs uppercase tracking-wider text-stone-500">Session {sessionNumber}</h3>
@@ -27,6 +43,19 @@ export function SessionControls({ onEndSession, onSaveSession, sessionNumber, is
           Pause Session
         </button>
       </div>
+
+      {totalTokens > 0 && (
+        <div className="border-t border-stone-800 pt-2 space-y-1">
+          <div className="flex justify-between text-xs">
+            <span className="text-stone-600">Tokens this session</span>
+            <span className="font-mono text-stone-500">{totalTokens.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between text-xs">
+            <span className="text-stone-600">Est. cost</span>
+            <span className="font-mono text-stone-500">${estimatedCost.toFixed(4)}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

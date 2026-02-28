@@ -166,21 +166,29 @@ export async function POST(request: NextRequest) {
           : m.content,
     }));
 
-    const stream = createStreamingResponse(systemPrompt, trimmedMessages, resolvedApiKey);
-
-    // After streaming starts, increment serverKeyTurnsUsed (fire-and-forget)
-    // Only when using the server key (resolvedApiKey is undefined = using env var)
-    if (userId && !resolvedApiKey) {
-      getCloudflareContext({ async: true })
-        .then(({ env }) => {
-          const db = getDb(env.DB);
-          return db
-            .update(users)
-            .set({ serverKeyTurnsUsed: sql`${users.serverKeyTurnsUsed} + 1` })
-            .where(eq(users.id, userId!));
-        })
-        .catch((err) => console.error("Failed to increment serverKeyTurnsUsed:", err));
-    }
+    const stream = createStreamingResponse(
+      systemPrompt,
+      trimmedMessages,
+      resolvedApiKey,
+      userId
+        ? (usage) => {
+            getCloudflareContext({ async: true })
+              .then(({ env }) => {
+                const db = getDb(env.DB);
+                const updates: Record<string, unknown> = {
+                  totalInputTokens: sql`${users.totalInputTokens} + ${usage.inputTokens}`,
+                  totalOutputTokens: sql`${users.totalOutputTokens} + ${usage.outputTokens}`,
+                };
+                // Also increment the server-key turn counter if using the env key
+                if (!resolvedApiKey) {
+                  updates.serverKeyTurnsUsed = sql`${users.serverKeyTurnsUsed} + 1`;
+                }
+                return db.update(users).set(updates).where(eq(users.id, userId!));
+              })
+              .catch((err) => console.error("Failed to track token usage:", err));
+          }
+        : undefined,
+    );
 
     return new Response(stream, {
       headers: {

@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { SERVER_KEY_TURN_LIMIT } from "@/lib/config";
+import { SERVER_KEY_TURN_LIMIT, ANTHROPIC_INPUT_COST_PER_TOKEN, ANTHROPIC_OUTPUT_COST_PER_TOKEN } from "@/lib/config";
 
 export default function AccountPage() {
   const [hasKey, setHasKey] = useState(false);
   const [maskedKey, setMaskedKey] = useState<string | null>(null);
   const [turnsUsed, setTurnsUsed] = useState(0);
+  const [totalInputTokens, setTotalInputTokens] = useState(0);
+  const [totalOutputTokens, setTotalOutputTokens] = useState(0);
   const [inputKey, setInputKey] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -22,6 +24,8 @@ export default function AccountPage() {
         setHasKey(data.hasKey);
         setMaskedKey(data.maskedKey);
         setTurnsUsed(data.turnsUsed ?? 0);
+        setTotalInputTokens(data.totalInputTokens ?? 0);
+        setTotalOutputTokens(data.totalOutputTokens ?? 0);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -204,6 +208,35 @@ export default function AccountPage() {
                   Free turns exhausted. Add your own API key above to continue playing.
                 </p>
               )}
+            </div>
+          )}
+
+          {/* Token usage summary */}
+          {(totalInputTokens > 0 || totalOutputTokens > 0) && (
+            <div className="border-t border-stone-800 pt-4">
+              <h2 className="mb-3 text-sm font-semibold text-stone-200">Your token usage</h2>
+              <div className="flex flex-col gap-1.5 mb-3">
+                <div className="flex justify-between text-xs">
+                  <span className="text-stone-500">Input tokens</span>
+                  <span className="font-mono text-stone-300">{totalInputTokens.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-stone-500">Output tokens</span>
+                  <span className="font-mono text-stone-300">{totalOutputTokens.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-xs border-t border-stone-800 pt-1.5 mt-0.5">
+                  <span className="text-stone-400">Est. cost (own key)</span>
+                  <span className="font-mono text-[var(--color-gold)]">
+                    ${(
+                      totalInputTokens * ANTHROPIC_INPUT_COST_PER_TOKEN +
+                      totalOutputTokens * ANTHROPIC_OUTPUT_COST_PER_TOKEN
+                    ).toFixed(4)}
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-stone-600">
+                Estimate only — based on claude-sonnet-4 list pricing. Actual charges on your key may differ.
+              </p>
             </div>
           )}
 
