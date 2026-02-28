@@ -146,3 +146,5 @@ Required Cloudflare secrets: `ANTHROPIC_API_KEY`, `BETTER_AUTH_SECRET`, `BETTER_
 ## License
 
 Private project. By Torchlight is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
+
+trigger rebuild
