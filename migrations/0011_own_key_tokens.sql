@@ -1,0 +1,2 @@
+ALTER TABLE user ADD COLUMN own_key_input_tokens INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE user ADD COLUMN own_key_output_tokens INTEGER NOT NULL DEFAULT 0;

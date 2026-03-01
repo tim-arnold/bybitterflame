@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
     let userId: string | null = null;
     let trialExhaustedUser: { name: string; email: string } | null = null;
     let incrementTurnCounter = false; // true when turn limit should tick (server key or beta trial)
+    let useOwnKey = false; // true when the user's own Anthropic key is being used
 
     let session: Awaited<ReturnType<typeof getSession>> | null = null;
     try {
@@ -63,6 +64,7 @@ export async function POST(request: NextRequest) {
         if (user?.anthropicApiKey?.startsWith("sk-ant-")) {
           // User has their own key — use it, no limit
           resolvedApiKey = user.anthropicApiKey;
+          useOwnKey = true;
         } else if (user?.betaApiKey?.startsWith("sk-ant-")) {
           // Admin-assigned beta key — use it in both trial and full mode
           resolvedApiKey = user.betaApiKey;
@@ -217,6 +219,11 @@ export async function POST(request: NextRequest) {
                 // Increment turn counter for server key or beta trial users
                 if (incrementTurnCounter) {
                   updates.serverKeyTurnsUsed = sql`${users.serverKeyTurnsUsed} + 1`;
+                }
+                // Track own-key usage separately
+                if (useOwnKey) {
+                  updates.ownKeyInputTokens = sql`${users.ownKeyInputTokens} + ${usage.inputTokens}`;
+                  updates.ownKeyOutputTokens = sql`${users.ownKeyOutputTokens} + ${usage.outputTokens}`;
                 }
                 await db.update(users).set(updates).where(eq(users.id, userId!));
 

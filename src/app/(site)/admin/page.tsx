@@ -27,7 +27,12 @@ function keyStatusBadge(user: {
   serverKeyTurnsUsed: number;
 }) {
   if (user.anthropicApiKey) {
-    return <span className="rounded px-2 py-0.5 text-xs font-mono bg-emerald-900/60 text-emerald-300 border border-emerald-700">Own Key</span>;
+    return (
+      <div className="space-y-1">
+        <span className="rounded px-2 py-0.5 text-xs font-mono bg-emerald-900/60 text-emerald-300 border border-emerald-700">Own Key</span>
+        <p className="text-xs text-stone-500 font-mono">{maskKey(user.anthropicApiKey)}</p>
+      </div>
+    );
   }
   if (user.betaApiKey && user.betaKeyMode === "full") {
     return <span className="rounded px-2 py-0.5 text-xs font-mono bg-yellow-900/60 text-yellow-300 border border-yellow-700">Beta Key</span>;
@@ -86,6 +91,8 @@ export default async function AdminPage() {
         serverKeyTurnsUsed: users.serverKeyTurnsUsed,
         totalInputTokens: users.totalInputTokens,
         totalOutputTokens: users.totalOutputTokens,
+        ownKeyInputTokens: users.ownKeyInputTokens,
+        ownKeyOutputTokens: users.ownKeyOutputTokens,
       })
       .from(users)
       .orderBy(desc(users.createdAt)),
@@ -188,6 +195,7 @@ export default async function AdminPage() {
                   <th className="px-4 py-3 text-left">Joined</th>
                   <th className="px-4 py-3 text-left">Key Status</th>
                   <th className="px-4 py-3 text-left">Tokens / Est. Cost</th>
+                  <th className="px-4 py-3 text-left">Own Key Usage</th>
                   <th className="px-4 py-3 text-left">Beta Key</th>
                   <th className="px-4 py-3 text-left"></th>
                 </tr>
@@ -209,6 +217,17 @@ export default async function AdminPage() {
                       <span>{formatTokens(user.totalInputTokens)} in / {formatTokens(user.totalOutputTokens)} out</span>
                       <br />
                       <span className="text-stone-500">{formatCost(user.totalInputTokens, user.totalOutputTokens)}</span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-stone-400 whitespace-nowrap">
+                      {user.anthropicApiKey ? (
+                        <>
+                          <span>{formatTokens(user.ownKeyInputTokens)} in / {formatTokens(user.ownKeyOutputTokens)} out</span>
+                          <br />
+                          <span className="text-stone-500">{formatCost(user.ownKeyInputTokens, user.ownKeyOutputTokens)}</span>
+                        </>
+                      ) : (
+                        <span className="text-stone-600">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <BetaKeyForm
