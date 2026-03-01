@@ -10,6 +10,7 @@ interface InventoryListProps {
   silver?: number;
   copper?: number;
   maxSlots?: number;
+  afterWeapons?: React.ReactNode;
 }
 
 function normalize(item: EquipmentItem | string): EquipmentItem {
@@ -108,16 +109,20 @@ function ItemRow({ item }: { item: EquipmentItem | string }) {
   );
 }
 
-export function InventoryList({ items, gold, silver, copper, maxSlots }: InventoryListProps) {
+export function InventoryList({ items, gold, silver, copper, maxSlots, afterWeapons }: InventoryListProps) {
   const normalized = items.map(normalize);
 
-  const weapons = normalized.filter((i) => i.type === "weapon" && (i.slots ?? 1) > 0);
-  const gear = normalized.filter((i) => i.type !== "weapon" && (i.slots ?? 1) > 0);
-  const worn = normalized.filter((i) => i.slots === 0);
+  const isCombatGear = (i: EquipmentItem) => i.type === "weapon" || i.type === "armor" || i.type === "shield";
+  const combatGear = normalized.filter(isCombatGear);
+  const gear = normalized.filter((i) => !isCombatGear(i) && (i.slots ?? 1) > 0);
+  const worn = normalized.filter((i) => !isCombatGear(i) && (i.slots ?? 1) === 0);
 
+  const totalCoins = (gold ?? 0) + (silver ?? 0) + (copper ?? 0);
+  const coinSlots = Math.max(0, Math.floor((totalCoins - 100) / 100));
   const slotsUsed = normalized
     .filter((i) => (i.slots ?? 1) > 0)
-    .reduce((sum, i) => sum + (i.slots ?? 1), 0);
+    .reduce((sum, i) => sum + (i.slots ?? 1), 0) + coinSlots;
+
 
   const slotLabel = maxSlots !== undefined
     ? `${slotsUsed} of ${maxSlots} gear slots used`
@@ -128,7 +133,7 @@ export function InventoryList({ items, gold, silver, copper, maxSlots }: Invento
   return (
     <div className="space-y-4">
       {(gold !== undefined || silver !== undefined || copper !== undefined) && (
-        <div className="flex gap-3 font-mono text-sm">
+        <div className="flex items-center gap-3 font-mono text-sm">
           {gold !== undefined && gold > 0 && (
             <span><span className="text-[var(--color-gold)]">{gold}</span> <span className="text-stone-500">gp</span></span>
           )}
@@ -138,19 +143,33 @@ export function InventoryList({ items, gold, silver, copper, maxSlots }: Invento
           {copper !== undefined && copper > 0 && (
             <span><span className="text-orange-400">{copper}</span> <span className="text-stone-500">cp</span></span>
           )}
+          <div className="relative group">
+            <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-stone-600 text-[9px] text-stone-500 cursor-default select-none group-hover:border-stone-400 group-hover:text-stone-300 transition-colors">
+              i
+            </span>
+            <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-5 z-50 w-48 rounded border border-stone-700 bg-stone-900 px-2.5 py-2 text-xs text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg font-sans space-y-1">
+              <p><span className="text-[var(--color-gold)]">gp</span> — gold piece</p>
+              <p><span className="text-stone-300">sp</span> — silver piece</p>
+              <p><span className="text-orange-400">cp</span> — copper piece</p>
+              <p className="border-t border-stone-700 pt-1 text-stone-500">10 cp = 1 sp · 10 sp = 1 gp</p>
+              <p className="text-stone-500">First 100 coins free; then 1 slot per 100</p>
+            </div>
+          </div>
         </div>
       )}
 
-      {weapons.length > 0 && (
+      {combatGear.length > 0 && (
         <div>
-          <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Weapons</h3>
+          <h3 className="text-xs uppercase tracking-wider text-stone-500 mb-2">Weapons &amp; Armor</h3>
           <ul className="space-y-1">
-            {weapons.map((item, i) => (
+            {combatGear.map((item, i) => (
               <ItemRow key={i} item={item} />
             ))}
           </ul>
         </div>
       )}
+
+      {afterWeapons}
 
       {gear.length > 0 && (
         <div>

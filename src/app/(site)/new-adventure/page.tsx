@@ -64,18 +64,18 @@ export default function NewAdventurePage() {
           ← Back to Home
         </Link>
 
-        <div className="mt-8 rounded-lg border border-stone-800 bg-stone-950/90 p-6 space-y-6">
+        <div className="mt-8 rounded-lg border border-stone-800 bg-stone-950/90 p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
 
           {/* Option A: roll your own */}
-          <div>
+          <div className="flex flex-col">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-3">
               Roll Your Own Character
             </h2>
             <Link
               href="/create"
-              className="block rounded-lg border border-stone-700 bg-stone-900 px-4 py-3 text-center transition-colors hover:border-stone-500 hover:bg-stone-800"
+              className="flex-1 flex flex-col items-center justify-center rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-4 py-3 text-center transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800"
             >
-              <p className="font-semibold text-stone-100">Create a New Character</p>
+              <p className="font-semibold text-[var(--color-gold)]">Create a New Character</p>
               <p className="text-sm text-stone-400 mt-0.5">
                 Step through character creation with the GM, then begin your adventure
               </p>
@@ -83,7 +83,7 @@ export default function NewAdventurePage() {
           </div>
 
           {/* Option B: GM decides */}
-          <div>
+          <div className="flex flex-col">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400 mb-3">
               Let the GM Decide
             </h2>
@@ -91,7 +91,7 @@ export default function NewAdventurePage() {
             {!showInterview ? (
               <button
                 onClick={() => setShowInterview(true)}
-                className="w-full rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-4 py-3 text-center transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800 cursor-pointer"
+                className="flex-1 w-full rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-4 py-3 text-center transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800 cursor-pointer"
               >
                 <p className="font-semibold text-[var(--color-gold)]">GM Builds Your Character</p>
                 <p className="text-sm text-stone-400 mt-0.5">

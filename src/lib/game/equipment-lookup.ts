@@ -24,12 +24,14 @@ const EQUIPMENT_DATA: (LookupEntry & { name: string })[] = [
   // ── Armor ──────────────────────────────────────────────────────────────────
   { name: "Leather",          type: "armor",  slots: 1, description: "AC 11 + DEX mod." },
   { name: "Chainmail",        type: "armor",  slots: 2, description: "AC 13 + DEX mod. Disadvantage on stealth and swimming." },
+  { name: "Scale mail",       type: "armor",  slots: 2, description: "AC 13 + DEX mod. Disadvantage on stealth and swimming." },
   { name: "Plate mail",       type: "armor",  slots: 3, description: "AC 15 (no DEX mod). Cannot swim. Disadvantage on stealth." },
   { name: "Mithral chainmail",type: "armor",  slots: 1, description: "AC 13 + DEX mod. No stealth or swim penalty." },
   { name: "Mithral plate",    type: "armor",  slots: 2, description: "AC 15 (no DEX mod). No stealth or swim penalty." },
   { name: "Shield",           type: "shield", slots: 0, description: "+2 AC. Requires one free hand. Cannot wield two-handed weapons." },
 
   // ── Common gear worth noting ────────────────────────────────────────────────
+  { name: "Backpack",        type: "gear", slots: 0, description: "Carries your gear. First one is free (no slot cost)." },
   { name: "Thieves' tools",  type: "gear", slots: 1, description: "Required to attempt picking locks or disarming traps." },
   { name: "Holy symbol",     type: "gear", slots: 0, description: "Required for Priest spellcasting." },
   { name: "Holy water",      type: "gear", slots: 1, description: "Deals 1d6 damage to undead on a direct hit." },
@@ -62,7 +64,7 @@ export function enrichEquipment(item: EquipmentItem): EquipmentItem {
   if (!base) return item;
   return {
     ...item,
-    type: item.type ?? base.type,
+    type: base.type ?? item.type,
     damage: item.damage || base.damage,
     properties: (item.properties && item.properties.length > 0) ? item.properties : base.properties,
     slots: item.slots ?? base.slots,

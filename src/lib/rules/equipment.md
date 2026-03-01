@@ -10,14 +10,14 @@
 
 **10 sp = 1 gp. 100 cp = 1 gp. 10 cp = 1 sp.**
 
-Coins: 100 coins = 1 gear slot.
+Coins: first 100 coins are free to carry; every 100 coins after that takes 1 gear slot.
 
 ## Gear Slots
 
 - A character can carry a number of items equal to their **STR score or 10**, whichever is higher.
 - Most items take **1 gear slot**.
 - Some heavy items take **2 or 3 slots** (noted in tables).
-- Small items (coins, gems, arrows) can be bundled: 100 coins = 1 slot, 20 arrows = 1 slot.
+- Small items (coins, gems, arrows) can be bundled: 100 coins = 1 slot (first 100 free), 20 arrows = 1 slot.
 - Worn armor occupies gear slots as noted.
 
 ## Weapons

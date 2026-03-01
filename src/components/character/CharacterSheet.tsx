@@ -122,7 +122,7 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
         </div>
       )}
 
-      {/* Equipment */}
+      {/* Equipment (spells injected between weapons and gear) */}
       {character.equipment && character.equipment.length > 0 && (
         <InventoryList
           items={character.equipment}
@@ -130,12 +130,12 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
           silver={character.silver}
           copper={character.copper}
           maxSlots={calcMaxGearSlots(character)}
+          afterWeapons={
+            character.spells && character.spells.length > 0
+              ? <SpellList spells={character.spells} />
+              : undefined
+          }
         />
-      )}
-
-      {/* Spells */}
-      {character.spells && character.spells.length > 0 && (
-        <SpellList spells={character.spells} />
       )}
 
       {/* Talents */}
