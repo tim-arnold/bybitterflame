@@ -121,7 +121,13 @@ export function GameLayout({
     const vv = window.visualViewport;
     if (!vv) return;
     function update() {
-      if (layoutRef.current) layoutRef.current.style.height = `${vv!.height}px`;
+      if (!layoutRef.current) return;
+      // vv.offsetTop is how far the visual viewport has scrolled within the
+      // layout viewport (non-zero when the keyboard pushes the page up on iOS).
+      // Translating down by that amount keeps the container anchored to the
+      // top of the visible area.
+      layoutRef.current.style.height = `${vv!.height}px`;
+      layoutRef.current.style.transform = `translateY(${vv!.offsetTop}px)`;
     }
     update();
     vv.addEventListener("resize", update);
