@@ -122,10 +122,11 @@ export function GameLayout({
     if (!vv) return;
     function update() {
       if (!layoutRef.current) return;
-      // position:fixed keeps the container anchored to the top of the screen.
-      // We only need to shrink its height to match the visual viewport so the
-      // layout doesn't extend behind the on-screen keyboard on iOS Safari.
-      layoutRef.current.style.height = `${vv!.height}px`;
+      // The container fills the full layout viewport (fixed inset-0) so there's
+      // never a gap behind the keyboard. We add padding-bottom equal to the
+      // keyboard height so flex children fill only the visible area above it.
+      const keyboardHeight = Math.max(0, window.innerHeight - vv!.height);
+      layoutRef.current.style.paddingBottom = `${keyboardHeight}px`;
     }
     update();
     vv.addEventListener("resize", update);
@@ -139,7 +140,7 @@ export function GameLayout({
     : "The GM is responding. Wait a moment before leaving.";
 
   return (
-    <div ref={layoutRef} className="fixed inset-x-0 top-0 overflow-hidden flex flex-col bg-stone-950">
+    <div ref={layoutRef} className="fixed inset-0 overflow-hidden flex flex-col bg-stone-950">
       {/* Title bar */}
       {title && (
         <div className="shrink-0 border-b border-stone-800 bg-stone-950 px-4 py-2 grid grid-cols-3 items-center">
