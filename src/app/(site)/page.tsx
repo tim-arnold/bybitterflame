@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { UserNav } from "@/components/UserNav";
 import { authClient } from "@/lib/auth/client";
 import { trackEvent } from "@/lib/analytics";
 
@@ -125,11 +124,6 @@ export default function Home() {
       {/* Background */}
       <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
 
-
-      {/* User nav */}
-      <div className="fixed top-4 right-4 z-20">
-        <UserNav />
-      </div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center">

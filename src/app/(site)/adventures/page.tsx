@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ADVENTURE_COLLECTIONS } from "@/lib/adventures/index";
-import { UserNav } from "@/components/UserNav";
 
 function levelBadgeColor(min: number, max: number): string {
   const avg = (min + max) / 2;
@@ -39,11 +38,6 @@ export default function AdventuresPage() {
       {/* Background */}
       <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
 
-
-      {/* User nav */}
-      <div className="fixed top-4 right-4 z-20">
-        <UserNav />
-      </div>
 
       {/* Content */}
       <div className="relative z-10">
