@@ -9,6 +9,32 @@ interface UserNavProps {
   onSettings?: () => void;
 }
 
+function BookIcon() {
+  return (
+    <svg width="13" height="12" viewBox="0 0 13 12" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" aria-hidden>
+      <path d="M6.5 10.5V2M6.5 2C6.5 2 4 1 1 2v9c3-1 5.5 0 5.5 0M6.5 2c0 0 2.5-1 5.5 0v9c-3-1-5.5 0-5.5 0" />
+    </svg>
+  );
+}
+
+function GearIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" aria-hidden>
+      <circle cx="6" cy="6" r="2" />
+      <path d="M6 1v1M6 10v1M1 6h1M10 6h1M2.5 2.5l.7.7M8.8 8.8l.7.7M9.5 2.5l-.7.7M3.2 8.8l-.7.7" />
+    </svg>
+  );
+}
+
+function SignOutIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M5 2H2a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h3" />
+      <path d="M8 9l3-3-3-3M11 6H5" />
+    </svg>
+  );
+}
+
 export function UserNav({ onHowToPlay, onSettings }: UserNavProps = {}) {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
@@ -18,36 +44,29 @@ export function UserNav({ onHowToPlay, onSettings }: UserNavProps = {}) {
   const howToPlayEl = onHowToPlay ? (
     <button
       onClick={onHowToPlay}
-      className="rounded border border-stone-700 bg-stone-900/90 px-3 py-1.5 text-xs font-medium text-stone-400 hover:border-stone-500 hover:text-white transition-colors backdrop-blur-sm cursor-pointer"
+      className="flex items-center gap-1.5 hover:text-stone-100 transition-colors cursor-pointer"
     >
+      <BookIcon />
       How to Play
     </button>
   ) : (
-    <a
-      href="/how-to-play"
-      className="rounded border border-stone-700 bg-stone-900/90 px-3 py-1.5 text-xs font-medium text-stone-400 hover:border-stone-500 hover:text-white transition-colors backdrop-blur-sm"
-    >
+    <Link href="/how-to-play" className="flex items-center gap-1.5 hover:text-stone-100 transition-colors">
+      <BookIcon />
       How to Play
-    </a>
+    </Link>
   );
 
   if (!session) {
     return (
-      <div className="flex items-center gap-2">
+      <nav className="flex items-center gap-5 text-xs text-stone-400">
         {howToPlayEl}
-        <a
-          href="/request-access"
-          className="rounded border border-stone-700 bg-stone-900/90 px-3 py-1.5 text-xs font-medium text-stone-400 hover:border-stone-500 hover:text-white transition-colors backdrop-blur-sm"
-        >
+        <Link href="/request-access" className="hover:text-stone-100 transition-colors">
           Request access
-        </a>
-        <a
-          href="/login"
-          className="rounded border border-stone-600 bg-stone-900/90 px-3 py-1.5 text-xs font-medium text-stone-200 hover:border-stone-400 hover:text-white transition-colors backdrop-blur-sm"
-        >
+        </Link>
+        <Link href="/login" className="text-stone-200 hover:text-white transition-colors">
           Sign in
-        </a>
-      </div>
+        </Link>
+      </nav>
     );
   }
 
@@ -56,43 +75,35 @@ export function UserNav({ onHowToPlay, onSettings }: UserNavProps = {}) {
     router.push("/login");
   }
 
-  const howToPlayInlineEl = onHowToPlay ? (
+  const settingsEl = onSettings ? (
     <button
-      onClick={onHowToPlay}
-      className="text-stone-400 hover:text-stone-100 transition-colors cursor-pointer"
+      onClick={onSettings}
+      className="flex items-center gap-1.5 hover:text-stone-100 transition-colors cursor-pointer"
     >
-      How to Play
+      <GearIcon />
+      Settings
     </button>
   ) : (
-    <Link href="/how-to-play" className="text-stone-400 hover:text-stone-100 transition-colors">
-      How to Play
+    <Link href="/account" className="flex items-center gap-1.5 hover:text-stone-100 transition-colors">
+      <GearIcon />
+      Settings
     </Link>
   );
 
   return (
-    <div className="flex items-center gap-2 rounded border border-stone-600 bg-stone-900/90 px-3 py-1.5 text-xs backdrop-blur-sm">
-      <span className="hidden sm:block truncate max-w-[160px] text-stone-200 font-medium">
+    <nav className="flex items-center gap-5 text-xs text-stone-400">
+      <span className="hidden sm:block truncate max-w-[140px] text-stone-500">
         {session.user.name || session.user.email}
       </span>
-      <span className="hidden sm:block text-stone-600">·</span>
-      {howToPlayInlineEl}
-      <span className="text-stone-600">·</span>
-      {onSettings ? (
-        <button onClick={onSettings} className="text-stone-400 hover:text-stone-100 transition-colors cursor-pointer">
-          Settings
-        </button>
-      ) : (
-        <Link href="/account" className="text-stone-400 hover:text-stone-100 transition-colors">
-          Settings
-        </Link>
-      )}
-      <span className="text-stone-600">·</span>
+      {howToPlayEl}
+      {settingsEl}
       <button
         onClick={handleSignOut}
-        className="text-stone-400 hover:text-stone-100 transition-colors cursor-pointer"
+        className="flex items-center gap-1.5 hover:text-stone-100 transition-colors cursor-pointer"
       >
+        <SignOutIcon />
         Sign out
       </button>
-    </div>
+    </nav>
   );
 }

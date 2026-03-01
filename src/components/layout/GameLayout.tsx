@@ -122,10 +122,11 @@ export function GameLayout({
       {/* Title bar */}
       {title && (
         <div className="shrink-0 border-b border-stone-800 bg-stone-950 px-4 py-2 grid grid-cols-3 items-center">
-          {/* Left: home link + save indicator */}
+          {/* Left: brand home link + save indicator */}
           <div className="flex items-center gap-2">
-            <Link href="/" className="text-xs text-stone-500 hover:text-stone-300 transition-colors" aria-label="Home">
-              ← Home
+            <Link href="/" className="flex items-center gap-1.5 text-sm font-semibold text-[var(--color-gold)] hover:text-white transition-colors">
+              <svg width="8" height="11" viewBox="0 0 10 13" fill="currentColor" aria-hidden><path d="M5 0C5 0 0 5 0 8.5a5 5 0 0 0 10 0C10 5 5 0 5 0z" /></svg>
+              By Torchlight
             </Link>
             <div className="relative group">
               <span className="flex h-4 w-4 items-center justify-center rounded-full border border-stone-600 text-[10px] text-stone-500 cursor-default select-none group-hover:border-stone-400 group-hover:text-stone-300 transition-colors">
