@@ -26,7 +26,7 @@ export function AdventureCompleteScreen({ summary, characterName }: AdventureCom
     >
       {/* Background image */}
       <div className="fixed inset-0">
-        <Image src="/dungeon-background.webp" alt="" fill className="object-cover" priority />
+        <Image src="/dungeon-background-rattail.webp" alt="" fill className="object-cover" priority />
       </div>
       {/* Dark overlay */}
 

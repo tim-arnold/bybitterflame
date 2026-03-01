@@ -135,7 +135,7 @@ function CreatePasswordForm() {
 export default function CreatePasswordPage() {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
-      <div className="absolute inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
+      <div className="absolute inset-0 bg-[url('/dungeon-background-rattail.webp')] bg-cover bg-center" />
 
       <div className="relative z-10 w-full max-w-sm px-4">
         <h1 className="mb-1 text-center text-3xl font-bold tracking-tight text-[var(--color-gold)]">

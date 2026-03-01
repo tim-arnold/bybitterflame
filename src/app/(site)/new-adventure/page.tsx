@@ -56,7 +56,7 @@ export default function NewAdventurePage() {
 
   return (
     <main className="relative min-h-screen">
-      <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
+      <div className="fixed inset-0 bg-[url('/dungeon-background-rattail.webp')] bg-cover bg-center" />
 
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-12">
         <h1 className="text-3xl font-bold text-[var(--color-gold)] mb-1">Begin New Adventure</h1>

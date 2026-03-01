@@ -108,7 +108,7 @@ export default async function AdminPage() {
 
   return (
     <div className="relative min-h-screen text-stone-100">
-      <div className="absolute inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
+      <div className="absolute inset-0 bg-[url('/dungeon-background-rattail.webp')] bg-cover bg-center" />
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-10">
         {/* Header */}

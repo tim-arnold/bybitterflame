@@ -70,7 +70,7 @@ export default function Home() {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center text-center">
       {/* Background */}
-      <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
+      <div className="fixed inset-0 bg-[url('/dungeon-background-rattail.webp')] bg-cover bg-center" />
 
 
       {/* Content */}
