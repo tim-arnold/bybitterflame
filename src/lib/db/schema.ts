@@ -47,6 +47,8 @@ export const users = sqliteTable("user", {
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
   anthropicApiKey: text("anthropic_api_key"),
+  betaApiKey: text("beta_api_key"),
+  betaKeyMode: text("beta_key_mode"),    // "trial" | "full" | null
   serverKeyTurnsUsed: integer("server_key_turns_used").notNull().default(0),
   totalInputTokens: integer("total_input_tokens").notNull().default(0),
   totalOutputTokens: integer("total_output_tokens").notNull().default(0),
@@ -93,7 +95,9 @@ export const accountRequests = sqliteTable("account_requests", {
   name: text("name").notNull(),
   email: text("email").notNull(),
   token: text("token").notNull().unique(),
-  status: text("status").notNull().default("pending"), // "pending" | "approved"
+  status: text("status").notNull().default("pending"), // "pending" | "approved" | "completed"
+  betaApiKey: text("beta_api_key"),
+  betaKeyMode: text("beta_key_mode").notNull().default("trial"), // "trial" | "full"
   createdAt: integer("created_at").notNull(),
 });
 

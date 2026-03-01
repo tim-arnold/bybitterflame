@@ -75,6 +75,8 @@ CREATE TABLE IF NOT EXISTS user (
   created_at            INTEGER NOT NULL,
   updated_at            INTEGER NOT NULL,
   anthropic_api_key     TEXT,
+  beta_api_key          TEXT,
+  beta_key_mode         TEXT,
   server_key_turns_used INTEGER NOT NULL DEFAULT 0,
   total_input_tokens    INTEGER NOT NULL DEFAULT 0,
   total_output_tokens   INTEGER NOT NULL DEFAULT 0
@@ -117,10 +119,12 @@ CREATE TABLE IF NOT EXISTS verification (
 );
 
 CREATE TABLE IF NOT EXISTS account_requests (
-  id          TEXT PRIMARY KEY NOT NULL,
-  name        TEXT NOT NULL,
-  email       TEXT NOT NULL,
-  token       TEXT NOT NULL UNIQUE,
-  status      TEXT NOT NULL DEFAULT 'pending',
-  created_at  INTEGER NOT NULL
+  id            TEXT PRIMARY KEY NOT NULL,
+  name          TEXT NOT NULL,
+  email         TEXT NOT NULL,
+  token         TEXT NOT NULL UNIQUE,
+  status        TEXT NOT NULL DEFAULT 'pending',
+  beta_api_key  TEXT,
+  beta_key_mode TEXT NOT NULL DEFAULT 'trial',
+  created_at    INTEGER NOT NULL
 );

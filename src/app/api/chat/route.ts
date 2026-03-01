@@ -31,6 +31,8 @@ export async function POST(request: NextRequest) {
     // ── Determine which API key to use ──────────────────────────────────────
     let resolvedApiKey: string | undefined;
     let userId: string | null = null;
+    let trialExhaustedUser: { name: string; email: string } | null = null;
+    let incrementTurnCounter = false; // true when turn limit should tick (server key or beta trial)
 
     let session: Awaited<ReturnType<typeof getSession>> | null = null;
     try {
@@ -46,7 +48,14 @@ export async function POST(request: NextRequest) {
         const db = getDb(env.DB);
 
         const [user] = await db
-          .select({ anthropicApiKey: users.anthropicApiKey, serverKeyTurnsUsed: users.serverKeyTurnsUsed })
+          .select({
+            name: users.name,
+            email: users.email,
+            anthropicApiKey: users.anthropicApiKey,
+            betaApiKey: users.betaApiKey,
+            betaKeyMode: users.betaKeyMode,
+            serverKeyTurnsUsed: users.serverKeyTurnsUsed,
+          })
           .from(users)
           .where(eq(users.id, userId))
           .limit(1);
@@ -54,8 +63,30 @@ export async function POST(request: NextRequest) {
         if (user?.anthropicApiKey?.startsWith("sk-ant-")) {
           // User has their own key — use it, no limit
           resolvedApiKey = user.anthropicApiKey;
+        } else if (user?.betaApiKey?.startsWith("sk-ant-")) {
+          // Admin-assigned beta key — use it in both trial and full mode
+          resolvedApiKey = user.betaApiKey;
+          if (user.betaKeyMode !== "full") {
+            // Trial mode: still enforce the turn limit on their beta key
+            const turnsUsed = user.serverKeyTurnsUsed ?? 0;
+            if (turnsUsed >= SERVER_KEY_TURN_LIMIT) {
+              return new Response(
+                JSON.stringify({
+                  error: "api_key_required",
+                  turnsUsed,
+                  limit: SERVER_KEY_TURN_LIMIT,
+                }),
+                { status: 402, headers: { "Content-Type": "application/json" } },
+              );
+            }
+            if (turnsUsed + 1 >= SERVER_KEY_TURN_LIMIT && user) {
+              trialExhaustedUser = { name: user.name, email: user.email };
+            }
+            incrementTurnCounter = true;
+          }
+          // Full mode: no limit, resolvedApiKey already set
         } else {
-          // Use server key — check turn limit
+          // No key — use server key with turn limit
           const turnsUsed = user?.serverKeyTurnsUsed ?? 0;
           if (turnsUsed >= SERVER_KEY_TURN_LIMIT) {
             return new Response(
@@ -68,6 +99,10 @@ export async function POST(request: NextRequest) {
             );
           }
           // resolvedApiKey stays undefined → client.ts falls back to env var
+          incrementTurnCounter = true;
+          if (turnsUsed + 1 >= SERVER_KEY_TURN_LIMIT && user) {
+            trialExhaustedUser = { name: user.name, email: user.email };
+          }
         }
       } catch (dbErr) {
         console.error("DB lookup error in chat route:", dbErr);
@@ -173,17 +208,33 @@ export async function POST(request: NextRequest) {
       userId
         ? (usage) => {
             getCloudflareContext({ async: true })
-              .then(({ env }) => {
+              .then(async ({ env }) => {
                 const db = getDb(env.DB);
                 const updates: Record<string, unknown> = {
                   totalInputTokens: sql`${users.totalInputTokens} + ${usage.inputTokens}`,
                   totalOutputTokens: sql`${users.totalOutputTokens} + ${usage.outputTokens}`,
                 };
-                // Also increment the server-key turn counter if using the env key
-                if (!resolvedApiKey) {
+                // Increment turn counter for server key or beta trial users
+                if (incrementTurnCounter) {
                   updates.serverKeyTurnsUsed = sql`${users.serverKeyTurnsUsed} + 1`;
                 }
-                return db.update(users).set(updates).where(eq(users.id, userId!));
+                await db.update(users).set(updates).where(eq(users.id, userId!));
+
+                // Email admin when a trial user exhausts their turns
+                if (incrementTurnCounter && trialExhaustedUser && env.RESEND_API_KEY) {
+                  const { Resend } = await import("resend");
+                  const resend = new Resend(env.RESEND_API_KEY);
+                  const adminUrl = `${env.BETTER_AUTH_URL}/admin`;
+                  await resend.emails.send({
+                    from: "gm@bytorchlight.com",
+                    to: "gm@bytorchlight.com",
+                    subject: `Trial limit reached — ${trialExhaustedUser.name}`,
+                    html: `
+                      <p><strong>${trialExhaustedUser.name}</strong> (${trialExhaustedUser.email}) has used all ${SERVER_KEY_TURN_LIMIT} trial turns.</p>
+                      <p><a href="${adminUrl}">Open the admin panel</a> to assign them a full beta key.</p>
+                    `,
+                  });
+                }
               })
               .catch((err) => console.error("Failed to track token usage:", err));
           }

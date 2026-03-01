@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
-import { accountRequests } from "@/lib/db/schema";
+import { accountRequests, users } from "@/lib/db/schema";
 import { getAuth } from "@/lib/auth";
 
 export const runtime = "nodejs";
@@ -49,6 +49,21 @@ export async function POST(request: Request) {
   } catch {
     // User may already exist — try updating their password instead via a reset flow
     return NextResponse.json({ error: "Failed to create account. Please contact support." }, { status: 500 });
+  }
+
+  // Copy any pre-assigned beta key/mode to the new user row
+  if (req.betaApiKey) {
+    const [newUser] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.email, req.email))
+      .limit(1);
+    if (newUser) {
+      await db
+        .update(users)
+        .set({ betaApiKey: req.betaApiKey, betaKeyMode: req.betaKeyMode })
+        .where(eq(users.id, newUser.id));
+    }
   }
 
   await db
