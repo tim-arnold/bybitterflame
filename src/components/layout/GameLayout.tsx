@@ -106,12 +106,19 @@ export function GameLayout({
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
+  // Lock body scroll for the duration of the game — the layout owns the full viewport.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   const tooltip = isSaved
     ? "Your session is saved — safe to leave."
     : "The GM is responding. Wait a moment before leaving.";
 
   return (
-    <div className="h-dvh flex flex-col bg-stone-950">
+    <div className="h-dvh overflow-hidden flex flex-col bg-stone-950">
       {/* Title bar */}
       {title && (
         <div className="shrink-0 border-b border-stone-800 bg-stone-950 px-4 py-2 grid grid-cols-3 items-center">

@@ -70,6 +70,10 @@ export default function PlayPage() {
   const [sessionInputTokens, setSessionInputTokens] = useState(0);
   const [sessionOutputTokens, setSessionOutputTokens] = useState(0);
 
+  // Trial turn tracking
+  const [trialTurnsUsed, setTrialTurnsUsed] = useState<number | null>(null);
+  const [isOnTrial, setIsOnTrial] = useState(false);
+
   // Adventure module state
   const [adventure, setAdventure] = useState<Adventure | null>(null);
   const [currentMapFile, setCurrentMapFile] = useState<string | null>(null);
@@ -101,6 +105,18 @@ export default function PlayPage() {
     if (character.name) parts.push(character.name);
     document.title = parts.join(" · ");
   }, [campaignTitle, character.name]);
+
+  useEffect(() => {
+    fetch("/api/user/api-key")
+      .then((r) => r.json())
+      .then((data: { isOnTrial?: boolean; turnsUsed?: number }) => {
+        if (data.isOnTrial) {
+          setIsOnTrial(true);
+          setTrialTurnsUsed(data.turnsUsed ?? 0);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Load character and campaign data. For new campaigns (no messages), auto-trigger
   // the GM's opening scene using the freshly loaded data before state is set.
@@ -535,6 +551,7 @@ export default function PlayPage() {
         if (companionsChanged) setCompanions(updatedCompanions);
         setMessages(finalMessages);
         setStreamingContent("");
+        if (isOnTrial) setTrialTurnsUsed((prev) => (prev !== null ? prev + 1 : null));
 
         // Auto-save after every AI response
         fetch(`/api/campaign/${campaignId}/save`, {
@@ -895,6 +912,7 @@ export default function PlayPage() {
                   isPausing={isPausing}
                   sessionInputTokens={sessionInputTokens}
                   sessionOutputTokens={sessionOutputTokens}
+                  trialTurnsUsed={isOnTrial ? (trialTurnsUsed ?? 0) : null}
                 />
               </>
             )}

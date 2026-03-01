@@ -227,9 +227,8 @@ export function SettingsContent() {
         <h2 className="text-sm font-semibold text-stone-200">How costs work</h2>
         <p className="text-xs text-stone-400 leading-relaxed">
           Every turn sends your action plus the full game context — character sheet, active
-          rules, session history, GM persona — to the API. A typical session of 20–30 turns
-          costs roughly <span className="text-stone-300">$0.50–$2.00</span>, depending on
-          context size.
+          rules, session history, GM persona — to the API. Each GM response costs roughly{" "}
+          <span className="text-stone-300">5–7 cents</span>, so a 20-turn session runs about $1.
         </p>
         <p className="text-xs text-stone-400 leading-relaxed">
           When using your own key,{" "}

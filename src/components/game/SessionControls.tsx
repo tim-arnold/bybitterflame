@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ANTHROPIC_INPUT_COST_PER_TOKEN, ANTHROPIC_OUTPUT_COST_PER_TOKEN } from "@/lib/config";
+import { ANTHROPIC_INPUT_COST_PER_TOKEN, ANTHROPIC_OUTPUT_COST_PER_TOKEN, SERVER_KEY_TURN_LIMIT } from "@/lib/config";
 
 interface SessionControlsProps {
   onEndSession: () => void;
@@ -11,6 +11,8 @@ interface SessionControlsProps {
   isPausing?: boolean;
   sessionInputTokens?: number;
   sessionOutputTokens?: number;
+  /** Non-null when user is on the free trial; value is turns used so far. */
+  trialTurnsUsed?: number | null;
 }
 
 export function SessionControls({
@@ -21,6 +23,7 @@ export function SessionControls({
   isPausing,
   sessionInputTokens = 0,
   sessionOutputTokens = 0,
+  trialTurnsUsed = null,
 }: SessionControlsProps) {
   const totalTokens = sessionInputTokens + sessionOutputTokens;
   const estimatedCost =
@@ -55,6 +58,32 @@ export function SessionControls({
           </button>
         )}
       </div>
+
+      {trialTurnsUsed !== null && (
+        <div className="border-t border-stone-800 pt-2 space-y-1.5">
+          <div className="flex justify-between text-xs">
+            <span className="text-stone-500">Free trial turns</span>
+            <span className={`font-mono ${trialTurnsUsed >= SERVER_KEY_TURN_LIMIT ? "text-red-400" : "text-blue-400"}`}>
+              {trialTurnsUsed} / {SERVER_KEY_TURN_LIMIT}
+            </span>
+          </div>
+          <div className="h-1 rounded-full bg-stone-800 overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${trialTurnsUsed >= SERVER_KEY_TURN_LIMIT ? "bg-red-500" : "bg-blue-600"}`}
+              style={{ width: `${Math.min(100, (trialTurnsUsed / SERVER_KEY_TURN_LIMIT) * 100)}%` }}
+            />
+          </div>
+          {trialTurnsUsed >= SERVER_KEY_TURN_LIMIT && (
+            <p className="text-xs text-red-400">
+              Trial ended.{" "}
+              <Link href="/account" className="underline hover:text-red-300">
+                Add your API key
+              </Link>{" "}
+              to continue.
+            </p>
+          )}
+        </div>
+      )}
 
       {totalTokens > 0 && (
         <div className="border-t border-stone-800 pt-2 space-y-1">

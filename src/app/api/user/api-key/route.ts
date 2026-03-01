@@ -29,6 +29,8 @@ export async function GET(request: Request) {
   const [user] = await db
     .select({
       anthropicApiKey: users.anthropicApiKey,
+      betaApiKey: users.betaApiKey,
+      betaKeyMode: users.betaKeyMode,
       serverKeyTurnsUsed: users.serverKeyTurnsUsed,
       totalInputTokens: users.totalInputTokens,
       totalOutputTokens: users.totalOutputTokens,
@@ -41,10 +43,16 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  // On trial if: no own key, and no beta key in full mode
+  const isOnTrial =
+    !user.anthropicApiKey?.startsWith("sk-ant-") &&
+    !(user.betaApiKey?.startsWith("sk-ant-") && user.betaKeyMode === "full");
+
   return NextResponse.json({
     hasKey: !!user.anthropicApiKey,
     maskedKey: user.anthropicApiKey ? maskKey(user.anthropicApiKey) : null,
     turnsUsed: user.serverKeyTurnsUsed,
+    isOnTrial,
     totalInputTokens: user.totalInputTokens,
     totalOutputTokens: user.totalOutputTokens,
   });

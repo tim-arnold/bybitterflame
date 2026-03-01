@@ -157,7 +157,7 @@ export function HowToPlayContent() {
           >
             console.anthropic.com
           </a>
-          . You only pay for what you use — a typical session costs a few cents.{" "}
+          . You only pay for what you use — each GM response costs roughly 5–7 cents, so a 20-turn session runs about $1.{" "}
           {session ? (
             <>Add your key in <Link href="/account" className="text-stone-300 underline hover:text-white transition-colors">Account Settings</Link> and it will be used for all future turns.</>
           ) : (
