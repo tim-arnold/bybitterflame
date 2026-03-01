@@ -122,19 +122,15 @@ export function GameLayout({
     if (!vv) return;
     function update() {
       if (!layoutRef.current) return;
-      // vv.offsetTop is how far the visual viewport has scrolled within the
-      // layout viewport (non-zero when the keyboard pushes the page up on iOS).
-      // Translating down by that amount keeps the container anchored to the
-      // top of the visible area.
+      // position:fixed keeps the container anchored to the top of the screen.
+      // We only need to shrink its height to match the visual viewport so the
+      // layout doesn't extend behind the on-screen keyboard on iOS Safari.
       layoutRef.current.style.height = `${vv!.height}px`;
-      layoutRef.current.style.transform = `translateY(${vv!.offsetTop}px)`;
     }
     update();
     vv.addEventListener("resize", update);
-    vv.addEventListener("scroll", update);
     return () => {
       vv.removeEventListener("resize", update);
-      vv.removeEventListener("scroll", update);
     };
   }, []);
 
@@ -143,7 +139,7 @@ export function GameLayout({
     : "The GM is responding. Wait a moment before leaving.";
 
   return (
-    <div ref={layoutRef} className="h-dvh overflow-hidden flex flex-col bg-stone-950">
+    <div ref={layoutRef} className="fixed inset-x-0 top-0 overflow-hidden flex flex-col bg-stone-950">
       {/* Title bar */}
       {title && (
         <div className="shrink-0 border-b border-stone-800 bg-stone-950 px-4 py-2 grid grid-cols-3 items-center">
