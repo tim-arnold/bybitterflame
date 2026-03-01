@@ -105,7 +105,10 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ character: {}, gmPersona: "", campaignType: "standard" }),
       });
-      if (!res.ok) throw new Error("Failed to create campaign");
+      if (!res.ok) {
+        setIsStartingGm(false);
+        return;
+      }
       const { campaignId } = await res.json() as { campaignId: string };
       sessionStorage.setItem(`gm-create-answers-${campaignId}`, JSON.stringify(gmAnswers));
       trackEvent({ name: "adventure_started", type: "gm_decides" });
@@ -364,7 +367,7 @@ export default function Home() {
         <p className="text-xs text-stone-400 max-w-sm leading-relaxed text-center">
           By Torchlight is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC.
         </p>
-        <p className="text-xs text-stone-600 text-center">
+        <p className="text-xs text-stone-400 text-center">
           © {new Date().getFullYear()} tim52.io
         </p>
       </div>
