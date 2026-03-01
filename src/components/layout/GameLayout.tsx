@@ -111,7 +111,7 @@ export function GameLayout({
     : "The GM is responding. Wait a moment before leaving.";
 
   return (
-    <div className="h-screen flex flex-col bg-stone-950">
+    <div className="h-dvh flex flex-col bg-stone-950">
       {/* Title bar */}
       {title && (
         <div className="shrink-0 border-b border-stone-800 bg-stone-950 px-4 py-2 grid grid-cols-3 items-center">
@@ -167,8 +167,8 @@ export function GameLayout({
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
 
       {/* Mobile layout */}
-      <div className="md:hidden flex flex-col flex-1 overflow-hidden">
-        <div className="flex-1 overflow-hidden">
+      <div className="md:hidden flex flex-col flex-1 min-h-0">
+        <div className="flex-1 min-h-0 overflow-hidden">
           {mobileTab === "left" && <div className="h-full overflow-y-auto">{leftPanel}</div>}
           {mobileTab === "center" && <div className="h-full flex flex-col">{centerPanel}</div>}
           {mobileTab === "right" && <div className="h-full overflow-y-auto p-4 space-y-4">{rightPanel}</div>}
