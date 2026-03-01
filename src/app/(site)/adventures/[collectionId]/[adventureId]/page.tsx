@@ -136,26 +136,21 @@ export default function AdventureDetailPage() {
       : `Levels ${adventure.levelMin}–${adventure.levelMax}`;
 
   return (
-    <div className="relative min-h-screen text-stone-100">
-      {/* Background */}
+    <main className="relative min-h-screen">
       <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
 
-
-      {/* Content */}
-      <div className="relative z-10">
-      <div className="max-w-2xl mx-auto px-6 py-10">
-        <div className="mb-8">
-          <Link href="/adventures" className="text-sm text-stone-500 hover:text-stone-300 transition-colors">
-            ← Adventures
-          </Link>
-        </div>
+      <div className="relative z-10 mx-auto max-w-4xl px-4 py-12">
+        <h1 className="text-3xl font-bold text-[var(--color-gold)] mb-1">Choose an Adventure</h1>
+        <Link href="/adventures" className="text-sm text-stone-400 hover:text-stone-300 transition-colors">
+          ← Back to all Adventures
+        </Link>
 
         {/* Adventure header */}
-        <div className="mb-8">
+        <div className="mt-8 mb-6 rounded-lg border border-stone-800 bg-stone-950/90 p-6">
           <div className="flex items-start gap-3 mb-3">
-            <h1 className="text-2xl font-bold text-[var(--color-gold)] leading-tight">
+            <h2 className="text-2xl font-bold text-stone-100 leading-tight">
               {adventure.title}
-            </h1>
+            </h2>
             <span className="shrink-0 text-xs mt-1 px-2 py-0.5 rounded border border-stone-600 bg-stone-800 text-stone-300 font-mono">
               {levelLabel}
             </span>
@@ -167,7 +162,7 @@ export default function AdventureDetailPage() {
         </div>
 
         {/* Character options */}
-        <div className="space-y-6">
+        <div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6 space-y-6">
 
           {/* Option A: create new character */}
           <div>
@@ -283,7 +278,6 @@ export default function AdventureDetailPage() {
           </div>
         </div>
       </div>
-      </div>
-    </div>
+    </main>
   );
 }

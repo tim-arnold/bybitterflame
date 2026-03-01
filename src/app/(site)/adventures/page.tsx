@@ -34,27 +34,21 @@ export default function AdventuresPage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen text-stone-100">
-      {/* Background */}
+    <main className="relative min-h-screen">
       <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
 
-
-      {/* Content */}
-      <div className="relative z-10">
-      <div className="max-w-4xl mx-auto px-6 py-10">
-        <div className="mb-8">
-          <Link href="/" className="text-sm text-stone-500 hover:text-stone-300 transition-colors">
-            ← Back
-          </Link>
-        </div>
+      <div className="relative z-10 mx-auto max-w-4xl px-4 py-12">
 
         <h1 className="text-3xl font-bold text-[var(--color-gold)] mb-1">Choose an Adventure</h1>
-        <p className="text-stone-400 mb-10">
+        <Link href="/" className="text-sm text-stone-400 hover:text-stone-300 transition-colors">
+          ← Back to Home
+        </Link>
+        <p className="text-stone-400 mt-6 mb-6">
           Select a published oneshot module to run with an AI Game Master.
         </p>
 
         {ADVENTURE_COLLECTIONS.map((collection) => (
-          <section key={collection.id} className="mb-12">
+          <section key={collection.id} className="mb-6 rounded-lg border border-stone-800 bg-stone-950/90 p-6">
             <h2 className="text-xl font-semibold text-stone-200 mb-1">{collection.title}</h2>
             <p className="text-sm text-stone-500 mb-5">
               {collection.adventures.length} oneshot adventures
@@ -101,7 +95,6 @@ export default function AdventuresPage() {
           </section>
         ))}
       </div>
-      </div>
-    </div>
+    </main>
   );
 }

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
-import { trackEvent } from "@/lib/analytics";
 
 interface CampaignSummary {
   campaignId: string;
@@ -21,29 +20,6 @@ interface CampaignSummary {
 }
 
 type DeleteTarget = "adventure" | "character" | "both";
-
-const GM_QUESTIONS = [
-  {
-    id: "style",
-    question: "When trouble finds you, what's your first instinct?",
-    options: [
-      "Steel and muscle — I hit first",
-      "Shadows and patience — I wait for my moment",
-      "Words and wit — I talk my way through",
-      "Power — magic or faith sees me through",
-    ],
-  },
-  {
-    id: "motivation",
-    question: "What brought you to this line of work?",
-    options: [
-      "The coin",
-      "The thrill",
-      "A debt to repay",
-      "Someone I'm searching for",
-    ],
-  },
-] as const;
 
 export default function Home() {
   const router = useRouter();
@@ -73,11 +49,6 @@ export default function Home() {
     });
   }
 
-  // New adventure flow
-  const [showNewOptions, setShowNewOptions] = useState(false);
-  const [gmAnswers, setGmAnswers] = useState<Record<string, string>>({});
-  const [isStartingGm, setIsStartingGm] = useState(false);
-
   useEffect(() => {
     fetch("/api/campaigns")
       .then((r) => r.json())
@@ -95,29 +66,6 @@ export default function Home() {
       setIsDeleting(false);
     }
   }
-
-  async function handleGmBegin() {
-    setIsStartingGm(true);
-    try {
-      const res = await fetch("/api/character", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ character: {}, gmPersona: "", campaignType: "standard" }),
-      });
-      if (!res.ok) {
-        setIsStartingGm(false);
-        return;
-      }
-      const { campaignId } = await res.json() as { campaignId: string };
-      sessionStorage.setItem(`gm-create-answers-${campaignId}`, JSON.stringify(gmAnswers));
-      trackEvent({ name: "adventure_started", type: "gm_decides" });
-      router.push(`/play/${campaignId}`);
-    } catch {
-      setIsStartingGm(false);
-    }
-  }
-
-  const allAnswered = GM_QUESTIONS.every((q) => gmAnswers[q.id]);
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center text-center">
@@ -156,7 +104,7 @@ export default function Home() {
         </div>
       )}
 
-      {campaigns.length > 0 && !showNewOptions && (
+      {campaigns.length > 0 && (
         <div className="mb-8 w-full max-w-md">
           <p className="mb-3 text-sm uppercase tracking-widest text-stone-500">
             Continue Adventure
@@ -268,84 +216,19 @@ export default function Home() {
       )}
 
       {/* New adventure options */}
-      <div className="w-full max-w-md">
-        {!showNewOptions ? (
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={() => session ? setShowNewOptions(true) : router.push("/login")}
-              className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-8 py-3 text-lg font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800 cursor-pointer"
-            >
-              Begin New Adventure
-            </button>
-            <button
-              onClick={() => session ? router.push("/adventures") : router.push("/login")}
-              className="rounded-lg border border-stone-600 bg-stone-900 px-8 py-3 text-lg font-semibold text-stone-300 transition-colors hover:border-stone-400 hover:bg-stone-800 cursor-pointer"
-            >
-              Choose an Adventure
-            </button>
-          </div>
-        ) : (
-          <div className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-5 py-5 text-left space-y-5">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold uppercase tracking-wider text-stone-400">New Adventure</p>
-              <button
-                onClick={() => { setShowNewOptions(false); setGmAnswers({}); }}
-                className="text-xs text-stone-600 hover:text-stone-400 transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-            </div>
-
-            {/* Option A: build your own */}
-            <Link
-              href="/create"
-              className="block rounded border border-stone-700 bg-stone-800 px-4 py-3 transition-colors hover:border-stone-500 hover:bg-stone-700"
-            >
-              <p className="font-semibold text-stone-100">Roll a New Character</p>
-              <p className="text-xs text-stone-300 mt-0.5">Step through character creation with the GM</p>
-            </Link>
-
-            {/* Option B: GM decides */}
-            <div>
-              <p className="font-semibold text-stone-100 mb-3">Let the GM Decide</p>
-              <div className="space-y-4">
-                {GM_QUESTIONS.map((q) => (
-                  <div key={q.id} role="group" aria-labelledby={`gm-q-${q.id}`}>
-                    <p id={`gm-q-${q.id}`} className="text-sm text-stone-300 mb-2">{q.question}</p>
-                    <div className="grid grid-cols-1 gap-1.5">
-                      {q.options.map((opt) => {
-                        const selected = gmAnswers[q.id] === opt;
-                        return (
-                          <button
-                            key={opt}
-                            aria-pressed={selected}
-                            onClick={() => setGmAnswers((prev) => ({ ...prev, [q.id]: opt }))}
-                            disabled={isStartingGm}
-                            className={`w-full rounded border px-3 py-2 text-left text-sm transition-colors cursor-pointer ${
-                              selected
-                                ? "border-[var(--color-gold-dim)] bg-stone-700 text-[var(--color-gold)]"
-                                : "border-stone-700 bg-stone-800 text-stone-300 hover:border-stone-500 hover:text-stone-100"
-                            }`}
-                          >
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-
-                <button
-                  onClick={handleGmBegin}
-                  disabled={!allAnswered || isStartingGm}
-                  className="w-full rounded border border-[var(--color-gold-dim)] bg-stone-800 px-4 py-2.5 text-sm font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-700 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {isStartingGm ? "Preparing…" : "Begin Adventure →"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <button
+          onClick={() => session ? router.push("/new-adventure") : router.push("/login")}
+          className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-8 py-3 text-lg font-semibold text-[var(--color-gold)] transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800 cursor-pointer"
+        >
+          Begin New Adventure
+        </button>
+        <button
+          onClick={() => session ? router.push("/adventures") : router.push("/login")}
+          className="rounded-lg border border-stone-600 bg-stone-900 px-8 py-3 text-lg font-semibold text-stone-300 transition-colors hover:border-stone-400 hover:bg-stone-800 cursor-pointer"
+        >
+          Choose an Adventure
+        </button>
       </div>
 
       <div className="mt-6 flex flex-col items-center gap-3">

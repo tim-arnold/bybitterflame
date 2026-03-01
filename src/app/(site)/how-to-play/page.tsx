@@ -13,12 +13,15 @@ export default function HowToPlayPage() {
       <div className="fixed inset-0 bg-[url('/dungeon-background.webp')] bg-cover bg-center" />
 
 
-      <div className="relative z-10 mx-auto max-w-2xl px-4 py-12">
-        <h1 className="mb-8 text-3xl font-bold tracking-tight text-[var(--color-gold)]">
+      <div className="relative z-10 mx-auto max-w-4xl px-4 py-12">
+        <h1 className="mb-1 text-3xl font-bold tracking-tight text-[var(--color-gold)]">
           How to Play
         </h1>
+        <a href="/" className="text-sm text-stone-400 hover:text-stone-300 transition-colors">
+          ← Back to Home
+        </a>
 
-        <div className="rounded-lg border border-stone-800 bg-stone-950/90 p-6">
+        <div className="mt-8 rounded-lg border border-stone-800 bg-stone-950/90 p-6">
           <HowToPlayContent />
         </div>
       </div>
