@@ -75,29 +75,6 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
         </div>
       </div>
 
-      {/* HP and AC */}
-      {(character.hp !== undefined || character.ac !== undefined) && (
-        <div className="flex gap-4">
-          {character.hp !== undefined && character.maxHp !== undefined && (
-            <HPTracker current={character.hp} max={character.maxHp} />
-          )}
-          {character.ac !== undefined && (
-            <div className="flex flex-col items-center bg-stone-900 border border-stone-700 rounded-lg p-3 min-w-[70px]">
-              <span className="text-[10px] uppercase tracking-wider text-stone-500">AC</span>
-              <span className="text-2xl font-bold text-stone-100">{character.ac}</span>
-            </div>
-          )}
-          {character.xp !== undefined && character.level !== undefined && (
-            <div className="flex flex-col items-center bg-stone-900 border border-stone-700 rounded-lg p-3 min-w-[70px]">
-              <span className="text-[10px] uppercase tracking-wider text-stone-500">XP</span>
-              <span className="text-lg font-bold text-stone-100 leading-tight">
-                {character.xp}<span className="text-stone-500 text-base font-normal">/{character.level * 10}</span>
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Ability Scores */}
       {character.str !== undefined && (
         <div>
@@ -115,6 +92,33 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
                 )
             )}
           </div>
+        </div>
+      )}
+
+      {/* HP, AC, XP */}
+      {(character.hp !== undefined || character.ac !== undefined) && (
+        <div className="space-y-2">
+          {character.hp !== undefined && character.maxHp !== undefined && (
+            <HPTracker current={character.hp} max={character.maxHp} />
+          )}
+          {(character.ac !== undefined || character.xp !== undefined) && (
+            <div className="grid grid-cols-2 gap-2">
+              {character.ac !== undefined && (
+                <div className="flex flex-col items-center bg-stone-900 border border-stone-700 rounded-lg py-2">
+                  <span className="text-[10px] uppercase tracking-wider text-stone-500">AC</span>
+                  <span className="text-2xl font-bold text-stone-100">{character.ac}</span>
+                </div>
+              )}
+              {character.xp !== undefined && character.level !== undefined && (
+                <div className="flex flex-col items-center bg-stone-900 border border-stone-700 rounded-lg py-2">
+                  <span className="text-[10px] uppercase tracking-wider text-stone-500">XP</span>
+                  <span className="text-xl font-bold text-stone-100 leading-tight">
+                    {character.xp}<span className="text-stone-500 text-sm font-normal">/{character.level * 10}</span>
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

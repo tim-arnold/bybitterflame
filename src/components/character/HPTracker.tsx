@@ -13,7 +13,7 @@ export function HPTracker({ current, max }: HPTrackerProps) {
   else if (pct <= 50) barColor = "bg-yellow-600";
 
   return (
-    <div className="flex flex-col items-center bg-stone-900 border border-stone-700 rounded-lg p-3 min-w-[100px]">
+    <div className="flex flex-col items-center bg-stone-900 border border-stone-700 rounded-lg p-3 w-full">
       <span className="text-[10px] uppercase tracking-wider text-stone-500" aria-hidden="true">HP</span>
       <span
         className="text-2xl font-bold text-stone-100"
