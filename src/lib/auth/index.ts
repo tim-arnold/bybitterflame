@@ -12,8 +12,6 @@ export async function getAuth() {
 
   const { env } = await getCloudflareContext({ async: true });
   const db = getDb(env.DB);
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
   _auth = betterAuth({
     database: drizzleAdapter(db, {
       provider: "sqlite",
@@ -27,6 +25,7 @@ export async function getAuth() {
     emailAndPassword: {
       enabled: true,
       sendResetPassword: async ({ user, url }) => {
+        const resend = new Resend(process.env.RESEND_API_KEY);
         void resend.emails.send({
           from: "gm@bytorchlight.com",
           to: user.email,
