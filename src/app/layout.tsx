@@ -42,6 +42,9 @@ export const metadata: Metadata = {
       "An AI-powered Game Master for Shadowdark RPG. Create a character and explore deadly dungeons.",
     images: ["https://bytorchlight.com/dungeon-background-rattail.webp"],
   },
+  alternates: {
+    canonical: "https://bytorchlight.com",
+  },
   robots: {
     index: true,
     follow: true,
