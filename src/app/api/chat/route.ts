@@ -113,6 +113,11 @@ export async function POST(request: NextRequest) {
     }
     // ────────────────────────────────────────────────────────────────────────
 
+    // Character creation turns don't count toward the trial limit
+    if (mode !== "play") {
+      incrementTurnCounter = false;
+    }
+
     let systemContent: string | SystemBlock[];
 
     if (mode === "create") {
