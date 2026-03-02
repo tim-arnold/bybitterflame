@@ -56,6 +56,36 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 
 ## Recent Work
 
+### Session 15 (2026-03-02)
+
+**Companion selection at adventure start, carousing, homepage UX, new-adventure flow:**
+
+**Companion selection (pre-adventure step):**
+- Two-step flow on adventure detail page: select character → select companions
+- New `GET /api/companions/available?characterId=X`: returns former companions from completed/abandoned campaigns (filters dead/hostile, deduplicates by name) + available roster characters with full stats
+- New `POST /api/companion/promote`: creates a `characters` row + campaign from companion data; allows former companions to become the main playable character
+- `POST /api/character/start-adventure` accepts optional `companions[]`; each companion added to initial `worldState.companions` with HP restored to max
+- Multi-companion support: slot limit formula `min(3, max(1, 1 + max(0, adventure.levelMin - character.level)))`
+- "Play as [Name]" path for former companions (no roster character equivalent — they're already in the picker)
+
+**Carousing at adventure end:**
+- `AdventureCompleteScreen` multi-phase flow: `victory → carousing → rolling → result → done`
+- Shadowdark carousing mechanic: 7 tiers (30gp–1800gp), roll d8 + tier bonus for XP; 14 thematic outcomes
+- Animated dice tumble (18 ticks, biases toward final value)
+- Gold deducted from character on completion; `/complete` API deferred until after carousing so XP/gold saves first
+
+**Homepage UX:**
+- "Continue Adventure" tiles: adventure name as gold heading, character info secondary, companions on third line
+- Delete simplified to adventure-only (character row always preserved)
+- Delete confirmation heading now shows adventure name
+- Trash can SVG replaces × icon; tooltips on lock/delete via `group/tip` scoped Tailwind groups
+- Fixed icon/date collision: actions moved into a dedicated flex column alongside the Link
+
+**New adventure flow:**
+- `/new-adventure` now skips the intermediate collapsed two-card state; lands directly with GM interview visible
+
+**Build: clean ✓**
+
 ### Session 14 (2026-03-02)
 
 **Cost optimization — Phases 1, 2, and 5 implemented:**
