@@ -46,6 +46,18 @@ body {
   animation: dice-land 0.3s ease-out forwards;
 }
 
+/* Override browser autofill styles (e.g. 1Password, Chrome) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input[data-com-onepassword-filled],
+input[data-com-onepassword-filled]:hover,
+input[data-com-onepassword-filled]:focus {
+  -webkit-text-fill-color: #f1f0ee; /* stone-100 */
+  box-shadow: 0 0 0 1000px #1c1917 inset; /* stone-900 */
+  caret-color: #f1f0ee;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   @apply w-2;

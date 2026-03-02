@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { trackEvent } from "@/lib/analytics";
+import { SiteNav } from "@/components/SiteNav";
 
 export default function RequestAccessPage() {
   const [name, setName] = useState("");
@@ -39,10 +40,11 @@ export default function RequestAccessPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
+      <SiteNav />
       <div className="absolute inset-0 bg-[url('/dungeon-background-rattail.webp')] bg-cover bg-center" />
 
 
-      <div className="relative z-10 w-full max-w-sm px-4">
+      <div className="relative z-10 w-full max-w-sm px-4 pt-12">
         <h1 className="mb-1 text-center text-3xl font-bold tracking-tight text-[var(--color-gold)]">
           By Torchlight
         </h1>
@@ -152,11 +154,6 @@ export default function RequestAccessPage() {
           </div>
         )}
 
-        <div className="mt-4 text-center">
-          <Link href="/" className="text-sm text-stone-400 hover:text-white transition-colors">
-            ← Home
-          </Link>
-        </div>
       </div>
     </div>
   );
