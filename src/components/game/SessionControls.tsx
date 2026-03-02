@@ -11,6 +11,8 @@ interface SessionControlsProps {
   isPausing?: boolean;
   sessionInputTokens?: number;
   sessionOutputTokens?: number;
+  lifetimeInputTokens?: number;
+  lifetimeOutputTokens?: number;
   /** Non-null when user is on the free trial; value is turns used so far. */
   trialTurnsUsed?: number | null;
 }
@@ -23,12 +25,19 @@ export function SessionControls({
   isPausing,
   sessionInputTokens = 0,
   sessionOutputTokens = 0,
+  lifetimeInputTokens = 0,
+  lifetimeOutputTokens = 0,
   trialTurnsUsed = null,
 }: SessionControlsProps) {
-  const totalTokens = sessionInputTokens + sessionOutputTokens;
-  const estimatedCost =
+  const sessionTokens = sessionInputTokens + sessionOutputTokens;
+  const sessionCost =
     sessionInputTokens * ANTHROPIC_INPUT_COST_PER_TOKEN +
     sessionOutputTokens * ANTHROPIC_OUTPUT_COST_PER_TOKEN;
+
+  const lifetimeTokens = lifetimeInputTokens + lifetimeOutputTokens;
+  const lifetimeCost =
+    lifetimeInputTokens * ANTHROPIC_INPUT_COST_PER_TOKEN +
+    lifetimeOutputTokens * ANTHROPIC_OUTPUT_COST_PER_TOKEN;
 
   return (
     <div className="bg-stone-900 border border-stone-700 rounded-lg p-3 space-y-2">
@@ -85,15 +94,19 @@ export function SessionControls({
         </div>
       )}
 
-      {totalTokens > 0 && (
+      {lifetimeTokens > 0 && (
         <div className="border-t border-stone-800 pt-2 space-y-1">
           <div className="flex justify-between text-xs">
-            <span className="text-stone-600">Tokens this session</span>
-            <span className="font-mono text-stone-500">{totalTokens.toLocaleString()}</span>
+            <span className="text-stone-600">This session</span>
+            <span className="font-mono text-stone-500">
+              {sessionTokens > 0 ? `${sessionTokens.toLocaleString()} · $${sessionCost.toFixed(4)}` : "—"}
+            </span>
           </div>
           <div className="flex justify-between text-xs">
-            <span className="text-stone-600">Est. cost</span>
-            <span className="font-mono text-stone-500">${estimatedCost.toFixed(4)}</span>
+            <span className="text-stone-600">Lifetime</span>
+            <span className="font-mono text-stone-500">
+              {lifetimeTokens.toLocaleString()} · ${lifetimeCost.toFixed(4)}
+            </span>
           </div>
         </div>
       )}

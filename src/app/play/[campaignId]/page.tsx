@@ -69,6 +69,9 @@ export default function PlayPage() {
   // Session token usage (accumulated from \x00TOKENS: sentinels in the stream)
   const [sessionInputTokens, setSessionInputTokens] = useState(0);
   const [sessionOutputTokens, setSessionOutputTokens] = useState(0);
+  // Lifetime baseline loaded from DB on mount; session tokens are added on top
+  const [lifetimeBaseInputTokens, setLifetimeBaseInputTokens] = useState(0);
+  const [lifetimeBaseOutputTokens, setLifetimeBaseOutputTokens] = useState(0);
 
   // Trial turn tracking
   const [trialTurnsUsed, setTrialTurnsUsed] = useState<number | null>(null);
@@ -109,11 +112,13 @@ export default function PlayPage() {
   useEffect(() => {
     fetch("/api/user/api-key")
       .then((r) => r.json())
-      .then((data: { isOnTrial?: boolean; turnsUsed?: number }) => {
+      .then((data: { isOnTrial?: boolean; turnsUsed?: number; totalInputTokens?: number; totalOutputTokens?: number }) => {
         if (data.isOnTrial) {
           setIsOnTrial(true);
           setTrialTurnsUsed(data.turnsUsed ?? 0);
         }
+        setLifetimeBaseInputTokens(data.totalInputTokens ?? 0);
+        setLifetimeBaseOutputTokens(data.totalOutputTokens ?? 0);
       })
       .catch(() => {});
   }, []);
@@ -912,6 +917,8 @@ export default function PlayPage() {
                   isPausing={isPausing}
                   sessionInputTokens={sessionInputTokens}
                   sessionOutputTokens={sessionOutputTokens}
+                  lifetimeInputTokens={lifetimeBaseInputTokens + sessionInputTokens}
+                  lifetimeOutputTokens={lifetimeBaseOutputTokens + sessionOutputTokens}
                   trialTurnsUsed={isOnTrial ? (trialTurnsUsed ?? 0) : null}
                 />
               </>
