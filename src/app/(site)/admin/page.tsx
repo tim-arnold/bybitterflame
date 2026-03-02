@@ -6,11 +6,7 @@ import { desc, eq, not } from "drizzle-orm";
 import { getAuth } from "@/lib/auth/index";
 import { getDb } from "@/lib/db/client";
 import { users, accountRequests } from "@/lib/db/schema";
-import {
-  SERVER_KEY_TURN_LIMIT,
-  ANTHROPIC_INPUT_COST_PER_TOKEN,
-  ANTHROPIC_OUTPUT_COST_PER_TOKEN,
-} from "@/lib/config";
+import { SERVER_KEY_TURN_LIMIT, calcCost } from "@/lib/config";
 import { BetaKeyForm } from "./BetaKeyForm";
 import { DeleteUserButton } from "./DeleteUserButton";
 
@@ -53,9 +49,8 @@ function formatTokens(n: number): string {
   return String(n);
 }
 
-function formatCost(input: number, output: number): string {
-  const cost = input * ANTHROPIC_INPUT_COST_PER_TOKEN + output * ANTHROPIC_OUTPUT_COST_PER_TOKEN;
-  return `$${cost.toFixed(3)}`;
+function formatCost(input: number, output: number, cacheWrite = 0, cacheRead = 0): string {
+  return `$${calcCost(input, output, cacheWrite, cacheRead).toFixed(3)}`;
 }
 
 function formatDate(val: Date | number | null): string {
@@ -91,6 +86,8 @@ export default async function AdminPage() {
         serverKeyTurnsUsed: users.serverKeyTurnsUsed,
         totalInputTokens: users.totalInputTokens,
         totalOutputTokens: users.totalOutputTokens,
+        totalCacheWriteTokens: users.totalCacheWriteTokens,
+        totalCacheReadTokens: users.totalCacheReadTokens,
         ownKeyInputTokens: users.ownKeyInputTokens,
         ownKeyOutputTokens: users.ownKeyOutputTokens,
       })
@@ -216,7 +213,7 @@ export default async function AdminPage() {
                     <td className="px-4 py-3 text-xs text-stone-400 whitespace-nowrap">
                       <span>{formatTokens(user.totalInputTokens)} in / {formatTokens(user.totalOutputTokens)} out</span>
                       <br />
-                      <span className="text-stone-500">{formatCost(user.totalInputTokens, user.totalOutputTokens)}</span>
+                      <span className="text-stone-500">{formatCost(user.totalInputTokens, user.totalOutputTokens, user.totalCacheWriteTokens, user.totalCacheReadTokens)}</span>
                     </td>
                     <td className="px-4 py-3 text-xs text-stone-400 whitespace-nowrap">
                       {user.anthropicApiKey ? (

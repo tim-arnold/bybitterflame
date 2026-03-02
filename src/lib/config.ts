@@ -11,6 +11,25 @@ export const ANTHROPIC_CACHE_WRITE_COST_PER_TOKEN = 3.75 / 1_000_000; // $3.75 p
 export const ANTHROPIC_CACHE_READ_COST_PER_TOKEN = 0.30 / 1_000_000;  // $0.30 per MTok (0.1x base, per hit)
 
 /**
+ * Calculate the true estimated API cost from all token types.
+ * With prompt caching, input_tokens only covers uncached tokens —
+ * cache write and read tokens are billed separately and must be included.
+ */
+export function calcCost(
+  inputTokens: number,
+  outputTokens: number,
+  cacheWriteTokens = 0,
+  cacheReadTokens = 0,
+): number {
+  return (
+    inputTokens * ANTHROPIC_INPUT_COST_PER_TOKEN +
+    outputTokens * ANTHROPIC_OUTPUT_COST_PER_TOKEN +
+    cacheWriteTokens * ANTHROPIC_CACHE_WRITE_COST_PER_TOKEN +
+    cacheReadTokens * ANTHROPIC_CACHE_READ_COST_PER_TOKEN
+  );
+}
+
+/**
  * Base URL for static assets served from Cloudflare R2.
  * In production this is https://images.bytorchlight.com (set via NEXT_PUBLIC_ASSETS_URL).
  * In local dev it is empty, so paths like /adventures/... resolve to public/.

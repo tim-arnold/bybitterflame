@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ANTHROPIC_INPUT_COST_PER_TOKEN, ANTHROPIC_OUTPUT_COST_PER_TOKEN, SERVER_KEY_TURN_LIMIT } from "@/lib/config";
+import { calcCost, SERVER_KEY_TURN_LIMIT } from "@/lib/config";
 
 interface SessionControlsProps {
   onEndSession: () => void;
@@ -11,8 +11,12 @@ interface SessionControlsProps {
   isPausing?: boolean;
   sessionInputTokens?: number;
   sessionOutputTokens?: number;
+  sessionCacheWriteTokens?: number;
+  sessionCacheReadTokens?: number;
   lifetimeInputTokens?: number;
   lifetimeOutputTokens?: number;
+  lifetimeCacheWriteTokens?: number;
+  lifetimeCacheReadTokens?: number;
   /** Non-null when user is on the free trial; value is turns used so far. */
   trialTurnsUsed?: number | null;
 }
@@ -25,19 +29,19 @@ export function SessionControls({
   isPausing,
   sessionInputTokens = 0,
   sessionOutputTokens = 0,
+  sessionCacheWriteTokens = 0,
+  sessionCacheReadTokens = 0,
   lifetimeInputTokens = 0,
   lifetimeOutputTokens = 0,
+  lifetimeCacheWriteTokens = 0,
+  lifetimeCacheReadTokens = 0,
   trialTurnsUsed = null,
 }: SessionControlsProps) {
   const sessionTokens = sessionInputTokens + sessionOutputTokens;
-  const sessionCost =
-    sessionInputTokens * ANTHROPIC_INPUT_COST_PER_TOKEN +
-    sessionOutputTokens * ANTHROPIC_OUTPUT_COST_PER_TOKEN;
+  const sessionCost = calcCost(sessionInputTokens, sessionOutputTokens, sessionCacheWriteTokens, sessionCacheReadTokens);
 
   const lifetimeTokens = lifetimeInputTokens + lifetimeOutputTokens;
-  const lifetimeCost =
-    lifetimeInputTokens * ANTHROPIC_INPUT_COST_PER_TOKEN +
-    lifetimeOutputTokens * ANTHROPIC_OUTPUT_COST_PER_TOKEN;
+  const lifetimeCost = calcCost(lifetimeInputTokens, lifetimeOutputTokens, lifetimeCacheWriteTokens, lifetimeCacheReadTokens);
 
   return (
     <div className="bg-stone-900 border border-stone-700 rounded-lg p-3 space-y-2">

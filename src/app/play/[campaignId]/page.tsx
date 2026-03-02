@@ -69,9 +69,13 @@ export default function PlayPage() {
   // Session token usage (accumulated from \x00TOKENS: sentinels in the stream)
   const [sessionInputTokens, setSessionInputTokens] = useState(0);
   const [sessionOutputTokens, setSessionOutputTokens] = useState(0);
+  const [sessionCacheWriteTokens, setSessionCacheWriteTokens] = useState(0);
+  const [sessionCacheReadTokens, setSessionCacheReadTokens] = useState(0);
   // Lifetime baseline loaded from DB on mount; session tokens are added on top
   const [lifetimeBaseInputTokens, setLifetimeBaseInputTokens] = useState(0);
   const [lifetimeBaseOutputTokens, setLifetimeBaseOutputTokens] = useState(0);
+  const [lifetimeBaseCacheWriteTokens, setLifetimeBaseCacheWriteTokens] = useState(0);
+  const [lifetimeBaseCacheReadTokens, setLifetimeBaseCacheReadTokens] = useState(0);
 
   // Trial turn tracking
   const [trialTurnsUsed, setTrialTurnsUsed] = useState<number | null>(null);
@@ -97,6 +101,8 @@ export default function PlayPage() {
         const usage = JSON.parse(match[1]) as { in: number; out: number; cacheWrite?: number; cacheRead?: number };
         setSessionInputTokens((prev) => prev + usage.in);
         setSessionOutputTokens((prev) => prev + usage.out);
+        if (usage.cacheWrite) setSessionCacheWriteTokens((prev) => prev + usage.cacheWrite!);
+        if (usage.cacheRead) setSessionCacheReadTokens((prev) => prev + usage.cacheRead!);
       } catch { /* ignore parse errors */ }
     }
     return response.replace(/\x00TOKENS:\{[^}]+\}/g, "");
@@ -112,13 +118,15 @@ export default function PlayPage() {
   useEffect(() => {
     fetch("/api/user/api-key")
       .then((r) => r.json())
-      .then((data: { isOnTrial?: boolean; turnsUsed?: number; totalInputTokens?: number; totalOutputTokens?: number }) => {
+      .then((data: { isOnTrial?: boolean; turnsUsed?: number; totalInputTokens?: number; totalOutputTokens?: number; totalCacheWriteTokens?: number; totalCacheReadTokens?: number }) => {
         if (data.isOnTrial) {
           setIsOnTrial(true);
           setTrialTurnsUsed(data.turnsUsed ?? 0);
         }
         setLifetimeBaseInputTokens(data.totalInputTokens ?? 0);
         setLifetimeBaseOutputTokens(data.totalOutputTokens ?? 0);
+        setLifetimeBaseCacheWriteTokens(data.totalCacheWriteTokens ?? 0);
+        setLifetimeBaseCacheReadTokens(data.totalCacheReadTokens ?? 0);
       })
       .catch(() => {});
   }, []);
@@ -917,8 +925,12 @@ export default function PlayPage() {
                   isPausing={isPausing}
                   sessionInputTokens={sessionInputTokens}
                   sessionOutputTokens={sessionOutputTokens}
+                  sessionCacheWriteTokens={sessionCacheWriteTokens}
+                  sessionCacheReadTokens={sessionCacheReadTokens}
                   lifetimeInputTokens={lifetimeBaseInputTokens + sessionInputTokens}
                   lifetimeOutputTokens={lifetimeBaseOutputTokens + sessionOutputTokens}
+                  lifetimeCacheWriteTokens={lifetimeBaseCacheWriteTokens + sessionCacheWriteTokens}
+                  lifetimeCacheReadTokens={lifetimeBaseCacheReadTokens + sessionCacheReadTokens}
                   trialTurnsUsed={isOnTrial ? (trialTurnsUsed ?? 0) : null}
                 />
               </>

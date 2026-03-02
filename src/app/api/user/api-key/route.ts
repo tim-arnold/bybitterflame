@@ -34,6 +34,8 @@ export async function GET(request: Request) {
       serverKeyTurnsUsed: users.serverKeyTurnsUsed,
       totalInputTokens: users.totalInputTokens,
       totalOutputTokens: users.totalOutputTokens,
+      totalCacheWriteTokens: users.totalCacheWriteTokens,
+      totalCacheReadTokens: users.totalCacheReadTokens,
     })
     .from(users)
     .where(eq(users.id, session.user.id))
@@ -55,6 +57,8 @@ export async function GET(request: Request) {
     isOnTrial,
     totalInputTokens: user.totalInputTokens,
     totalOutputTokens: user.totalOutputTokens,
+    totalCacheWriteTokens: user.totalCacheWriteTokens,
+    totalCacheReadTokens: user.totalCacheReadTokens,
   });
 }
 

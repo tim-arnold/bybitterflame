@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { SERVER_KEY_TURN_LIMIT, ANTHROPIC_INPUT_COST_PER_TOKEN, ANTHROPIC_OUTPUT_COST_PER_TOKEN } from "@/lib/config";
+import { SERVER_KEY_TURN_LIMIT, calcCost } from "@/lib/config";
 import { trackEvent } from "@/lib/analytics";
 
 export function SettingsContent() {
@@ -10,6 +10,8 @@ export function SettingsContent() {
   const [turnsUsed, setTurnsUsed] = useState(0);
   const [totalInputTokens, setTotalInputTokens] = useState(0);
   const [totalOutputTokens, setTotalOutputTokens] = useState(0);
+  const [totalCacheWriteTokens, setTotalCacheWriteTokens] = useState(0);
+  const [totalCacheReadTokens, setTotalCacheReadTokens] = useState(0);
   const [inputKey, setInputKey] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -26,6 +28,8 @@ export function SettingsContent() {
         setTurnsUsed(data.turnsUsed ?? 0);
         setTotalInputTokens(data.totalInputTokens ?? 0);
         setTotalOutputTokens(data.totalOutputTokens ?? 0);
+        setTotalCacheWriteTokens(data.totalCacheWriteTokens ?? 0);
+        setTotalCacheReadTokens(data.totalCacheReadTokens ?? 0);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -209,10 +213,7 @@ export function SettingsContent() {
             <div className="flex justify-between text-xs border-t border-stone-800 pt-1.5 mt-0.5">
               <span className="text-stone-400">Est. cost (own key)</span>
               <span className="font-mono text-[var(--color-gold)]">
-                ${(
-                  totalInputTokens * ANTHROPIC_INPUT_COST_PER_TOKEN +
-                  totalOutputTokens * ANTHROPIC_OUTPUT_COST_PER_TOKEN
-                ).toFixed(4)}
+                ${calcCost(totalInputTokens, totalOutputTokens, totalCacheWriteTokens, totalCacheReadTokens).toFixed(4)}
               </span>
             </div>
           </div>
