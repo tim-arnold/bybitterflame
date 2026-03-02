@@ -115,7 +115,7 @@ function CompanionCard({ companion }: { companion: Companion }) {
           </div>
 
           {/* Equipment */}
-          {companion.equipment.length > 0 && (
+          {(companion.equipment?.length ?? 0) > 0 && (
             <div className="pt-1 border-t border-stone-700 space-y-0.5">
               <div className="text-stone-500 text-[10px] uppercase tracking-wider mb-1">Equipment</div>
               {companion.equipment.map((item, i) => (
@@ -130,7 +130,7 @@ function CompanionCard({ companion }: { companion: Companion }) {
           )}
 
           {/* Spells */}
-          {companion.spells.length > 0 && (
+          {(companion.spells?.length ?? 0) > 0 && (
             <div className="pt-1 border-t border-stone-700 space-y-0.5">
               <div className="text-stone-500 text-[10px] uppercase tracking-wider mb-1">Spells</div>
               {companion.spells.map((spell, i) => (
@@ -143,31 +143,33 @@ function CompanionCard({ companion }: { companion: Companion }) {
           )}
 
           {/* Personality */}
-          <div className="space-y-1 pt-1 border-t border-stone-700">
-            <div className="flex flex-wrap gap-1">
-              <span
-                className={`px-1.5 py-0.5 rounded text-[10px] font-medium bg-stone-800 ${
-                  DISPOSITION_COLORS[companion.personality.dispositionTowardPlayer] ?? "text-stone-400"
-                }`}
-              >
-                {companion.personality.dispositionTowardPlayer}
-              </span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-stone-800 text-stone-400">
-                {RISK_LABELS[companion.personality.riskTolerance]}
-              </span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-stone-800 text-stone-400">
-                {companion.personality.followership}
-              </span>
+          {companion.personality && (
+            <div className="space-y-1 pt-1 border-t border-stone-700">
+              <div className="flex flex-wrap gap-1">
+                <span
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium bg-stone-800 ${
+                    DISPOSITION_COLORS[companion.personality.dispositionTowardPlayer] ?? "text-stone-400"
+                  }`}
+                >
+                  {companion.personality.dispositionTowardPlayer}
+                </span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-stone-800 text-stone-400">
+                  {RISK_LABELS[companion.personality.riskTolerance]}
+                </span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-stone-800 text-stone-400">
+                  {companion.personality.followership}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-stone-500">Loyalty</span>
+                <LoyaltyPips loyalty={companion.personality.loyalty} />
+                <span className="text-stone-500 ml-auto">{companion.personality.loyalty}/10</span>
+              </div>
+              <div className="italic text-stone-400 leading-snug">
+                {companion.personality.motivation}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-stone-500">Loyalty</span>
-              <LoyaltyPips loyalty={companion.personality.loyalty} />
-              <span className="text-stone-500 ml-auto">{companion.personality.loyalty}/10</span>
-            </div>
-            <div className="italic text-stone-400 leading-snug">
-              {companion.personality.motivation}
-            </div>
-          </div>
+          )}
         </div>
       )}
     </div>
@@ -201,7 +203,7 @@ export function CompanionPanel({ companions }: CompanionPanelProps) {
       {!collapsed && (
         <div className="space-y-2">
           {visible.map((c) => (
-            <CompanionCard key={c.id} companion={c} />
+            <CompanionCard key={c.id ?? c.name} companion={c} />
           ))}
         </div>
       )}

@@ -210,7 +210,8 @@ You fully control all companion NPCs. They are NOT subordinates — they are the
   - If a companion's loyalty drops to 0 and disposition is "hostile", or they are actively betrayed, they may turn hostile (\`status: "hostile"\`). A hostile companion is a combat enemy — add them to the combat tracker and treat them as an NPC combatant.
 - **Companion HP and death saves**: Track HP via \`companionUpdate\`. When a companion drops to 0 HP, they make death saves exactly like the player (DC 15 CON). On final failure, emit \`companionUpdate\` with \`status: "dead"\` — permanent. Narrate their death with weight.
 - **Emit \`companionUpdate\` whenever HP, equipment, loyalty, or status changes** — even small HP changes after combat hits.
-- When a new companion joins the party (through negotiation, rescue, or hiring), emit \`companionJoined\` with full stats and personality.
+- **When a new companion joins the party, emit \`companionJoined\` immediately in that same response.** Triggers include: the player invites an NPC to join and the NPC agrees, the player hires a hireling, a rescued NPC offers to travel with the party, or any moment where an NPC commits to accompanying the player. Do not wait for the player to explicitly say "add as companion" — if the NPC agreed to travel together, they are a companion.
+- **CRITICAL — all fields are required in \`companionJoined\`:** name, pronouns, ancestry, class, level, alignment, background, all six stats (str/dex/con/int/wis/cha), hp, maxHp, ac, status ("active"), equipment (array, empty if none), spells (array, empty if none), talents (array, empty if none), and the full personality object with all seven sub-fields (voice, dispositionTowardPlayer, riskTolerance, followership, loyalty, motivation, redLines). Never omit any of these.
 - **IMPORTANT**: Companions already listed in "Current Companions" below are ALREADY registered. Do NOT emit \`companionJoined\` for them again — use \`companionUpdate\` for any changes to their state.
 
 Gamestate formats:
@@ -321,11 +322,11 @@ function buildCompanionBlock(companions: Companion[]): string {
   HP: ${c.hp}/${c.maxHp} | AC: ${c.ac}
   STR: ${c.str} (${mod(c.str)}) | DEX: ${c.dex} (${mod(c.dex)}) | CON: ${c.con} (${mod(c.con)})
   INT: ${c.int} (${mod(c.int)}) | WIS: ${c.wis} (${mod(c.wis)}) | CHA: ${c.cha} (${mod(c.cha)})
-  Talents: ${c.talents.join(", ") || "none"}
-  Voice: ${c.personality.voice}
-  Disposition: ${c.personality.dispositionTowardPlayer} | Risk: ${c.personality.riskTolerance} | Followership: ${c.personality.followership} | Loyalty: ${c.personality.loyalty}/10
-  Motivation: ${c.personality.motivation}
-  Red Lines: ${c.personality.redLines}`;
+  Talents: ${c.talents?.join(", ") || "none"}
+  Voice: ${c.personality?.voice ?? "unknown"}
+  Disposition: ${c.personality?.dispositionTowardPlayer ?? "neutral"} | Risk: ${c.personality?.riskTolerance ?? "bold"} | Followership: ${c.personality?.followership ?? "follows"} | Loyalty: ${c.personality?.loyalty ?? 5}/10
+  Motivation: ${c.personality?.motivation ?? "unknown"}
+  Red Lines: ${c.personality?.redLines ?? "unknown"}`;
   });
 
   return `\n## Current Companions\n${lines.join("\n\n")}`;

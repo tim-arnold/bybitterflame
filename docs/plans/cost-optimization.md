@@ -316,6 +316,31 @@ Once we have cache hit data:
 - Phase 2d (adventure brief condensation after 5 turns) — requires tracking explored locations; deferred
 - Phase 3 (Haiku routing) — test character creation quality first before expanding
 - Phase 4 (user pricing) — pricing math needs revisiting; BYOK remains the viable near-term model
+- **Rules layer invalidation (investigate):** Extended caching trials show context-flag changes (e.g., entering/leaving combat) invalidate Layer 2 (rules, ~10–15K tokens) and trigger a re-write. Investigate whether always loading all rules every turn produces better cache economics than selective loading — the 90% savings on a stable 15K-token rules block may outweigh the extra uncached tokens on turns where fewer rules would have been loaded.
+
+---
+
+## Real-World Measurements
+
+### Trial 1: Post-optimization (local, dev), 20 turns
+
+| Metric | Value |
+|--------|-------|
+| Turns | 20 |
+| Total input tokens | 79,000 |
+| Total output tokens | 13,000 |
+| Actual cost | **$1.226** |
+| Cost per turn | ~$0.061 |
+
+**Notes:**
+- Short sessions are cache-write-heavy: the first turn pays 1.25x to write all three layers (static frame ~5K, rules ~8–12K, dynamic ~3–4K). Cache reads kick in from turn 2 onward.
+- Over 20 turns, estimated cache write cost is front-loaded in turns 1–2; turns 3–20 benefit from reads at $0.30/MTok.
+- $0.061/turn is already below the pre-optimization estimate of $0.07–$0.09/turn, despite this being a short session where cache warmup represents a larger fraction of cost.
+- Savings compound significantly over longer sessions (40–60 turns) as more turns hit the cache.
+
+### Trial 2: Pre-optimization (prod), 20 turns — PENDING
+
+Run a 20-turn session on the unoptimized production branch and record the same metrics for a direct comparison. Expected baseline: ~$1.40–$1.80 ($0.07–$0.09/turn, no caching).
 
 ---
 

@@ -100,6 +100,29 @@ export function SessionControls({
 
       {lifetimeTokens > 0 && (
         <div className="border-t border-stone-800 pt-2 space-y-1">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-xs text-stone-500">Estimated Costs</span>
+            <div className="relative group">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="w-3 h-3 text-stone-600 cursor-default"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M15 8A7 7 0 1 1 1 8a7 7 0 0 1 14 0Zm-6 3.5a1 1 0 1 1-2 0V8a1 1 0 0 1 2 0v3.5ZM8 5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-56 rounded bg-stone-800 border border-stone-600 px-2.5 py-2 text-xs text-stone-300 leading-relaxed shadow-lg z-50 pointer-events-none">
+                Based on Sonnet 4 list pricing. Actual charges may differ slightly due to rounding, model changes, or Anthropic pricing updates. Check{" "}
+                <span className="text-stone-400">console.anthropic.com</span>{" "}
+                for exact usage.
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-600" />
+              </div>
+            </div>
+          </div>
           <div className="flex justify-between text-xs">
             <span className="text-stone-600">This session</span>
             <span className="font-mono text-stone-500">
