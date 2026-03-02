@@ -56,6 +56,8 @@ export const users = sqliteTable("user", {
   totalCacheReadTokens: integer("total_cache_read_tokens").notNull().default(0),
   ownKeyInputTokens: integer("own_key_input_tokens").notNull().default(0),
   ownKeyOutputTokens: integer("own_key_output_tokens").notNull().default(0),
+  ownKeyCacheWriteTokens: integer("own_key_cache_write_tokens").notNull().default(0),
+  ownKeyCacheReadTokens: integer("own_key_cache_read_tokens").notNull().default(0),
 });
 
 export const authSessions = sqliteTable("session", {

@@ -83,7 +83,9 @@ CREATE TABLE IF NOT EXISTS user (
   total_cache_write_tokens  INTEGER NOT NULL DEFAULT 0,
   total_cache_read_tokens   INTEGER NOT NULL DEFAULT 0,
   own_key_input_tokens      INTEGER NOT NULL DEFAULT 0,
-  own_key_output_tokens     INTEGER NOT NULL DEFAULT 0
+  own_key_output_tokens     INTEGER NOT NULL DEFAULT 0,
+  own_key_cache_write_tokens INTEGER NOT NULL DEFAULT 0,
+  own_key_cache_read_tokens  INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS session (

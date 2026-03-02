@@ -250,6 +250,8 @@ export async function POST(request: NextRequest) {
                 if (useOwnKey) {
                   updates.ownKeyInputTokens = sql`${users.ownKeyInputTokens} + ${usage.inputTokens}`;
                   updates.ownKeyOutputTokens = sql`${users.ownKeyOutputTokens} + ${usage.outputTokens}`;
+                  updates.ownKeyCacheWriteTokens = sql`${users.ownKeyCacheWriteTokens} + ${usage.cacheCreationInputTokens}`;
+                  updates.ownKeyCacheReadTokens = sql`${users.ownKeyCacheReadTokens} + ${usage.cacheReadInputTokens}`;
                 }
                 await db.update(users).set(updates).where(eq(users.id, userId!));
 

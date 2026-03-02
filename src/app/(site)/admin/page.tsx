@@ -90,6 +90,8 @@ export default async function AdminPage() {
         totalCacheReadTokens: users.totalCacheReadTokens,
         ownKeyInputTokens: users.ownKeyInputTokens,
         ownKeyOutputTokens: users.ownKeyOutputTokens,
+        ownKeyCacheWriteTokens: users.ownKeyCacheWriteTokens,
+        ownKeyCacheReadTokens: users.ownKeyCacheReadTokens,
       })
       .from(users)
       .orderBy(desc(users.createdAt)),
@@ -220,7 +222,7 @@ export default async function AdminPage() {
                         <>
                           <span>{formatTokens(user.ownKeyInputTokens)} in / {formatTokens(user.ownKeyOutputTokens)} out</span>
                           <br />
-                          <span className="text-stone-500">{formatCost(user.ownKeyInputTokens, user.ownKeyOutputTokens)}</span>
+                          <span className="text-stone-500">{formatCost(user.ownKeyInputTokens, user.ownKeyOutputTokens, user.ownKeyCacheWriteTokens, user.ownKeyCacheReadTokens)}</span>
                         </>
                       ) : (
                         <span className="text-stone-600">—</span>
