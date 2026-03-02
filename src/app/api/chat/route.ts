@@ -210,6 +210,11 @@ export async function POST(request: NextRequest) {
         { type: "text", text: structured.rules, cache_control: { type: "ephemeral" } },
         { type: "text", text: structured.dynamicState },
       ];
+      // TEST 2b: temporary logging — remove after QA
+      console.log("[QA 2b] System blocks:", (systemContent as SystemBlock[]).map(b => ({
+        chars: b.text.length,
+        cached: !!b.cache_control,
+      })));
     }
 
     // Window to the last 20 messages, strip gamestate blocks (already in system prompt),
