@@ -52,6 +52,8 @@ export const users = sqliteTable("user", {
   serverKeyTurnsUsed: integer("server_key_turns_used").notNull().default(0),
   totalInputTokens: integer("total_input_tokens").notNull().default(0),
   totalOutputTokens: integer("total_output_tokens").notNull().default(0),
+  totalCacheWriteTokens: integer("total_cache_write_tokens").notNull().default(0),
+  totalCacheReadTokens: integer("total_cache_read_tokens").notNull().default(0),
   ownKeyInputTokens: integer("own_key_input_tokens").notNull().default(0),
   ownKeyOutputTokens: integer("own_key_output_tokens").notNull().default(0),
 });

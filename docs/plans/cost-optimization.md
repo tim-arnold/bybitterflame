@@ -280,15 +280,42 @@ Once we have cache hit data:
 
 ## Implementation Order
 
-| Priority | Phase | Effort | Impact |
-|----------|-------|--------|--------|
-| 1 | **Phase 1: Prompt caching** | Medium (1 session) | ~57% input cost reduction |
-| 2 | **Phase 2: Cap dynamic state** | Small (1 session) | Prevents unbounded growth |
-| 3 | **Phase 5: Cache observability** | Small (same session as Phase 1) | Data for future decisions |
-| 4 | **Phase 3: Haiku routing** | Medium (1–2 sessions) | Additional ~20–30% on some turns |
-| 5 | **Phase 4: User pricing** | Large (2–3 sessions) | Revenue model |
+| Priority | Phase | Effort | Impact | Status |
+|----------|-------|--------|--------|--------|
+| 1 | **Phase 1: Prompt caching** | Medium (1 session) | ~57% input cost reduction | ✅ Done |
+| 2 | **Phase 2: Cap dynamic state** | Small (1 session) | Prevents unbounded growth | ✅ Done (minus 2d) |
+| 3 | **Phase 5: Cache observability** | Small (same session as Phase 1) | Data for future decisions | ✅ Done |
+| 4 | **Phase 3: Haiku routing** | Medium (1–2 sessions) | Additional ~20–30% on some turns | Pending |
+| 5 | **Phase 4: User pricing** | Large (2–3 sessions) | Revenue model | Pending |
 
 **Phase 1 is the critical path.** It's prerequisite for viable subscription pricing and delivers the largest single cost reduction. Phases 2 and 5 are small additions that should ship alongside Phase 1.
+
+### Implementation Notes (Session 14)
+
+**Phase 1 implemented:**
+- `buildSessionPrompt` now returns `StructuredPrompt { staticFrame, rules, dynamicState }`
+- `STATIC_GM_FRAME` is a module-level constant (~5,000 tokens) — identical every turn across all sessions
+- Route assembles three content blocks: Layer 1 (staticFrame, cached), Layer 2 (rules, cached), Layer 3 (dynamicState, uncached)
+- Create-mode prompts (character creation, adventure-create, gm-create) each wrapped as single cached block
+- `client.ts` accepts `SystemContent = string | SystemBlock[]` throughout
+- `StreamResult` now includes `cacheCreationInputTokens` and `cacheReadInputTokens`
+- TOKENS sentinel updated to include `cacheWrite` and `cacheRead` fields
+
+**Phase 2 implemented (minus 2d):**
+- 2a: GM notes truncated to 1,500 chars in `buildSessionPrompt` before injection
+- 2b: Session summaries capped to 3 most recent (`slice(-3)`)
+- 2c: NPCs capped at 10 most recent, locations capped at 15 most recent, completed quests filtered out
+
+**Phase 5 implemented:**
+- `total_cache_write_tokens` and `total_cache_read_tokens` columns added to users table
+- Migration: `migrations/0012_cache_tokens.sql`
+- `schema.sql` updated as canonical restore reference
+- Both columns accumulated in the `onComplete` callback in `route.ts`
+
+**Deferred:**
+- Phase 2d (adventure brief condensation after 5 turns) — requires tracking explored locations; deferred
+- Phase 3 (Haiku routing) — test character creation quality first before expanding
+- Phase 4 (user pricing) — pricing math needs revisiting; BYOK remains the viable near-term model
 
 ---
 

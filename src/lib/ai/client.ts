@@ -25,10 +25,18 @@ function getAtmosphericError(error: unknown): string {
 const MODEL = "claude-sonnet-4-20250514";
 const MAX_TOKENS = 4096;
 
+/** A cacheable system content block. */
+export type SystemBlock = { type: "text"; text: string; cache_control?: { type: "ephemeral" } };
+
+/** System prompt: either a plain string or an array of blocks with optional cache_control. */
+export type SystemContent = string | SystemBlock[];
+
 export interface StreamResult {
   text: string;
   inputTokens: number;
   outputTokens: number;
+  cacheCreationInputTokens: number;
+  cacheReadInputTokens: number;
 }
 
 /**
@@ -37,7 +45,7 @@ export interface StreamResult {
  * Returns the full assembled response text plus token usage.
  */
 export async function streamChat(
-  systemPrompt: string,
+  system: SystemContent,
   messages: Message[],
   onChunk: (text: string) => void,
   apiKey?: string,
@@ -48,7 +56,7 @@ export async function streamChat(
   const stream = anthropic.messages.stream({
     model: MODEL,
     max_tokens: MAX_TOKENS,
-    system: systemPrompt,
+    system: system as string,
     messages: messages.map((m) => ({
       role: m.role,
       content: m.content,
@@ -61,10 +69,27 @@ export async function streamChat(
   });
 
   const finalMessage = await stream.finalMessage();
-  const inputTokens = finalMessage.usage.input_tokens;
-  const outputTokens = finalMessage.usage.output_tokens;
+  const usage = finalMessage.usage as {
+    input_tokens: number;
+    output_tokens: number;
+    cache_creation_input_tokens?: number;
+    cache_read_input_tokens?: number;
+  };
 
-  return { text: fullText, inputTokens, outputTokens };
+  return {
+    text: fullText,
+    inputTokens: usage.input_tokens,
+    outputTokens: usage.output_tokens,
+    cacheCreationInputTokens: usage.cache_creation_input_tokens ?? 0,
+    cacheReadInputTokens: usage.cache_read_input_tokens ?? 0,
+  };
+}
+
+export interface UsageResult {
+  inputTokens: number;
+  outputTokens: number;
+  cacheCreationInputTokens: number;
+  cacheReadInputTokens: number;
 }
 
 /**
@@ -73,25 +98,35 @@ export async function streamChat(
  * onComplete is called with token usage after the stream finishes successfully.
  */
 export function createStreamingResponse(
-  systemPrompt: string,
+  system: SystemContent,
   messages: Message[],
   apiKey?: string,
-  onComplete?: (usage: { inputTokens: number; outputTokens: number }) => void,
+  onComplete?: (usage: UsageResult) => void,
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
 
   return new ReadableStream({
     async start(controller) {
       try {
-        const result = await streamChat(systemPrompt, messages, (chunk) => {
+        const result = await streamChat(system, messages, (chunk) => {
           controller.enqueue(encoder.encode(chunk));
         }, apiKey);
         // Append a sentinel for client-side session token tracking.
         // Uses \x00 prefix so it's unambiguous and won't appear in rendered text.
         controller.enqueue(encoder.encode(
-          `\x00TOKENS:${JSON.stringify({ in: result.inputTokens, out: result.outputTokens })}`
+          `\x00TOKENS:${JSON.stringify({
+            in: result.inputTokens,
+            out: result.outputTokens,
+            cacheWrite: result.cacheCreationInputTokens,
+            cacheRead: result.cacheReadInputTokens,
+          })}`
         ));
-        onComplete?.({ inputTokens: result.inputTokens, outputTokens: result.outputTokens });
+        onComplete?.({
+          inputTokens: result.inputTokens,
+          outputTokens: result.outputTokens,
+          cacheCreationInputTokens: result.cacheCreationInputTokens,
+          cacheReadInputTokens: result.cacheReadInputTokens,
+        });
         controller.close();
       } catch (error) {
         console.error("[AI client] Stream error:", error);

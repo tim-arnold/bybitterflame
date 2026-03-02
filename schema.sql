@@ -78,10 +78,12 @@ CREATE TABLE IF NOT EXISTS user (
   beta_api_key          TEXT,
   beta_key_mode         TEXT,
   server_key_turns_used INTEGER NOT NULL DEFAULT 0,
-  total_input_tokens    INTEGER NOT NULL DEFAULT 0,
-  total_output_tokens   INTEGER NOT NULL DEFAULT 0,
-  own_key_input_tokens  INTEGER NOT NULL DEFAULT 0,
-  own_key_output_tokens INTEGER NOT NULL DEFAULT 0
+  total_input_tokens        INTEGER NOT NULL DEFAULT 0,
+  total_output_tokens       INTEGER NOT NULL DEFAULT 0,
+  total_cache_write_tokens  INTEGER NOT NULL DEFAULT 0,
+  total_cache_read_tokens   INTEGER NOT NULL DEFAULT 0,
+  own_key_input_tokens      INTEGER NOT NULL DEFAULT 0,
+  own_key_output_tokens     INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS session (

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { eq, sql } from "drizzle-orm";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { createStreamingResponse } from "@/lib/ai/client";
+import { createStreamingResponse, type SystemBlock } from "@/lib/ai/client";
 import { CHARACTER_CREATION_PROMPT } from "@/lib/ai/prompts/initializer";
 import { buildSessionPrompt } from "@/lib/ai/prompts/session";
 import { buildAdventureCreatePrompt } from "@/lib/ai/prompts/adventure-create";
@@ -113,10 +113,13 @@ export async function POST(request: NextRequest) {
     }
     // ────────────────────────────────────────────────────────────────────────
 
-    let systemPrompt: string;
+    let systemContent: string | SystemBlock[];
 
     if (mode === "create") {
-      systemPrompt = CHARACTER_CREATION_PROMPT;
+      // Static prompt — identical for all character creation sessions; cache the whole thing
+      systemContent = [
+        { type: "text", text: CHARACTER_CREATION_PROMPT, cache_control: { type: "ephemeral" } },
+      ];
     } else if (mode === "adventure-create") {
       // GM-driven character creation for a specific adventure module
       const moduleId = campaign?.moduleId;
@@ -128,10 +131,16 @@ export async function POST(request: NextRequest) {
           headers: { "Content-Type": "application/json" },
         });
       }
-      systemPrompt = buildAdventureCreatePrompt(adventure);
+      const prompt = buildAdventureCreatePrompt(adventure);
+      systemContent = [
+        { type: "text", text: prompt, cache_control: { type: "ephemeral" } },
+      ];
     } else if (mode === "gm-create") {
       // GM-driven character creation for a standard (non-module) campaign
-      systemPrompt = buildGmCreatePrompt();
+      const prompt = buildGmCreatePrompt();
+      systemContent = [
+        { type: "text", text: prompt, cache_control: { type: "ephemeral" } },
+      ];
     } else {
       // Build gameplay context from the current state
       const context: GameContext = {
@@ -179,13 +188,23 @@ export async function POST(request: NextRequest) {
       const adventureId = campaign?.adventureId;
       const adventure = moduleId && adventureId ? getAdventure(moduleId, adventureId) : undefined;
 
-      systemPrompt = buildSessionPrompt({
+      const structured = buildSessionPrompt({
         character: character ?? {},
         campaign: campaign ?? {},
         sessionSummaries,
         rules,
         adventure,
       });
+
+      // Assemble three-layer cached prompt:
+      // Layer 1 (cache): static GM frame — identical every turn across all sessions
+      // Layer 2 (cache): rules — changes only when context flags change
+      // Layer 3 (no cache): dynamic state — character, world, companions, etc.
+      systemContent = [
+        { type: "text", text: structured.staticFrame, cache_control: { type: "ephemeral" } },
+        { type: "text", text: structured.rules, cache_control: { type: "ephemeral" } },
+        { type: "text", text: structured.dynamicState },
+      ];
     }
 
     // Window to the last 20 messages, strip gamestate blocks (already in system prompt),
@@ -204,7 +223,7 @@ export async function POST(request: NextRequest) {
     }));
 
     const stream = createStreamingResponse(
-      systemPrompt,
+      systemContent,
       trimmedMessages,
       resolvedApiKey,
       userId
@@ -215,6 +234,8 @@ export async function POST(request: NextRequest) {
                 const updates: Record<string, unknown> = {
                   totalInputTokens: sql`${users.totalInputTokens} + ${usage.inputTokens}`,
                   totalOutputTokens: sql`${users.totalOutputTokens} + ${usage.outputTokens}`,
+                  totalCacheWriteTokens: sql`${users.totalCacheWriteTokens} + ${usage.cacheCreationInputTokens}`,
+                  totalCacheReadTokens: sql`${users.totalCacheReadTokens} + ${usage.cacheReadInputTokens}`,
                 };
                 // Increment turn counter for server key or beta trial users
                 if (incrementTurnCounter) {

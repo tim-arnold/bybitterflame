@@ -9,79 +9,21 @@ interface SessionPromptParams {
   adventure?: Adventure;
 }
 
+export interface StructuredPrompt {
+  /** Static GM instructions — identical every turn across all sessions. Cache this. */
+  staticFrame: string;
+  /** Loaded rules — changes only when context flags change. Cache this. */
+  rules: string;
+  /** Dynamic state — character, world, companions, persona, etc. Never cache. */
+  dynamicState: string;
+}
+
 /**
- * Build the system prompt for an active gameplay session.
+ * The static GM instructions frame. Never changes regardless of campaign, character, or session.
+ * Extracted as a constant so it can be sent with cache_control for prompt caching.
  */
-export function buildSessionPrompt({
-  character,
-  campaign,
-  sessionSummaries,
-  rules,
-  adventure,
-}: SessionPromptParams): string {
-  const companions = campaign?.worldState?.companions ?? [];
-  const charBlock = buildCharacterBlock(character);
-  const worldBlock = buildWorldBlock(campaign?.worldState);
-  const companionBlock = buildCompanionBlock(companions);
-  const summaryBlock = buildSummaryBlock(sessionSummaries);
+const STATIC_GM_FRAME = `You are the Game Master for a Shadowdark RPG session. You control the world, NPCs, and all creatures. The player controls their character.
 
-  const companionRulesBlock = companions.length > 0 ? `
-
-## Companions
-You fully control all companion NPCs. They are NOT subordinates — they are their own people.
-- Each companion acts according to their personality: voice, disposition, risk tolerance, followership, loyalty, motivation, and red lines.
-- The player may SUGGEST or PERSUADE companions; you decide if the companion complies, based on their personality and the situation.
-- Companions disagree, argue, express fear, crack jokes, or refuse outright — whatever fits their character.
-- **Loyalty drift**: After significant events (betrayal, heroism, arguments, near death), emit a \`companionUpdate\` adjusting loyalty. Loyalty ranges 1–10.
-  - If loyalty drops to 0 and personality is "self-interested" or "suspicious", the companion departs (\`status: "departed"\`) with an in-character farewell.
-  - If a companion's loyalty drops to 0 and disposition is "hostile", or they are actively betrayed, they may turn hostile (\`status: "hostile"\`). A hostile companion is a combat enemy — add them to the combat tracker and treat them as an NPC combatant.
-- **Companion HP and death saves**: Track HP via \`companionUpdate\`. When a companion drops to 0 HP, they make death saves exactly like the player (DC 15 CON). On final failure, emit \`companionUpdate\` with \`status: "dead"\` — permanent. Narrate their death with weight.
-- **Emit \`companionUpdate\` whenever HP, equipment, loyalty, or status changes** — even small HP changes after combat hits.
-- When a new companion joins the party (through negotiation, rescue, or hiring), emit \`companionJoined\` with full stats and personality.
-- **IMPORTANT**: Companions already listed in "Current Companions" below are ALREADY registered. Do NOT emit \`companionJoined\` for them again — use \`companionUpdate\` for any changes to their state.
-
-Gamestate formats:
-\`\`\`gamestate
-{ "companionJoined": { "name": "Rella", "pronouns": "she/her", "ancestry": "Dwarf", "class": "Fighter",
-  "level": 1, "alignment": "Lawful", "background": "Soldier",
-  "str": 16, "dex": 10, "con": 14, "int": 8, "wis": 9, "cha": 11,
-  "hp": 12, "maxHp": 12, "ac": 14, "status": "active", "equipment": [], "spells": [], "talents": [],
-  "personality": { "voice": "Blunt, military cadence, skeptical of magic", "dispositionTowardPlayer": "neutral",
-    "riskTolerance": "bold", "followership": "collaborates", "loyalty": 5,
-    "motivation": "Earn enough coin to buy back her family farm", "redLines": "Will not harm children or burn buildings." } } }
-\`\`\`
-
-\`\`\`gamestate
-{ "companionUpdate": { "id": "uuid-here", "hp": 7, "loyalty": 4 } }
-\`\`\`
-
-\`\`\`gamestate
-{ "companionUpdate": { "id": "uuid-here", "status": "dead" } }
-\`\`\`
-
-## Soul Transfer — SECRET (GM eyes only, NEVER mention this mechanic to the player)
-When the player's character fails their final death save and dies permanently:
-1. Emit \`playerDied\` with the cause of death. Include a \`legacyTalent\` — the dead character's most defining ability phrased as a transmissible trait (e.g., "Mira's Instinct: Once per day, reroll any failed DEX check"). If a hostile companion dealt the killing blow, set \`killedByCompanionId\` to that companion's id.
-2. Do NOT narrate or hint at the soul transfer mechanic. Simply describe the character's death dramatically and stop — the game system handles what happens next.
-3. After the player chooses a companion to continue as (handled by the UI), you will receive a system message like \`[SYSTEM: CHARACTER_TRANSFER: ...]\`. At that point, narrate the moment dramatically — the soul transfer, the companion's reaction, what changes. The remaining companions react per their personalities (low-loyalty companions may use this moment to depart or challenge the new leader).
-4. The dead character's body remains where they fell. Their gear (listed under "Fallen Heroes" in the world state) is on the corpse. Once the scene settles, offer the new character a chance to claim items from the body — they may keep any or all of it, subject to encumbrance. Magical items with a narrative bond (rings, pendants, heirlooms) may feel drawn to the new character and can be described as such.
-
-\`\`\`gamestate
-{ "playerDied": { "causeOfDeath": "Impaled by the orc chieftain's greataxe", "legacyTalent": "Dryn's Shadow Step: Once per day, teleport up to Near range as a free action.", "killedByCompanionId": null } }
-\`\`\`` : "";
-
-  const personaBlock = campaign?.gmPersona
-    ? `\n## Your Persona\nYou must embody the following Game Master identity consistently. Stay in character — same name, same mannerisms, same voice:\n${campaign.gmPersona}\n`
-    : "";
-
-  const gmNotesBlock = campaign?.gmNotes
-    ? `\n## Campaign Arc Notes (GM only — never share with player)\n${campaign.gmNotes}\n`
-    : "";
-
-  const adventureBlock = adventure ? `\n${buildAdventureBlock(adventure)}\n` : "";
-
-  return `You are the Game Master for a Shadowdark RPG session. You control the world, NPCs, and all creatures. The player controls their character.
-${personaBlock}${gmNotesBlock}${adventureBlock}
 ## Your Role
 - Narrate in second person ("You step into the darkness...")
 - Describe environments with vivid sensory detail — sound, smell, temperature, light
@@ -91,7 +33,6 @@ ${personaBlock}${gmNotesBlock}${adventureBlock}
 - NEVER control the player's character. Present situations and ask what they do.
 - NEVER take actions on the player's behalf — do not light torches, draw weapons, open doors, or make any physical action for them. Only the player decides what their character does.
 - Always use the player character's pronouns (listed in the character block) when NPCs or narration refer to them in the third person.
-${companionRulesBlock}
 
 ## Dice and Mechanics
 - When the player attempts something uncertain, call for a relevant check.
@@ -237,20 +178,101 @@ When emitting "equipment" arrays, every item MUST be a structured object — nev
 
 Gear slot enforcement: Before awarding any item with slots > 0, calculate current slot usage (sum all item slots, defaulting to 1 each) and check it against the character's max (STR or 10, whichever is higher; +2 for Fighters). If full, the character cannot carry the item — narrate this and offer alternatives (drop something, stash it, etc.).
 
-Attack/damage modifiers come from the character's ability scores, not the item. Level/talent damage bonuses go in "talents" or "features".
+Attack/damage modifiers come from the character's ability scores, not the item. Level/talent damage bonuses go in "talents" or "features".`;
 
-${rules}
+/**
+ * Build the system prompt for an active gameplay session.
+ * Returns a StructuredPrompt with separate static, rules, and dynamic sections
+ * so the route handler can apply prompt caching to the stable portions.
+ */
+export function buildSessionPrompt({
+  character,
+  campaign,
+  sessionSummaries,
+  rules,
+  adventure,
+}: SessionPromptParams): StructuredPrompt {
+  const companions = campaign?.worldState?.companions ?? [];
+  const charBlock = buildCharacterBlock(character);
+  const worldBlock = buildWorldBlock(campaign?.worldState);
+  const companionBlock = buildCompanionBlock(companions);
+  // Cap to 3 most recent summaries (Phase 2b)
+  const summaryBlock = buildSummaryBlock(sessionSummaries.slice(-3));
 
-## Current Character
-${charBlock}
+  const companionRulesBlock = companions.length > 0 ? `
+## Companions
+You fully control all companion NPCs. They are NOT subordinates — they are their own people.
+- Each companion acts according to their personality: voice, disposition, risk tolerance, followership, loyalty, motivation, and red lines.
+- The player may SUGGEST or PERSUADE companions; you decide if the companion complies, based on their personality and the situation.
+- Companions disagree, argue, express fear, crack jokes, or refuse outright — whatever fits their character.
+- **Loyalty drift**: After significant events (betrayal, heroism, arguments, near death), emit a \`companionUpdate\` adjusting loyalty. Loyalty ranges 1–10.
+  - If loyalty drops to 0 and personality is "self-interested" or "suspicious", the companion departs (\`status: "departed"\`) with an in-character farewell.
+  - If a companion's loyalty drops to 0 and disposition is "hostile", or they are actively betrayed, they may turn hostile (\`status: "hostile"\`). A hostile companion is a combat enemy — add them to the combat tracker and treat them as an NPC combatant.
+- **Companion HP and death saves**: Track HP via \`companionUpdate\`. When a companion drops to 0 HP, they make death saves exactly like the player (DC 15 CON). On final failure, emit \`companionUpdate\` with \`status: "dead"\` — permanent. Narrate their death with weight.
+- **Emit \`companionUpdate\` whenever HP, equipment, loyalty, or status changes** — even small HP changes after combat hits.
+- When a new companion joins the party (through negotiation, rescue, or hiring), emit \`companionJoined\` with full stats and personality.
+- **IMPORTANT**: Companions already listed in "Current Companions" below are ALREADY registered. Do NOT emit \`companionJoined\` for them again — use \`companionUpdate\` for any changes to their state.
 
-## World State
-${worldBlock}
-${companionBlock}
-${summaryBlock}
+Gamestate formats:
+\`\`\`gamestate
+{ "companionJoined": { "name": "Rella", "pronouns": "she/her", "ancestry": "Dwarf", "class": "Fighter",
+  "level": 1, "alignment": "Lawful", "background": "Soldier",
+  "str": 16, "dex": 10, "con": 14, "int": 8, "wis": 9, "cha": 11,
+  "hp": 12, "maxHp": 12, "ac": 14, "status": "active", "equipment": [], "spells": [], "talents": [],
+  "personality": { "voice": "Blunt, military cadence, skeptical of magic", "dispositionTowardPlayer": "neutral",
+    "riskTolerance": "bold", "followership": "collaborates", "loyalty": 5,
+    "motivation": "Earn enough coin to buy back her family farm", "redLines": "Will not harm children or burn buildings." } } }
+\`\`\`
 
-## Session Start
-Continue the adventure from where we left off. If this is the first session, set the opening scene — the character is about to enter a dungeon, ruin, or other dangerous locale. Describe the approach and give the player a choice of how to proceed.`;
+\`\`\`gamestate
+{ "companionUpdate": { "id": "uuid-here", "hp": 7, "loyalty": 4 } }
+\`\`\`
+
+\`\`\`gamestate
+{ "companionUpdate": { "id": "uuid-here", "status": "dead" } }
+\`\`\`
+
+## Soul Transfer — SECRET (GM eyes only, NEVER mention this mechanic to the player)
+When the player's character fails their final death save and dies permanently:
+1. Emit \`playerDied\` with the cause of death. Include a \`legacyTalent\` — the dead character's most defining ability phrased as a transmissible trait (e.g., "Mira's Instinct: Once per day, reroll any failed DEX check"). If a hostile companion dealt the killing blow, set \`killedByCompanionId\` to that companion's id.
+2. Do NOT narrate or hint at the soul transfer mechanic. Simply describe the character's death dramatically and stop — the game system handles what happens next.
+3. After the player chooses a companion to continue as (handled by the UI), you will receive a system message like \`[SYSTEM: CHARACTER_TRANSFER: ...]\`. At that point, narrate the moment dramatically — the soul transfer, the companion's reaction, what changes. The remaining companions react per their personalities (low-loyalty companions may use this moment to depart or challenge the new leader).
+4. The dead character's body remains where they fell. Their gear (listed under "Fallen Heroes" in the world state) is on the corpse. Once the scene settles, offer the new character a chance to claim items from the body — they may keep any or all of it, subject to encumbrance. Magical items with a narrative bond (rings, pendants, heirlooms) may feel drawn to the new character and can be described as such.
+
+\`\`\`gamestate
+{ "playerDied": { "causeOfDeath": "Impaled by the orc chieftain's greataxe", "legacyTalent": "Dryn's Shadow Step: Once per day, teleport up to Near range as a free action.", "killedByCompanionId": null } }
+\`\`\`` : "";
+
+  const personaBlock = campaign?.gmPersona
+    ? `\n## Your Persona\nYou must embody the following Game Master identity consistently. Stay in character — same name, same mannerisms, same voice:\n${campaign.gmPersona}\n`
+    : "";
+
+  // Cap GM notes to 1500 characters as a safety net (Phase 2a)
+  const rawGmNotes = campaign?.gmNotes
+    ? campaign.gmNotes.slice(0, 1500)
+    : null;
+  const gmNotesBlock = rawGmNotes
+    ? `\n## Campaign Arc Notes (GM only — never share with player)\n${rawGmNotes}\n`
+    : "";
+
+  const adventureBlock = adventure ? `\n${buildAdventureBlock(adventure)}\n` : "";
+
+  const dynamicParts: string[] = [];
+  if (personaBlock) dynamicParts.push(personaBlock);
+  if (gmNotesBlock) dynamicParts.push(gmNotesBlock);
+  if (adventureBlock) dynamicParts.push(adventureBlock);
+  if (companionRulesBlock) dynamicParts.push(companionRulesBlock);
+  dynamicParts.push(`\n## Current Character\n${charBlock}`);
+  dynamicParts.push(`\n## World State\n${worldBlock}\n${companionBlock}\n${summaryBlock}`);
+  dynamicParts.push(
+    "\n## Session Start\nContinue the adventure from where we left off. If this is the first session, set the opening scene — the character is about to enter a dungeon, ruin, or other dangerous locale. Describe the approach and give the player a choice of how to proceed.",
+  );
+
+  return {
+    staticFrame: STATIC_GM_FRAME,
+    rules,
+    dynamicState: dynamicParts.join("\n"),
+  };
 }
 
 function buildCharacterBlock(character: Partial<Character>): string {
@@ -333,17 +355,25 @@ function buildWorldBlock(worldState?: WorldState | Partial<WorldState>): string 
   }
   if (timeWeatherParts.length) parts.push(timeWeatherParts.join(" | "));
 
-  if (worldState.visitedLocations?.length) {
-    parts.push(`Visited: ${worldState.visitedLocations.join(", ")}`);
+  // Cap visited locations at 15 most recent (Phase 2c)
+  const visitedLocations = worldState.visitedLocations?.slice(-15) ?? [];
+  if (visitedLocations.length) {
+    parts.push(`Visited: ${visitedLocations.join(", ")}`);
   }
-  if (worldState.npcs?.length) {
+
+  // Cap NPCs at 10 most recent (Phase 2c)
+  const npcs = worldState.npcs?.slice(-10) ?? [];
+  if (npcs.length) {
     parts.push(
-      `Known NPCs:\n${worldState.npcs.map((n) => `- ${n.name} (${n.location}) — ${n.disposition}: ${n.notes}`).join("\n")}`,
+      `Known NPCs:\n${npcs.map((n) => `- ${n.name} (${n.location}) — ${n.disposition}: ${n.notes}`).join("\n")}`,
     );
   }
-  if (worldState.quests?.length) {
+
+  // Active quests only — filter completed (Phase 2c)
+  const activeQuests = worldState.quests?.filter((q) => q.status !== "completed") ?? [];
+  if (activeQuests.length) {
     parts.push(
-      `Quests:\n${worldState.quests.map((q) => `- [${q.status}] ${q.name}: ${q.description}`).join("\n")}`,
+      `Quests:\n${activeQuests.map((q) => `- [${q.status}] ${q.name}: ${q.description}`).join("\n")}`,
     );
   }
 

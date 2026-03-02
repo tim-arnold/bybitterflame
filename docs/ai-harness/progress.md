@@ -56,6 +56,38 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 
 ## Recent Work
 
+### Session 14 (2026-03-02)
+
+**Cost optimization — Phases 1, 2, and 5 implemented:**
+
+**Phase 1: Prompt caching (~57% input cost reduction)**
+- `buildSessionPrompt` refactored to return `StructuredPrompt { staticFrame, rules, dynamicState }` instead of a flat string
+- `STATIC_GM_FRAME` extracted as a module-level constant in `session.ts` — the entire GM instruction block (~5K tokens) that never changes across turns or users
+- `route.ts` assembles three-layer cached system prompt: Layer 1 (staticFrame, cache_control: ephemeral), Layer 2 (rules, cache_control: ephemeral), Layer 3 (dynamicState, uncached)
+- Character creation / adventure-create / gm-create prompts each wrapped as single cached block
+- `client.ts`: `SystemContent = string | SystemBlock[]`, `StreamResult` gains `cacheCreationInputTokens` + `cacheReadInputTokens`; `UsageResult` interface added for `onComplete` callback type
+- TOKENS sentinel updated: now emits `cacheWrite` + `cacheRead` alongside `in`/`out`
+
+**Phase 2: Cap dynamic state**
+- 2a: `campaign.gmNotes` truncated to 1,500 chars server-side before injection
+- 2b: Session summaries limited to 3 most recent (was 5)
+- 2c: NPCs capped at 10 most recent, visited locations at 15 most recent, completed quests filtered out in `buildWorldBlock`
+- 2d: Deferred (adventure brief condensation requires tracking explored locations)
+
+**Phase 5: Cache observability**
+- `total_cache_write_tokens` + `total_cache_read_tokens` columns added to users table in Drizzle schema
+- Migration: `migrations/0012_cache_tokens.sql`
+- `schema.sql` updated (canonical restore reference)
+- Both columns accumulated per-turn in the `onComplete` callback in `route.ts`
+- Pricing constants added to `config.ts`: `ANTHROPIC_CACHE_WRITE_COST_PER_TOKEN` ($3.75/MTok), `ANTHROPIC_CACHE_READ_COST_PER_TOKEN` ($0.30/MTok)
+
+**DB migration to apply to production:**
+```
+wrangler d1 execute shadowdark --remote --file=migrations/0012_cache_tokens.sql
+```
+
+**Build: clean ✓**
+
 ### Session 13 (2026-02-28)
 
 **Account request flow fixes + create-password page:**

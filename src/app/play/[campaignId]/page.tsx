@@ -88,10 +88,10 @@ export default function PlayPage() {
 
   /** Strip the \x00TOKENS sentinel from a stream response and accumulate session token counts. */
   function extractTokens(response: string): string {
-    const match = response.match(/\x00TOKENS:(\{"in":\d+,"out":\d+\})/);
+    const match = response.match(/\x00TOKENS:(\{[^}]+\})/);
     if (match) {
       try {
-        const usage = JSON.parse(match[1]) as { in: number; out: number };
+        const usage = JSON.parse(match[1]) as { in: number; out: number; cacheWrite?: number; cacheRead?: number };
         setSessionInputTokens((prev) => prev + usage.in);
         setSessionOutputTokens((prev) => prev + usage.out);
       } catch { /* ignore parse errors */ }
