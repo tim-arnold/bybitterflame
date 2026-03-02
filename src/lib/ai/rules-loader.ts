@@ -1,8 +1,5 @@
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
 import type { GameContext, LocationType } from "@/lib/game/types";
-
-const RULES_DIR = join(process.cwd(), "src/lib/rules");
+import { RULE_FILES } from "@/lib/rules/bundle";
 
 type BooleanContextFlags = Omit<GameContext, "locationType">;
 
@@ -27,15 +24,8 @@ const ALWAYS_LOAD = [
   "carousing.md",          // downtime rules — GM may offer carousing any time in town
 ];
 
-/**
- * Read a markdown rule file. Returns empty string if the file doesn't exist.
- */
 function readRuleFile(filename: string): string {
-  const filepath = join(RULES_DIR, filename);
-  if (!existsSync(filepath)) {
-    return "";
-  }
-  return readFileSync(filepath, "utf-8");
+  return RULE_FILES[filename] ?? "";
 }
 
 /**

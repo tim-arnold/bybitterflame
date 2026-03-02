@@ -1,6 +1,13 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  webpack(config) {
+    // Bundle .md files as raw strings so they work in Cloudflare Workers
+    // (Workers have no filesystem; readFileSync with process.cwd() fails at runtime)
+    config.module.rules.push({ test: /\.md$/, type: "asset/source" });
+    return config;
+  },
+};
 
 if (process.env.NODE_ENV === "development") {
   // Sets up local Cloudflare platform emulation (D1, KV, etc.) for npm run dev

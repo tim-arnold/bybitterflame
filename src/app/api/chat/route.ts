@@ -207,7 +207,8 @@ export async function POST(request: NextRequest) {
       // Layer 3 (no cache): dynamic state — character, world, companions, etc.
       systemContent = [
         { type: "text", text: structured.staticFrame, cache_control: { type: "ephemeral" } },
-        { type: "text", text: structured.rules, cache_control: { type: "ephemeral" } },
+        // Rules block is only included when non-empty — Anthropic rejects empty text blocks
+        ...(structured.rules ? [{ type: "text" as const, text: structured.rules, cache_control: { type: "ephemeral" as const } }] : []),
         { type: "text", text: structured.dynamicState },
       ];
       // TEST 2b: temporary logging — remove after QA
