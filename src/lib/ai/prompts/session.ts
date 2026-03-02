@@ -265,7 +265,17 @@ When the player's character fails their final death save and dies permanently:
   dynamicParts.push(`\n## Current Character\n${charBlock}`);
   dynamicParts.push(`\n## World State\n${worldBlock}\n${companionBlock}\n${summaryBlock}`);
   dynamicParts.push(
-    "\n## Session Start\nContinue the adventure from where we left off. If this is the first session, set the opening scene — the character is about to enter a dungeon, ruin, or other dangerous locale. Describe the approach and give the player a choice of how to proceed.",
+    "\n## Session Start\n" +
+    "If this is NOT the first session, continue the adventure from exactly where we left off.\n\n" +
+    "If this IS the first session:\n" +
+    (adventure
+      ? "- Follow the adventure hook and starting location defined in the adventure brief above."
+      : "- **Always begin in a town or settlement** — never at a dungeon entrance or wilderness location.\n" +
+        "- A town start gives the player a chance to hire companions, buy gear, gather rumors, and choose their own destination.\n" +
+        "- Describe the town briefly with sensory detail. Introduce at least one NPC who has a job, rumor, or hook to offer.\n" +
+        "- Do not push the player toward any specific dungeon — let them ask around and decide where to go.\n" +
+        "- Once they have a destination in mind and are ready to set out, describe the journey and the approach."
+    ),
   );
 
   return {
