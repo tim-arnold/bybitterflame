@@ -868,7 +868,11 @@ export default function PlayPage() {
         isSaved={!isLoading}
         leftTitle="Character"
         rightTitle="Tools"
-        leftPanel={<CharacterSheet character={character} />}
+        leftPanel={
+          <div className={isGmCreateMode ? "select-none blur-sm pointer-events-none" : undefined}>
+            <CharacterSheet character={character} />
+          </div>
+        }
         centerPanel={
           <ChatWindow
             messages={messages}
