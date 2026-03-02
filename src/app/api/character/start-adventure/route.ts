@@ -4,6 +4,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { campaigns, characters } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
+import type { Companion } from "@/lib/game/types";
 
 export const runtime = "nodejs";
 
@@ -22,8 +23,9 @@ export async function POST(request: Request) {
       characterId?: string;
       moduleId: string;
       adventureId: string;
+      companions?: Companion[];
     };
-    const { sourceCampaignId, characterId: directCharacterId, moduleId, adventureId } = body;
+    const { sourceCampaignId, characterId: directCharacterId, moduleId, adventureId, companions } = body;
 
     if ((!sourceCampaignId && !directCharacterId) || !moduleId || !adventureId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -82,6 +84,9 @@ export async function POST(request: Request) {
     const campaignId = crypto.randomUUID();
     const now = new Date().toISOString();
 
+    // Build initial companions list — restore each companion's HP to max
+    const initialCompanions: Companion[] = (companions ?? []).map((c) => ({ ...c, hp: c.maxHp }));
+
     await db.insert(campaigns).values({
       id: campaignId,
       userId: session?.user.id ?? null,
@@ -94,6 +99,7 @@ export async function POST(request: Request) {
         visitedLocations: [],
         npcs: [],
         quests: [],
+        companions: initialCompanions,
         flags: {},
       }),
       campaignType: "oneshot",

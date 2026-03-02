@@ -195,7 +195,23 @@ When emitting "equipment" arrays, every item MUST be a structured object — nev
 
 Gear slot enforcement: Before awarding any item with slots > 0, calculate current slot usage (sum all item slots, defaulting to 1 each) and check it against the character's max (STR or 10, whichever is higher; +2 for Fighters). If full, the character cannot carry the item — narrate this and offer alternatives (drop something, stash it, etc.).
 
-Attack/damage modifiers come from the character's ability scores, not the item. Level/talent damage bonuses go in "talents" or "features".`;
+Attack/damage modifiers come from the character's ability scores, not the item. Level/talent damage bonuses go in "talents" or "features".
+
+### Adventure Completion
+When all adventure objectives are complete and the character is in a place of safety (a safe camp, back in town, or after a completed rest), emit \`adventureComplete\`.
+
+**Before** emitting \`adventureComplete\`, always emit a \`characterUpdate\` in the same response with:
+- \`hp\` set to \`maxHp\` if the adventure ended with a full rest
+- Final XP total (base XP plus any adventure reward XP)
+- Final gold/silver/copper (including any adventure reward treasure)
+
+Emit in order — \`characterUpdate\` first, then \`adventureComplete\` — so the player's stats are current when the victory screen appears.
+
+\`\`\`gamestate
+{ "adventureComplete": { "summary": "After three days in the Rattail Warrens, you finally drove off the goblin infestation and returned the merchant's ledger to Saltwick. The town sleeps safely tonight.", "rewardDescription": "You earned 150 XP and 40 gold pieces for completing the merchant's request and defeating the goblin chief." } }
+\`\`\`
+
+**Companions**: Active companions carry over to the next adventure automatically — do NOT emit \`companionUpdate\` with \`status: "departed"\` unless the story explicitly calls for the companion to leave (they chose to stay behind, their personal arc concluded, etc.).`;
 
 /**
  * Build the system prompt for an active gameplay session.

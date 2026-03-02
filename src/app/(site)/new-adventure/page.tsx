@@ -32,7 +32,6 @@ export default function NewAdventurePage() {
   const router = useRouter();
   const [gmAnswers, setGmAnswers] = useState<Record<string, string>>({});
   const [isStartingGm, setIsStartingGm] = useState(false);
-  const [showInterview, setShowInterview] = useState(false);
 
   const allAnswered = GM_QUESTIONS.every((q) => gmAnswers[q.id]);
 
@@ -88,18 +87,7 @@ export default function NewAdventurePage() {
               Let the GM Decide
             </h2>
 
-            {!showInterview ? (
-              <button
-                onClick={() => setShowInterview(true)}
-                className="flex-1 w-full rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-4 py-3 text-center transition-colors hover:border-[var(--color-gold)] hover:bg-stone-800 cursor-pointer"
-              >
-                <p className="font-semibold text-[var(--color-gold)]">GM Builds Your Character</p>
-                <p className="text-sm text-stone-400 mt-0.5">
-                  Answer 2 quick questions, then jump straight into the adventure
-                </p>
-              </button>
-            ) : (
-              <div className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-4 py-5 space-y-6">
+            <div className="rounded-lg border border-[var(--color-gold-dim)] bg-stone-900 px-4 py-5 space-y-6">
                 {GM_QUESTIONS.map((q) => (
                   <div key={q.id}>
                     <p className="text-sm font-semibold text-stone-200 mb-3">{q.question}</p>
@@ -133,7 +121,6 @@ export default function NewAdventurePage() {
                   {isStartingGm ? "Preparing…" : "Begin Adventure →"}
                 </button>
               </div>
-            )}
           </div>
 
         </div>

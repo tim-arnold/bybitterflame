@@ -10,6 +10,7 @@ interface CampaignSummary {
   campaignName: string;
   updatedAt: string;
   currentLocation: string;
+  companions: string[];
   character: {
     name: string;
     class: string;
@@ -19,7 +20,6 @@ interface CampaignSummary {
   };
 }
 
-type DeleteTarget = "adventure" | "character" | "both";
 
 export default function Home() {
   const router = useRouter();
@@ -56,10 +56,10 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  async function handleDelete(campaignId: string, target: DeleteTarget) {
+  async function handleDelete(campaignId: string) {
     setIsDeleting(true);
     try {
-      await fetch(`/api/campaign/${campaignId}?target=${target}`, { method: "DELETE" });
+      await fetch(`/api/campaign/${campaignId}?target=adventure`, { method: "DELETE" });
       setCampaigns((prev) => prev.filter((c) => c.campaignId !== campaignId));
       setPendingDeleteId(null);
     } finally {
@@ -107,7 +107,7 @@ export default function Home() {
       {campaigns.length > 0 && (
         <div className="mb-8 w-full max-w-md">
           <p className="mb-3 text-sm uppercase tracking-widest text-stone-500">
-            Continue Adventure
+            Continue an Adventure
           </p>
           <div className="flex flex-col gap-2">
             {campaigns.map((c) => {
@@ -118,94 +118,102 @@ export default function Home() {
                   {isPending ? (
                     <div className="rounded-lg border border-red-800 bg-stone-900 px-5 py-4 text-left">
                       <p className="text-sm font-semibold text-stone-200 mb-1">
-                        Delete {c.character.name || "this adventure"}?
+                        Delete {c.campaignName || "this adventure"}?
                       </p>
                       <p className="text-xs text-stone-500 mb-4">
-                        This cannot be undone. Choose what to remove:
+                        This cannot be undone. The character will be kept on your roster.
                       </p>
-                      <div className="flex flex-col gap-2 mb-3">
+                      <div className="flex gap-2">
                         <button
-                          onClick={() => handleDelete(c.campaignId, "adventure")}
+                          onClick={() => handleDelete(c.campaignId)}
                           disabled={isDeleting}
-                          className="w-full rounded border border-stone-700 bg-stone-800 px-3 py-2 text-left text-sm hover:border-stone-500 hover:bg-stone-700 disabled:opacity-50 cursor-pointer transition-colors"
+                          className="rounded border border-red-800 bg-stone-800 px-3 py-2 text-sm font-medium text-red-400 hover:border-red-600 hover:bg-stone-700 disabled:opacity-50 cursor-pointer transition-colors"
                         >
-                          <span className="font-medium text-stone-200">Adventure only</span>
-                          <span className="ml-2 text-stone-500">— keep the character for a future run</span>
+                          {isDeleting ? "Deleting…" : "Delete Adventure"}
                         </button>
                         <button
-                          onClick={() => handleDelete(c.campaignId, "character")}
+                          onClick={() => setPendingDeleteId(null)}
                           disabled={isDeleting}
-                          className="w-full rounded border border-stone-700 bg-stone-800 px-3 py-2 text-left text-sm hover:border-stone-500 hover:bg-stone-700 disabled:opacity-50 cursor-pointer transition-colors"
+                          className="rounded border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-400 hover:border-stone-500 hover:bg-stone-700 disabled:opacity-50 cursor-pointer transition-colors"
                         >
-                          <span className="font-medium text-stone-200">Character only</span>
-                          <span className="ml-2 text-stone-500">— deletes everything</span>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(c.campaignId, "both")}
-                          disabled={isDeleting}
-                          className="w-full rounded border border-red-900 bg-stone-800 px-3 py-2 text-left text-sm hover:border-red-700 hover:bg-stone-700 disabled:opacity-50 cursor-pointer transition-colors"
-                        >
-                          <span className="font-medium text-red-400">Delete both</span>
-                          <span className="ml-2 text-stone-500">— adventure and character gone</span>
+                          Cancel
                         </button>
                       </div>
-                      <button
-                        onClick={() => setPendingDeleteId(null)}
-                        disabled={isDeleting}
-                        className="text-xs text-stone-600 hover:text-stone-400 transition-colors cursor-pointer"
-                      >
-                        Cancel
-                      </button>
                     </div>
                   ) : (
                     <>
-                      <Link
-                        href={`/play/${c.campaignId}`}
-                        className="flex items-center justify-between rounded-lg border border-stone-700 bg-stone-900 px-5 py-3 text-left transition-colors hover:border-stone-500 hover:bg-stone-800"
-                      >
-                        <div>
-                          <p className="text-xs text-[var(--color-gold)] mb-0.5">{c.campaignName}</p>
-                          <p className="font-semibold text-stone-100">{c.character.name || "Unnamed Adventurer"}</p>
-                          <p className="text-sm text-stone-400">
-                            Level {c.character.level} {c.character.ancestry} {c.character.class}
-                            {c.currentLocation && (
-                              <span className="text-stone-500"> · {c.currentLocation}</span>
-                            )}
-                          </p>
-                        </div>
-                        <span className="text-xs text-stone-600">
-                          {new Date(c.updatedAt).toLocaleDateString()}
-                        </span>
-                      </Link>
-                      {/* Lock / unlock button — always right-2; gold when locked, appears on hover when unlocked */}
-                      <button
-                        onClick={() => toggleLock(c.campaignId)}
-                        className={`absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded transition-all cursor-pointer ${
-                          isLocked
-                            ? "text-[var(--color-gold-dim)]"
-                            : "text-stone-600 opacity-0 group-hover:opacity-100 hover:text-stone-400"
-                        }`}
-                        aria-label={isLocked ? "Unlock adventure" : "Lock adventure"}
-                      >
-                        <svg viewBox="0 0 12 14" width="11" height="13" fill="currentColor">
-                          <rect x="1" y="6" width="10" height="8" rx="1.5" />
-                          {isLocked ? (
-                            <path d="M3.5 6V4a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                          ) : (
-                            <path d="M3.5 6V4a2.5 2.5 0 0 1 5 0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                          )}
-                        </svg>
-                      </button>
-                      {/* Delete — only available when unlocked */}
-                      {!isLocked && (
-                        <button
-                          onClick={() => setPendingDeleteId(c.campaignId)}
-                          className="absolute right-8 top-2 flex h-5 w-5 items-center justify-center rounded text-stone-500 opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all cursor-pointer text-sm leading-none"
-                          aria-label="Delete adventure"
+                      {/* Tile: link is flex-1, right column holds date + actions so they never overlap */}
+                      <div className="flex rounded-lg border border-stone-700 bg-stone-900 transition-colors hover:border-stone-500 hover:bg-stone-800">
+                        <Link
+                          href={`/play/${c.campaignId}`}
+                          className="flex-1 min-w-0 px-5 py-3 text-left"
                         >
-                          ×
-                        </button>
-                      )}
+                          <p className="font-semibold text-[var(--color-gold)] leading-snug">{c.campaignName}</p>
+                          <p className="text-sm text-stone-400 mt-0.5">
+                            {c.character.name || "Unnamed Adventurer"}
+                            <span className="text-stone-600"> · </span>
+                            Lvl {c.character.level} {c.character.ancestry} {c.character.class}
+                          </p>
+                          {(c.companions.length > 0 || c.currentLocation) && (
+                            <p className="text-xs text-stone-500 mt-0.5">
+                              {c.companions.length > 0 && (
+                                <span>with {c.companions.join(", ")}</span>
+                              )}
+                              {c.companions.length > 0 && c.currentLocation && (
+                                <span> · </span>
+                              )}
+                              {c.currentLocation && (
+                                <span>{c.currentLocation}</span>
+                              )}
+                            </p>
+                          )}
+                        </Link>
+                        {/* Right column: date on top, icons on bottom (shown on hover) */}
+                        <div className="flex flex-col items-end justify-between px-3 py-2.5 shrink-0">
+                          <span className="text-xs text-stone-600">
+                            {new Date(c.updatedAt).toLocaleDateString()}
+                          </span>
+                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {!isLocked && (
+                              <button
+                                onClick={() => setPendingDeleteId(c.campaignId)}
+                                className="group/tip relative flex h-5 w-5 items-center justify-center rounded text-stone-500 hover:text-red-400 transition-colors cursor-pointer"
+                                aria-label="Delete adventure"
+                              >
+                                <svg viewBox="0 0 12 14" width="11" height="13" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M1 3.5h10M4.5 3.5V2.5h3v1" />
+                                  <path d="M2 3.5l.7 8.5h6.6L10 3.5" />
+                                  <line x1="4.5" y1="6" x2="4.5" y2="10" />
+                                  <line x1="6" y1="6" x2="6" y2="10" />
+                                  <line x1="7.5" y1="6" x2="7.5" y2="10" />
+                                </svg>
+                                <span className="pointer-events-none absolute bottom-full right-0 mb-1.5 rounded border border-stone-700 bg-stone-900 px-1.5 py-0.5 text-xs whitespace-nowrap text-stone-300 opacity-0 transition-opacity group-hover/tip:opacity-100">
+                                  Delete adventure
+                                </span>
+                              </button>
+                            )}
+                            <button
+                              onClick={() => toggleLock(c.campaignId)}
+                              className={`group/tip relative flex h-5 w-5 items-center justify-center rounded transition-colors cursor-pointer ${
+                                isLocked ? "text-[var(--color-gold-dim)]" : "text-stone-500 hover:text-stone-300"
+                              }`}
+                              aria-label={isLocked ? "Unlock adventure" : "Lock adventure"}
+                            >
+                              <svg viewBox="0 0 12 14" width="11" height="13" fill="currentColor">
+                                <rect x="1" y="6" width="10" height="8" rx="1.5" />
+                                {isLocked ? (
+                                  <path d="M3.5 6V4a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                ) : (
+                                  <path d="M3.5 6V4a2.5 2.5 0 0 1 5 0" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                )}
+                              </svg>
+                              <span className="pointer-events-none absolute bottom-full right-0 mb-1.5 rounded border border-stone-700 bg-stone-900 px-1.5 py-0.5 text-xs whitespace-nowrap text-stone-300 opacity-0 transition-opacity group-hover/tip:opacity-100">
+                                {isLocked ? "Unlock adventure" : "Lock adventure"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>

@@ -47,11 +47,16 @@ export async function GET(request: Request) {
         row.moduleId && row.adventureId
           ? getAdventure(row.moduleId, row.adventureId)
           : undefined;
+      const activeCompanions: string[] = (worldState.companions ?? [])
+        .filter((c: { status?: string }) => c.status === "active")
+        .map((c: { name: string }) => c.name);
+
       return {
         campaignId: row.campaignId,
         campaignName: adventure ? adventure.title : row.campaignName,
         updatedAt: row.updatedAt,
         currentLocation: worldState.currentLocation ?? "",
+        companions: activeCompanions,
         character: {
           name: row.characterName,
           class: row.characterClass,

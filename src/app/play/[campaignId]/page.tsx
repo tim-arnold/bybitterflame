@@ -63,7 +63,7 @@ export default function PlayPage() {
   const [companions, setCompanions] = useState<Companion[]>([]);
   const [isDead, setIsDead] = useState(false);
   const [deathData, setDeathData] = useState<DeathData | null>(null);
-  const [adventureCompleteData, setAdventureCompleteData] = useState<{ summary: string } | null>(null);
+  const [adventureCompleteData, setAdventureCompleteData] = useState<{ summary: string; rewardDescription: string } | null>(null);
   const torchTimerRef = useRef<TorchTimerHandle>(null);
 
   // Session token usage (accumulated from \x00TOKENS: sentinels in the stream)
@@ -526,10 +526,9 @@ export default function PlayPage() {
           if (update.type === "adventureComplete") {
             trackEvent({ name: "adventure_completed" });
             const summary = update.data.summary as string;
-            setAdventureCompleteData({ summary });
-            fetch(`/api/campaign/${campaignId}/complete`, { method: "POST" }).catch(
-              (err) => console.error("Complete failed:", err)
-            );
+            const rewardDescription = (update.data.rewardDescription as string) ?? "";
+            setAdventureCompleteData({ summary, rewardDescription });
+            // /complete API is deferred — called via handleCarouseComplete after carousing
           }
           if (update.type === "gmNotesUpdate") {
             const notes = update.data.notes as string;
@@ -726,6 +725,23 @@ export default function PlayPage() {
 
   function handleCampaignEnd() {
     router.push("/");
+  }
+
+  function handleCarouseComplete(xpGained: number, goldLost: number) {
+    const updatedCharacter: Partial<Character> = {
+      ...character,
+      xp: (character.xp ?? 0) + xpGained,
+      gold: Math.max(0, (character.gold ?? 0) - goldLost),
+    };
+    setCharacter(updatedCharacter);
+    fetch(`/api/campaign/${campaignId}/save`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ character: updatedCharacter, campaign, sessionNumber }),
+    }).catch((err) => console.error("Carouse save failed:", err));
+    fetch(`/api/campaign/${campaignId}/complete`, { method: "POST" }).catch(
+      (err) => console.error("Complete failed:", err)
+    );
   }
 
   function handleAddJournalEntry(entryData: Omit<JournalEntry, "id" | "createdAt">) {
@@ -952,7 +968,10 @@ export default function PlayPage() {
       {adventureCompleteData && (
         <AdventureCompleteScreen
           summary={adventureCompleteData.summary}
+          rewardDescription={adventureCompleteData.rewardDescription}
           characterName={character.name ?? "Your character"}
+          character={character}
+          onCarouseComplete={handleCarouseComplete}
         />
       )}
 

@@ -96,20 +96,14 @@ export async function GET(
 }
 
 /**
- * DELETE /api/campaign/[campaignId]?target=adventure|character|both
- * Delete a campaign and optionally its character.
- *
- * target=adventure  — deletes sessions + campaign; character row survives for reuse
- * target=character  — deletes sessions + campaign + character
- * target=both       — same as "character"
+ * DELETE /api/campaign/[campaignId]
+ * Deletes sessions + campaign. The character row is preserved for reuse.
  */
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ campaignId: string }> },
 ) {
   const { campaignId } = await params;
-  const url = new URL(request.url);
-  const target = url.searchParams.get("target") ?? "adventure";
 
   try {
     const session = await getSession(request);
@@ -134,13 +128,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Delete in FK-safe order: sessions → campaign → (optionally) character
+    // Delete in FK-safe order: sessions → campaign; character row is preserved
     await db.delete(sessions).where(eq(sessions.campaignId, campaignId));
     await db.delete(campaigns).where(eq(campaigns.id, campaignId));
-
-    if (target === "character" || target === "both") {
-      await db.delete(characters).where(eq(characters.id, campaign.characterId));
-    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
