@@ -12,7 +12,7 @@ import { getDb } from "@/lib/db/client";
 import { users } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
 import type { ChatRequest, GameContext, LocationType } from "@/lib/game/types";
-import { SERVER_KEY_TURN_LIMIT } from "@/lib/config";
+import { SERVER_KEY_TURN_LIMIT, MODEL_SONNET, MODEL_HAIKU } from "@/lib/config";
 
 export const runtime = "nodejs";
 
@@ -228,6 +228,9 @@ export async function POST(request: NextRequest) {
           : m.content,
     }));
 
+    // Use Haiku for structured creation flows, Sonnet for gameplay
+    const model = mode === "play" ? MODEL_SONNET : MODEL_HAIKU;
+
     const stream = createStreamingResponse(
       systemContent,
       trimmedMessages,
@@ -275,6 +278,7 @@ export async function POST(request: NextRequest) {
               .catch((err) => console.error("Failed to track token usage:", err));
           }
         : undefined,
+      model,
     );
 
     return new Response(stream, {

@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@/lib/game/types";
+import { MODEL_SONNET } from "@/lib/config";
 
 const OVERLOADED_MESSAGES = [
   "*The arcane connection flickers and dies. The GM's voice fades into silence...*\n\n---\n\nThe threads of fate are stretched thin across the realm. Try again in a moment.",
@@ -22,7 +23,6 @@ function getAtmosphericError(error: unknown): string {
   return "\n\n" + pool[Math.floor(Math.random() * pool.length)];
 }
 
-const MODEL = "claude-sonnet-4-20250514";
 const MAX_TOKENS = 4096;
 
 /** A cacheable system content block. */
@@ -49,12 +49,13 @@ export async function streamChat(
   messages: Message[],
   onChunk: (text: string) => void,
   apiKey?: string,
+  model: string = MODEL_SONNET,
 ): Promise<StreamResult> {
   const anthropic = new Anthropic({ apiKey: apiKey ?? process.env.ANTHROPIC_API_KEY });
   let fullText = "";
 
   const stream = anthropic.messages.stream({
-    model: MODEL,
+    model,
     max_tokens: MAX_TOKENS,
     system,
     messages: messages.map((m) => ({
@@ -102,6 +103,7 @@ export function createStreamingResponse(
   messages: Message[],
   apiKey?: string,
   onComplete?: (usage: UsageResult) => void,
+  model: string = MODEL_SONNET,
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
 
@@ -110,7 +112,7 @@ export function createStreamingResponse(
       try {
         const result = await streamChat(system, messages, (chunk) => {
           controller.enqueue(encoder.encode(chunk));
-        }, apiKey);
+        }, apiKey, model);
         // Append a sentinel for client-side session token tracking.
         // Uses \x00 prefix so it's unambiguous and won't appear in rendered text.
         controller.enqueue(encoder.encode(

@@ -145,7 +145,9 @@ export function CharacterSheet({ character }: CharacterSheetProps) {
           <ul className="space-y-1">
             {character.talents.map((t, i) => (
               <li key={i} className="text-sm text-stone-300 bg-stone-900 rounded px-3 py-1.5 border border-stone-800">
-                {t}
+                {typeof t === "string"
+                  ? t
+                  : (t as { name?: string; description?: string }).name ?? JSON.stringify(t)}
               </li>
             ))}
           </ul>

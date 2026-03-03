@@ -149,7 +149,14 @@ export function applyCharacterUpdates(
 
   for (const update of updates) {
     if (update.type === "characterUpdate") {
-      Object.assign(result, update.data);
+      const data = { ...update.data };
+      // Normalize talents: AI may emit {name, description} objects instead of strings
+      if (Array.isArray(data.talents)) {
+        data.talents = (data.talents as unknown[]).map((t) =>
+          typeof t === "string" ? t : (t as { name?: string }).name ?? JSON.stringify(t),
+        );
+      }
+      Object.assign(result, data);
     }
   }
 

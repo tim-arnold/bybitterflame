@@ -228,6 +228,21 @@
       ]
     },
     {
+      "id": "cost-optimization",
+      "name": "API cost optimization (caching, model routing)",
+      "status": "done",
+      "notes": "Phase 1: prompt caching (3-layer system blocks). Phase 2: dynamic state caps (GM notes, summaries, NPCs, locations). Phase 3: Haiku for creation modes (create, adventure-create, gm-create); Sonnet for gameplay. Phase 5: cache token tracking in DB. Haiku talent object normalization fix in state-parser + CharacterSheet.",
+      "tests": [
+        { "name": "Prompt caching: 3-layer system blocks with cache_control", "pass": true },
+        { "name": "Cache tokens tracked in DB (write + read columns)", "pass": true },
+        { "name": "Dynamic state capped (GM notes, summaries, NPCs, locations)", "pass": true },
+        { "name": "Character creation uses Haiku (create, adventure-create, gm-create)", "pass": true },
+        { "name": "Gameplay uses Sonnet (mode: play)", "pass": true },
+        { "name": "Haiku talent object normalization prevents React crash", "pass": true },
+        { "name": "Summarize route uses shared MODEL_HAIKU constant", "pass": true }
+      ]
+    },
+    {
       "id": "combat-tracker",
       "name": "Combat tracking UI",
       "status": "pending",

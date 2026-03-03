@@ -56,6 +56,21 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 
 ## Recent Work
 
+### Session 16 (2026-03-02)
+
+**Cost optimization — Phase 3: Haiku for character creation:**
+
+- `MODEL_SONNET` and `MODEL_HAIKU` constants centralized in `src/lib/config.ts` (were scattered/hardcoded)
+- Haiku pricing constants added to `config.ts` ($1/$5/MTok input/output, $1.25 cache write, $0.10 cache read)
+- `client.ts` `streamChat` and `createStreamingResponse` accept `model` param (defaults to Sonnet)
+- `route.ts` routing: `mode === "play"` → Sonnet, creation modes (`create`, `adventure-create`, `gm-create`) → Haiku
+- `summarize/route.ts` uses shared `MODEL_HAIKU` from config (replaced local constant)
+- Haiku quality verified on full character creation — works well for the rigid scripted flow
+- **Bug fix:** Haiku emits talents as `{name, description}` objects instead of strings — added normalization in `state-parser.ts` (`applyCharacterUpdates`) and defensive rendering in `CharacterSheet.tsx`
+- Gameplay Haiku routing (exploring/shopping) deferred pending further quality evaluation
+
+**Build: clean ✓**
+
 ### Session 15 (2026-03-02)
 
 **Companion selection at adventure start, carousing, homepage UX, new-adventure flow:**

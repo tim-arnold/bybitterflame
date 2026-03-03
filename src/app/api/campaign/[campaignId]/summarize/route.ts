@@ -5,11 +5,10 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { campaigns, sessions } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
+import { MODEL_HAIKU } from "@/lib/config";
 import type { Message } from "@/lib/game/types";
 
 export const runtime = "nodejs";
-
-const HAIKU_MODEL = "claude-haiku-4-5-20251001";
 
 const SUMMARIZE_SYSTEM_PROMPT = `You are a session recorder for a Shadowdark RPG campaign. Given a session's chat log between a player and their GM, write a concise session summary for the GM's records.
 
@@ -90,7 +89,7 @@ export async function POST(
 
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
     const response = await anthropic.messages.create({
-      model: HAIKU_MODEL,
+      model: MODEL_HAIKU,
       max_tokens: 512,
       system: SUMMARIZE_SYSTEM_PROMPT,
       messages: [{ role: "user", content: `Session log:\n\n${chatLog}` }],

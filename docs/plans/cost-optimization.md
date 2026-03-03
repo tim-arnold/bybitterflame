@@ -285,7 +285,7 @@ Once we have cache hit data:
 | 1 | **Phase 1: Prompt caching** | Medium (1 session) | ~57% input cost reduction | ✅ Done |
 | 2 | **Phase 2: Cap dynamic state** | Small (1 session) | Prevents unbounded growth | ✅ Done (minus 2d) |
 | 3 | **Phase 5: Cache observability** | Small (same session as Phase 1) | Data for future decisions | ✅ Done |
-| 4 | **Phase 3: Haiku routing** | Medium (1–2 sessions) | Additional ~20–30% on some turns | Pending |
+| 4 | **Phase 3: Haiku routing** | Medium (1–2 sessions) | Additional ~20–30% on some turns | ✅ Done (creation only) |
 | 5 | **Phase 4: User pricing** | Large (2–3 sessions) | Revenue model | Pending |
 
 **Phase 1 is the critical path.** It's prerequisite for viable subscription pricing and delivers the largest single cost reduction. Phases 2 and 5 are small additions that should ship alongside Phase 1.
@@ -312,9 +312,19 @@ Once we have cache hit data:
 - `schema.sql` updated as canonical restore reference
 - Both columns accumulated in the `onComplete` callback in `route.ts`
 
+**Phase 3 implemented (creation modes only):**
+- `MODEL_SONNET` and `MODEL_HAIKU` constants centralized in `config.ts`
+- Haiku pricing constants added to `config.ts`
+- `client.ts` accepts `model` parameter (defaults to Sonnet) on `streamChat` and `createStreamingResponse`
+- `route.ts` routes: `mode === "play"` → Sonnet, all creation modes (`create`, `adventure-create`, `gm-create`) → Haiku
+- `summarize/route.ts` uses shared `MODEL_HAIKU` constant (was local)
+- Haiku quality verified on full character creation flow — works well for the rigid scripted steps
+- Fixed: Haiku sometimes emits talents as `{name, description}` objects instead of strings — added normalization in `state-parser.ts` and defensive rendering in `CharacterSheet.tsx`
+- Gameplay routing to Haiku (exploring/shopping) deferred pending further quality evaluation
+
 **Deferred:**
 - Phase 2d (adventure brief condensation after 5 turns) — requires tracking explored locations; deferred
-- Phase 3 (Haiku routing) — test character creation quality first before expanding
+- Phase 3 expansion (Haiku for routine gameplay) — creation quality verified; gameplay routing deferred for separate evaluation
 - Phase 4 (user pricing) — pricing math needs revisiting; BYOK remains the viable near-term model
 - **Rules layer invalidation (investigate):** Extended caching trials show context-flag changes (e.g., entering/leaving combat) invalidate Layer 2 (rules, ~10–15K tokens) and trigger a re-write. Investigate whether always loading all rules every turn produces better cache economics than selective loading — the 90% savings on a stable 15K-token rules block may outweigh the extra uncached tokens on turns where fewer rules would have been loaded.
 
