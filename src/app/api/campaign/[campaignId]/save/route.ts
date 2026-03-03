@@ -93,6 +93,7 @@ export async function POST(
         .set({
           worldState: JSON.stringify(campaignData.worldState ?? {}),
           gmPersona: campaignData.gmPersona ?? "",
+          ...(campaignData.name !== undefined && { name: campaignData.name }),
           ...(campaignData.gmNotes !== undefined && { gmNotes: campaignData.gmNotes }),
           updatedAt: now,
         })

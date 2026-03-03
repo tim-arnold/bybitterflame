@@ -300,6 +300,10 @@ export default function PlayPage() {
           if (update.type === "notification" && update.data.type === "characterComplete" && needsGmCreate) {
             trackEvent({ name: "character_created" });
             setIsGmCreateMode(false);
+            // Update campaign name from placeholder if the character now has a name
+            if (updatedCharacter.name && updatedCampaign.name === "New Adventure") {
+              updatedCampaign = { ...updatedCampaign, name: `The Adventures of ${updatedCharacter.name}` };
+            }
           }
         }
 
@@ -522,6 +526,10 @@ export default function PlayPage() {
           if (update.type === "notification" && update.data.type === "characterComplete" && isGmCreateMode) {
             trackEvent({ name: "character_created" });
             setIsGmCreateMode(false);
+            // Update campaign name from placeholder if the character now has a name
+            if (updatedCharacter.name && updatedCampaign.name === "New Adventure") {
+              updatedCampaign = { ...updatedCampaign, name: `The Adventures of ${updatedCharacter.name}` };
+            }
           }
           if (update.type === "adventureComplete") {
             trackEvent({ name: "adventure_completed" });
