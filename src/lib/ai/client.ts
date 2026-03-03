@@ -56,7 +56,7 @@ export async function streamChat(
   const stream = anthropic.messages.stream({
     model: MODEL,
     max_tokens: MAX_TOKENS,
-    system: system as string,
+    system,
     messages: messages.map((m) => ({
       role: m.role,
       content: m.content,

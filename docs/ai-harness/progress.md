@@ -84,6 +84,20 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 **New adventure flow:**
 - `/new-adventure` now skips the intermediate collapsed two-card state; lands directly with GM interview visible
 
+**Production rules-loading fix:**
+- `readFileSync` / `process.cwd()` silently fail in Cloudflare Workers (no filesystem) — rules were never loading in prod
+- Before prompt caching refactor this was harmless (empty string in flat prompt); after Session 14's structured blocks, empty rules = empty text block = Anthropic API 400 rejection
+- Fix: created `src/lib/rules/bundle.ts` — static imports of all 43 rule files via webpack `asset/source` + turbopack `raw-loader`; `rules-loader.ts` now reads from `RULE_FILES[filename]` instead of `readFileSync`
+- Added `src/markdown.d.ts` ambient module declaration for `*.md` imports
+- Added guard in `route.ts` to skip empty rules block (Anthropic rejects `{ type: "text", text: "" }`)
+- Added `turbopack.rules` config in `next.config.ts` alongside webpack config (Next.js 16 defaults to Turbopack for builds)
+- Installed `raw-loader` as devDependency
+
+**Cleanup:**
+- Removed leftover QA logging from `route.ts`
+- Removed incorrect `system as string` cast in `client.ts` (SDK accepts `string | TextBlockParam[]` natively)
+- Updated `feature-list.json`: companion-selection tests marked passing
+
 **Build: clean ✓**
 
 ### Session 14 (2026-03-02)

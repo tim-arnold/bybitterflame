@@ -208,11 +208,11 @@
       "status": "done",
       "notes": "Two-step flow on adventure detail page. GET /api/companions/available returns former companions + available roster chars. POST /api/companion/promote promotes a companion to main character. Multi-companion slots limited by level diff. start-adventure accepts companions[] array.",
       "tests": [
-        { "name": "Former companions from completed campaigns appear in selection step", "pass": false },
-        { "name": "Available roster characters appear in selection step", "pass": false },
-        { "name": "Multi-companion slot limit enforced", "pass": false },
-        { "name": "Selected companion appears in worldState.companions on new campaign", "pass": false },
-        { "name": "Play as companion creates new campaign and redirects", "pass": false }
+        { "name": "Former companions from completed campaigns appear in selection step", "pass": true },
+        { "name": "Available roster characters appear in selection step", "pass": true },
+        { "name": "Multi-companion slot limit enforced", "pass": true },
+        { "name": "Selected companion appears in worldState.companions on new campaign", "pass": true },
+        { "name": "Play as companion creates new campaign and redirects", "pass": true }
       ]
     },
     {
