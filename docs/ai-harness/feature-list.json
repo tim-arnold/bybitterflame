@@ -1,0 +1,433 @@
+{
+  "project": "By Bitter Flame — AI Fantasy Adventure",
+  "features": [
+    {
+      "id": "rules-docs",
+      "name": "Original rules markdown files (folklore setting, Toll system, 86 spells)",
+      "status": "done",
+      "notes": "BTORCH-52 Phase 1. All rules rewritten from scratch — fully original content. 6 ancestries, 3 base classes, 9 specializations, Toll spellcasting, Fate Roll death, folklore world.",
+      "tests": [
+        { "name": "All 21 rules files exist in src/lib/rules/ (plus 19 encounter files)", "pass": true },
+        { "name": "Character creation rules cover 6 ancestries, 3 classes, backgrounds, spell selection", "pass": true },
+        { "name": "Combat rules include Fate Roll death mechanic (d6, 3-round cap)", "pass": true },
+        { "name": "Spellcasting rules cover full Toll system (costs, thresholds, resets)", "pass": true },
+        { "name": "86 spells across 5 files (neutral + 3 paths)", "pass": true },
+        { "name": "Leveling includes 9 specialization talent tables (2d6)", "pass": true },
+        { "name": "Downtime has 3 class-specific outcome tables (42 outcomes)", "pass": true },
+        { "name": "bundle.ts and rules-loader.ts updated for new file structure", "pass": true },
+        { "name": "No third-party IP references remain in rules files (including all 19 encounter tables)", "pass": true },
+        { "name": "Build clean", "pass": true }
+      ]
+    },
+    {
+      "id": "db-schema",
+      "name": "Database schema (characters, campaigns, sessions)",
+      "status": "done",
+      "tests": [
+        { "name": "Drizzle schema compiles", "pass": true },
+        { "name": "Characters table has all required fields", "pass": true },
+        { "name": "Campaigns and sessions tables are linked", "pass": true },
+        { "name": "API routes read/write from D1", "pass": true }
+      ]
+    },
+    {
+      "id": "cloudflare-deployment",
+      "name": "Cloudflare Workers production deployment",
+      "status": "done",
+      "notes": "Live at https://dark.tim52.io. All DB routes use runtime=nodejs (not edge) — Edge Runtime bundler is incompatible with drizzle-orm CJS. CI/CD via GitHub Actions (.github/workflows/deploy.yml) on push to main. account_id in wrangler.toml for non-interactive deploy.",
+      "tests": [
+        { "name": "npx @opennextjs/cloudflare build succeeds", "pass": true },
+        { "name": "wrangler deploy uploads and deploys worker", "pass": true },
+        { "name": "D1 binding env.DB accessible in all API routes", "pass": true },
+        { "name": "ANTHROPIC_API_KEY secret available to worker", "pass": true },
+        { "name": "Site loads at production URL", "pass": true },
+        { "name": "Character creation → play redirect works end-to-end in production", "pass": true },
+        { "name": "GitHub Actions deploys on push to main", "pass": true }
+      ]
+    },
+    {
+      "id": "ai-client",
+      "name": "Claude API streaming integration",
+      "status": "done",
+      "tests": [
+        { "name": "Streaming chat route returns valid responses", "pass": true },
+        { "name": "System prompt includes character and rules data", "pass": true },
+        { "name": "Error handling for API failures", "pass": true }
+      ]
+    },
+    {
+      "id": "rules-loader",
+      "name": "Selective rules loading based on game context",
+      "status": "done",
+      "tests": [
+        { "name": "Combat rules loaded when inCombat flag set", "pass": true },
+        { "name": "Character creation rules loaded during creation", "pass": true },
+        { "name": "Token count stays manageable", "pass": true }
+      ]
+    },
+    {
+      "id": "gamestate-parser",
+      "name": "Parse gamestate JSON from AI responses",
+      "status": "done",
+      "tests": [
+        { "name": "Extracts gamestate blocks from narrative", "pass": true },
+        { "name": "Parses character updates correctly", "pass": true },
+        { "name": "Handles missing or malformed blocks gracefully", "pass": true },
+        { "name": "Parses companionJoined, companionUpdate, playerDied", "pass": true }
+      ]
+    },
+    {
+      "id": "dice-system",
+      "name": "Dice rolling (virtual + manual)",
+      "status": "done",
+      "tests": [
+        { "name": "All die types work (d4-d20)", "pass": true },
+        { "name": "Advantage/disadvantage rolls correctly", "pass": true },
+        { "name": "Stat modifier calculation is accurate", "pass": true },
+        { "name": "Manual dice input mode works", "pass": true }
+      ]
+    },
+    {
+      "id": "dice-ux",
+      "name": "Dice animation with phased narrative reveal",
+      "status": "done",
+      "notes": "Gamestate block must be first in AI response for streaming suppression. Narrative splits at --- for two-phase reveal with Continue button.",
+      "tests": [
+        { "name": "Dice tumble animation plays before any narrative", "pass": true },
+        { "name": "Narrative suppressed during streaming when gamestate detected", "pass": true },
+        { "name": "Flavor text fades in after dice complete", "pass": true },
+        { "name": "Continue button reveals scores and next question", "pass": true },
+        { "name": "Same component instance preserved across streaming → final", "pass": true }
+      ]
+    },
+    {
+      "id": "character-creation",
+      "name": "Character creation flow (/create)",
+      "status": "done",
+      "notes": "Steps: Ability Scores → Ancestry → Class → Alignment → Name & Pronouns → Background → Hit Points → Equipment & Gold → Final Summary. Manual 'Begin Adventure' button shown when isCharacterComplete.",
+      "tests": [
+        { "name": "Chat-driven creation with initializer agent", "pass": true },
+        { "name": "Live character preview sidebar updates", "pass": true },
+        { "name": "Pronouns asked and stored", "pass": true },
+        { "name": "All stats/choices persist to D1 in production", "pass": true },
+        { "name": "Redirect to gameplay after completion", "pass": true },
+        { "name": "Manual 'Begin Adventure' button visible when character complete", "pass": true }
+      ]
+    },
+    {
+      "id": "gm-persona",
+      "name": "Persistent GM persona across sessions",
+      "status": "done",
+      "notes": "AI establishes persona during character creation, stored as campaign.gmPersona, injected into session prompt",
+      "tests": [
+        { "name": "GM persona emitted in final gamestate block", "pass": true },
+        { "name": "Session prompt includes persona when available", "pass": true }
+      ]
+    },
+    {
+      "id": "gameplay-loop",
+      "name": "Gameplay chat loop (/play/[campaignId])",
+      "status": "done",
+      "notes": "Opening scene auto-generated on first visit; autosave after every turn; session resume works.",
+      "tests": [
+        { "name": "Three-column layout renders", "pass": true },
+        { "name": "Streaming AI responses display correctly", "pass": true },
+        { "name": "Character sheet sidebar shows live data", "pass": true },
+        { "name": "Chat input auto-focuses when AI finishes", "pass": true },
+        { "name": "State changes from AI update UI and DB", "pass": true }
+      ]
+    },
+    {
+      "id": "companion-npcs",
+      "name": "Companion NPCs with full stat sheets and personalities",
+      "status": "done",
+      "notes": "GM-controlled companions with disposition, loyalty drift, death saves, hostile turn. All state stored in worldState.companions JSON blob. Verified in production.",
+      "tests": [
+        { "name": "companionJoined gamestate parsed and companion added to state", "pass": true },
+        { "name": "CompanionPanel renders in right sidebar when companions present", "pass": true },
+        { "name": "companionUpdate merges HP/loyalty/status correctly", "pass": true },
+        { "name": "Companions persist across page reload from worldState", "pass": true }
+      ]
+    },
+    {
+      "id": "soul-transfer",
+      "name": "Soul transfer on player death",
+      "status": "done",
+      "notes": "playerDied gamestate triggers DeathScreen overlay. Player selects companion; inherit API creates new character. Legacy talent appended. Dead character's gear preserved in LegacyCharacter.equipment and surfaced to GM. Stale closure bug fixed (sendMessage accepts initialCharacter/initialCampaign/initialCompanions overrides). Verified in production.",
+      "tests": [
+        { "name": "playerDied triggers DeathScreen overlay", "pass": true },
+        { "name": "DeathScreen shows companion selection cards", "pass": true },
+        { "name": "Inherit API creates new character and updates campaign.characterId", "pass": true },
+        { "name": "Character sheet swaps to new character after transfer", "pass": true },
+        { "name": "Legacy talent appears in new character's talents list", "pass": true },
+        { "name": "No-companion path shows campaign end option", "pass": true },
+        { "name": "Hostile-companion killer path auto-selects and forces inherit", "pass": true },
+        { "name": "Transferred character has companion's actual HP (not 0)", "pass": true },
+        { "name": "Languages merged from both characters", "pass": true },
+        { "name": "Old character no longer appears in CompanionPanel", "pass": true }
+      ]
+    },
+    {
+      "id": "torch-timer",
+      "name": "Real-time torch timer",
+      "status": "done",
+      "notes": "UI owns the clock; GM signals intent only. Paused countdown (not wall-clock). Fixed stale closure bugs causing reignite-after-extinguish and double-notification on burnout. Darkness enforced when no torch lit.",
+      "tests": [
+        { "name": "60-minute countdown works", "pass": true },
+        { "name": "Persists across page refreshes (localStorage)", "pass": true },
+        { "name": "AI notified when torch expires", "pass": true }
+      ]
+    },
+    {
+      "id": "session-management",
+      "name": "Session save/resume with AI summaries",
+      "status": "done",
+      "notes": "Pause Session fires hidden GM message + background Haiku summarize call. Summary written to sessions.summary. Campaign GET returns sessionSummaries[] (past sessions with summaries, up to 5). Injected into system prompt via buildSummaryBlock(). gmNotes campaign arc tracking also added. DB migration: 0008_session_summarization.sql.",
+      "tests": [
+        { "name": "Pause Session triggers in-chat GM summary", "pass": true },
+        { "name": "Haiku summary written to sessions.summary in DB", "pass": true },
+        { "name": "Resume loads sessionSummaries into system prompt", "pass": true },
+        { "name": "AI references previous events on resume", "pass": true }
+      ]
+    },
+    {
+      "id": "analytics",
+      "name": "GA4 event tracking",
+      "status": "done",
+      "notes": "Property G-285WWGVN6Z. Typed trackEvent() utility in src/lib/analytics.ts. 10 events wired across the funnel. Setup guide at docs/guides/ga4-events.md.",
+      "tests": [
+        { "name": "GA4 script loads in layout.tsx", "pass": true },
+        { "name": "request_access fires on form submit", "pass": true },
+        { "name": "adventure_started fires with correct type (gm_decides/roll_own/module)", "pass": true },
+        { "name": "character_created fires in roll_own and gm-create paths", "pass": true },
+        { "name": "api_key_added fires on key save", "pass": true },
+        { "name": "free_turns_exhausted fires on 402 response", "pass": true },
+        { "name": "session_paused fires on End Session", "pass": true },
+        { "name": "adventure_completed fires on adventureComplete gamestate", "pass": true },
+        { "name": "character_died fires on playerDied gamestate", "pass": true },
+        { "name": "soul_transferred fires after successful inherit", "pass": true },
+        { "name": "companion_joined fires on first companionJoined gamestate", "pass": true }
+      ]
+    },
+    {
+      "id": "companion-selection",
+      "name": "Companion selection at adventure start",
+      "status": "done",
+      "notes": "Two-step flow on adventure detail page. GET /api/companions/available returns former companions + available roster chars. POST /api/companion/promote promotes a companion to main character. Multi-companion slots limited by level diff. start-adventure accepts companions[] array.",
+      "tests": [
+        { "name": "Former companions from completed campaigns appear in selection step", "pass": true },
+        { "name": "Available roster characters appear in selection step", "pass": true },
+        { "name": "Multi-companion slot limit enforced", "pass": true },
+        { "name": "Selected companion appears in worldState.companions on new campaign", "pass": true },
+        { "name": "Play as companion creates new campaign and redirects", "pass": true }
+      ]
+    },
+    {
+      "id": "carousing",
+      "name": "Carousing step at adventure end",
+      "status": "done",
+      "notes": "Multi-phase AdventureCompleteScreen: victory → carousing → rolling → result → [leveling-hp → leveling-talent → leveling-spells] → done. 7 tiers (30–1800gp), d8+bonus roll, 14 outcomes. Gold deducted, XP added. If XP crosses level threshold, full level-up flow plays before done. /complete fires after carousing. Level 10 skips level-up.",
+      "tests": [
+        { "name": "Carousing prompt shown after adventure complete", "pass": true },
+        { "name": "Tier selection and dice roll work", "pass": true },
+        { "name": "XP and gold update saved to character", "pass": true },
+        { "name": "Campaign marked complete after carousing step", "pass": true },
+        { "name": "Level-up flow triggers when carousing XP crosses threshold", "pass": true },
+        { "name": "HP roll shown with animation; maxHp and hp updated", "pass": true },
+        { "name": "Talent roll shown at odd levels; choice UI works for all talent types", "pass": true },
+        { "name": "Spell picker shown for Wizard/Priest when new spells unlocked", "pass": true },
+        { "name": "XP resets to 0 and new level saved to DB after level-up", "pass": true },
+        { "name": "Level 10 characters skip level-up flow", "pass": true }
+      ]
+    },
+    {
+      "id": "cost-optimization",
+      "name": "API cost optimization (caching, model routing)",
+      "status": "done",
+      "notes": "Phase 1: prompt caching (3-layer system blocks). Phase 2: dynamic state caps (GM notes, summaries, NPCs, locations). Phase 3: Haiku for creation modes (create, adventure-create, gm-create); Sonnet for gameplay. Phase 5: cache token tracking in DB. Haiku talent object normalization fix in state-parser + CharacterSheet.",
+      "tests": [
+        { "name": "Prompt caching: 3-layer system blocks with cache_control", "pass": true },
+        { "name": "Cache tokens tracked in DB (write + read columns)", "pass": true },
+        { "name": "Dynamic state capped (GM notes, summaries, NPCs, locations)", "pass": true },
+        { "name": "Character creation uses Haiku (create, adventure-create, gm-create)", "pass": true },
+        { "name": "Gameplay uses Sonnet (mode: play)", "pass": true },
+        { "name": "Haiku talent object normalization prevents React crash", "pass": true },
+        { "name": "Summarize route uses shared MODEL_HAIKU constant", "pass": true }
+      ]
+    },
+    {
+      "id": "quest-tracking",
+      "name": "Quest tracking system",
+      "status": "done",
+      "notes": "GM emits campaignUpdates.quests (full array) when quests are accepted/updated/completed/failed. Quest type extended with giver and reward fields. World block shows objectives/giver/reward to GM every turn. GM milestone review rules: after combat, on locationType change, at session start. QuestLog component in right panel. Quest giver shown as subtitle in collapsed card. Quests no longer auto-added to Traveller's Journal (Quest Log only).",
+      "tests": [
+        { "name": "QuestLog renders in right panel when quests exist", "pass": true },
+        { "name": "Active quests shown with objectives, giver, reward", "pass": true },
+        { "name": "Completed/failed quests in collapsed section", "pass": true },
+        { "name": "New quest auto-creates journal entry (category: quest)", "pass": true },
+        { "name": "No duplicate journal entries if same quest encountered twice", "pass": true },
+        { "name": "Build clean", "pass": true }
+      ]
+    },
+    {
+      "id": "character-management",
+      "name": "Character management page (/characters)",
+      "status": "done",
+      "notes": "Lists all roster characters. Adventuring characters get Continue link; idle characters get New Adventure and Delete. userId column on characters table (migration 0014) scopes all queries. companions/available fixed to not leak cross-user data. Delete adventure dialog has optional Also Delete character checkbox.",
+      "tests": [
+        { "name": "/characters lists all user's characters with correct status", "pass": true },
+        { "name": "Manage characters link on homepage", "pass": true },
+        { "name": "Character deletion works with FK safety check", "pass": true },
+        { "name": "companions/available scoped to current user", "pass": true }
+      ]
+    },
+    {
+      "id": "economy-mode",
+      "name": "Economy mode (Haiku toggle for gameplay)",
+      "status": "done",
+      "notes": "Toggle in right sidebar SessionControls switches all gameplay turns to Haiku. Shopping turns auto-route to Haiku when shopping context flag set. All other gameplay on Sonnet by default.",
+      "tests": [
+        { "name": "Economy mode toggle switches model to Haiku", "pass": true },
+        { "name": "Shopping context auto-routes to Haiku", "pass": true },
+        { "name": "Turning off economy mode resumes Sonnet on next turn", "pass": true }
+      ]
+    },
+    {
+      "id": "combat-tracker",
+      "name": "Combat tracking UI",
+      "status": "done",
+      "notes": "GM emits combatAction with active, round, and combatants fields. CombatTracker component lives in right panel. Player gold, companions emerald, enemies gray. Clears on combat end. Session prompt instructs GM on format.",
+      "tests": [
+        { "name": "Initiative order displays for all combatants", "pass": true },
+        { "name": "Turn indicators show whose turn it is", "pass": true },
+        { "name": "Combat tracker appears/updates based on combatAction gamestate", "pass": true },
+        { "name": "Tracker lives in the right panel", "pass": true },
+        { "name": "Clears/hides when combat ends", "pass": true }
+      ]
+    },
+    {
+      "id": "adventure-modules",
+      "name": "Adventure module system (oneshot modules)",
+      "status": "done",
+      "notes": "Shots in the Dark #1: 18 oneshot adventures. Adventure browser at /adventures. Character selection (existing / roll own / GM creates). Adventure data injected into session prompt. mapReveal gamestate key triggers Map tab in right panel. GM-create mode: brief interview → full character generated. DB: campaign_type, module_id, adventure_id columns. PC maps in public/adventures/shots-in-the-dark-1/. New migration: drizzle/0001_adventure_fields.sql.",
+      "tests": [
+        { "name": "/adventures lists all 18 oneshots with correct level ranges", "pass": true },
+        { "name": "Adventure detail page shows all 3 character options", "pass": true },
+        { "name": "Roll my own → create page passes adventureId/collectionId through to DB", "pass": true },
+        { "name": "Let GM decide → brief interview → characterComplete → adventure starts", "pass": true },
+        { "name": "Adventure module brief injected into session prompt", "pass": true },
+        { "name": "mapReveal gamestate key triggers Map tab badge and shows map", "pass": true },
+        { "name": "Build clean", "pass": true }
+      ]
+    },
+    {
+      "id": "auth",
+      "name": "User authentication (BetterAuth + D1)",
+      "status": "done",
+      "notes": "BetterAuth v1.4.19 with Drizzle adapter. Lazy singleton getAuth() — D1 binding only available per-request via getCloudflareContext. Integer timestamps in schema (D1 rejects Date objects). Cookie-presence proxy.ts guard (Edge Runtime can't call getCloudflareContext; full validation in API routes). Production migration applied via --command. BETTER_AUTH_SECRET + BETTER_AUTH_URL secrets set in Cloudflare.",
+      "tests": [
+        { "name": "Sign up / sign in with email+password", "pass": true },
+        { "name": "Session cookie persists across reloads", "pass": true },
+        { "name": "Campaigns scoped to authenticated user", "pass": true },
+        { "name": "Unauthenticated access redirected to login", "pass": true }
+      ]
+    },
+    {
+      "id": "ui-theme",
+      "name": "Dark fantasy UI theme",
+      "status": "done",
+      "tests": [
+        { "name": "Dark backgrounds with gold accents", "pass": true },
+        { "name": "Serif font for GM narration", "pass": true },
+        { "name": "Mobile responsive layout", "pass": true }
+      ]
+    },
+    {
+      "id": "admin-bounty-turns",
+      "name": "Admin bounty system — grant bonus free turns",
+      "status": "done",
+      "notes": "serverKeyTurnsBonus column on user table. effectiveLimit = SERVER_KEY_TURN_LIMIT + bonus. PATCH /api/admin/users/[userId]/turns sets bonus and emails user when increased. GrantTurnsForm inline on admin user rows. BugReportModal success screen shows bounty amounts (+10 bug, +20 feature). Welcome email updated with both amounts. Solo-dev voice throughout (no 'we').",
+      "tests": [
+        { "name": "DB schema has serverKeyTurnsBonus with default 0", "pass": true },
+        { "name": "Turn gate in /api/chat uses SERVER_KEY_TURN_LIMIT + bonus", "pass": true },
+        { "name": "PATCH /api/admin/users/[userId]/turns updates bonus", "pass": true },
+        { "name": "Notification email sent to user when bonus increases", "pass": true },
+        { "name": "Admin UI shows used/effective-limit/remaining per user", "pass": true },
+        { "name": "Key status badge reflects effective limit (e.g. Trial 18/40)", "pass": true },
+        { "name": "GrantTurnsForm hidden for own-key and full-beta users", "pass": true },
+        { "name": "BugReportModal success shows +10/+20 bounty messaging", "pass": true },
+        { "name": "Build clean", "pass": true }
+      ]
+    },
+    {
+      "id": "security-hardening",
+      "name": "Security hardening (auth checks, validation, rate limiting)",
+      "status": "done",
+      "notes": "BTORCH-29. Ownership check on start-adventure sourceCampaignId. D1-backed rate limiting on account-request/bug-report/chat-anon. isAdmin() helper centralizes admin email check. Zod validation on 3 POST endpoints. Bug report description capped at 5000 chars. Turn counter UI fixed to reflect admin-granted bonus turns. Migration: 0016_rate_limits.sql.",
+      "tests": [
+        { "name": "start-adventure: 403 when sourceCampaignId belongs to another user", "pass": true },
+        { "name": "account-request: 429 after 5 requests/hr per IP", "pass": true },
+        { "name": "bug-report: 429 after 10 requests/hr per IP", "pass": true },
+        { "name": "chat: authenticated gameplay unaffected by rate limit", "pass": true },
+        { "name": "Admin endpoints return 403 to non-admin users", "pass": true },
+        { "name": "Admin actions all work for gm@bybitterflame.com", "pass": true },
+        { "name": "start-adventure: 400 on malformed body (non-UUID sourceCampaignId)", "pass": true },
+        { "name": "campaign/save: 400 on sessionNumber: 0", "pass": true },
+        { "name": "companion/promote: 400 on empty moduleId", "pass": true },
+        { "name": "bug-report: >5000 char description truncated, Jira issue created", "pass": true },
+        { "name": "Turn counter shows correct limit including bonus turns", "pass": true },
+        { "name": "Build clean", "pass": true }
+      ]
+    },
+    {
+      "id": "api-key-encryption",
+      "name": "API key encryption at rest (AES-256-GCM)",
+      "status": "done",
+      "notes": "BTORCH-47. AES-256-GCM via Web Crypto API in src/lib/crypto.ts. Encrypted format enc:v1:{iv}:{ciphertext}. All write paths encrypt, all read paths decrypt. Legacy plaintext handled gracefully. One-time admin migration route + button. getEncryptionSecret() falls back to process.env for local dev.",
+      "tests": [
+        { "name": "Crypto utility encrypts and decrypts API keys correctly", "pass": true },
+        { "name": "POST /api/user/api-key stores encrypted value in DB", "pass": true },
+        { "name": "GET /api/user/api-key returns correct masked key from encrypted value", "pass": true },
+        { "name": "Chat route decrypts keys and passes to Anthropic client", "pass": true },
+        { "name": "Admin beta-key routes encrypt before DB write", "pass": true },
+        { "name": "Legacy plaintext keys returned as-is by decryptApiKey()", "pass": true },
+        { "name": "Migration route encrypts all existing plaintext keys", "pass": true },
+        { "name": "Settings page shows encryption disclosure", "pass": true },
+        { "name": "Build clean", "pass": true }
+      ]
+    },
+    {
+      "id": "persistence",
+      "name": "End-to-end data persistence",
+      "status": "done",
+      "notes": "Verified in production at dark.tim52.io. Character creation → D1 insert → redirect → play → autosave all confirmed working.",
+      "tests": [
+        { "name": "Character saved to D1 after creation", "pass": true },
+        { "name": "Campaign created and linked to character", "pass": true },
+        { "name": "Character creation redirects to /play/[campaignId]", "pass": true },
+        { "name": "Campaign state saved between turns", "pass": true },
+        { "name": "Session resumable after browser close", "pass": true }
+      ]
+    },
+    {
+      "id": "phase8-playtest",
+      "name": "Phase 8: Original rules playtest verification",
+      "status": "done",
+      "notes": "All 6 Test Gauntlet adventures completed. Quick Start presets, specialization/toll DB persistence, specialization colors, deferred death screen, stat display on talent rolls, character delete FK fix, GM prompt improvements (Toll tracking, mechanical/narrative separation, downtime emit rules).",
+      "tests": [
+        { "name": "Specialization at level 3: Sorcerer's Trial triggers level-up and specialization choice", "pass": true },
+        { "name": "Toll system end-to-end: Druid's Burden pushes through Strained → Fraying → Unraveling → Lost", "pass": true },
+        { "name": "Death and soul transfer: The Last Stand triggers Fate Roll, death screen, companion inheritance", "pass": true },
+        { "name": "Fighter downtime (Carousing): Victory Feast completes and triggers carousing flow", "pass": true },
+        { "name": "Rogue downtime (Wheeling & Dealing): The Fence completes and triggers downtime flow", "pass": true },
+        { "name": "Caster downtime (Studying): The Study completes and triggers downtime flow", "pass": true },
+        { "name": "Quick Start: preset characters skip character creation and land directly in /play", "pass": true },
+        { "name": "Specialization and Toll persist to DB across sessions", "pass": true },
+        { "name": "Specialization-specific accent colors in character sheet and GM narration", "pass": true },
+        { "name": "Death screen deferred until player reads final narrative", "pass": true },
+        { "name": "Stat scores and modifiers shown on talent roll stat choice buttons", "pass": true },
+        { "name": "Character delete handles FK constraints (sessions → campaigns → character)", "pass": true }
+      ]
+    }
+  ]
+}

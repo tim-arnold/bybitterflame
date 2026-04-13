@@ -1,0 +1,257 @@
+{
+  "name": "bob",
+  "stats": {
+    "STR": 11,
+    "DEX": 7,
+    "CON": 12,
+    "INT": 12,
+    "WIS": 10,
+    "CHA": 13
+  },
+  "rolledStats": {
+    "STR": 11,
+    "DEX": 7,
+    "CON": 12,
+    "INT": 12,
+    "WIS": 8,
+    "CHA": 13
+  },
+  "ancestry": "Elf",
+  "class": "Priest",
+  "level": 1,
+  "levels": [
+    {
+      "level": 1,
+      "talentRolledDesc": "+2 to Strength or Wisdom stat",
+      "talentRolledName": "StatBonus",
+      "Rolled12TalentOrTwoStatPoints": "",
+      "Rolled12ChosenTalentDesc": "",
+      "Rolled12ChosenTalentName": "",
+      "HitPointRoll": 4,
+      "stoutHitPointRoll": 0
+    }
+  ],
+  "XP": 0,
+  "ambitionTalentLevel": {
+    "level": 1,
+    "talentRolledDesc": "",
+    "talentRolledName": "",
+    "Rolled12TalentOrTwoStatPoints": "",
+    "Rolled12ChosenTalentDesc": "",
+    "Rolled12ChosenTalentName": "",
+    "HitPointRoll": 0,
+    "stoutHitPointRoll": 0
+  },
+  "title": "Seeker",
+  "alignment": "Neutral",
+  "background": "Banished",
+  "deity": "Gede",
+  "maxHitPoints": 5,
+  "armorClass": 8,
+  "gearSlotsTotal": 11,
+  "gearSlotsUsed": 7,
+  "bonuses": [
+    {
+      "sourceType": "Class",
+      "sourceName": "Priest",
+      "sourceCategory": "Ability",
+      "name": "ExtraLanguage: Priest 1",
+      "bonusName": "Diabolic",
+      "bonusTo": "Languages",
+      "gainedAtLevel": 1
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Priest",
+      "sourceCategory": "Ability",
+      "name": "Spell: Priest, Tier 1, Spell 1",
+      "bonusName": "Protection from Evil",
+      "bonusTo": "Tier:1, Spell:1",
+      "gainedAtLevel": 1
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Priest",
+      "sourceCategory": "Ability",
+      "name": "Spell: Priest, Tier 1, Spell 2",
+      "bonusName": "Light",
+      "bonusTo": "Tier:1, Spell:2",
+      "gainedAtLevel": 1
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Priest",
+      "sourceCategory": "Talent",
+      "gainedAtLevel": 1,
+      "name": "StatBonus",
+      "bonusTo": "WIS:+2",
+      "bonusName": "StatBonus"
+    }
+  ],
+  "goldRolled": 40,
+  "gold": 33,
+  "silver": 0,
+  "copper": 0,
+  "gear": [
+    {
+      "instanceId": "mm19haxn",
+      "gearId": "s2",
+      "name": "Backpack",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 0,
+      "cost": 2,
+      "currency": "gp"
+    },
+    {
+      "instanceId": "mm19haxo",
+      "gearId": "s8",
+      "name": "Flint and steel",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 5,
+      "currency": "sp"
+    },
+    {
+      "instanceId": "mm19haxp",
+      "gearId": "s17",
+      "name": "Torch",
+      "type": "sundry",
+      "quantity": 2,
+      "totalUnits": 2,
+      "slots": 2,
+      "cost": 10,
+      "currency": "sp"
+    },
+    {
+      "instanceId": "mm19haxr",
+      "gearId": "s15",
+      "name": "Rations",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 3,
+      "slots": 1,
+      "cost": 5,
+      "currency": "sp"
+    },
+    {
+      "instanceId": "mm19haxs",
+      "gearId": "s10",
+      "name": "Iron spikes",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 1,
+      "currency": "gp"
+    },
+    {
+      "instanceId": "mm19haxt",
+      "gearId": "s9",
+      "name": "Grappling hook",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 1,
+      "currency": "gp"
+    },
+    {
+      "instanceId": "mm19haxu",
+      "gearId": "s16",
+      "name": "Rope, 60'",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 1,
+      "currency": "gp"
+    }
+  ],
+  "treasures": [],
+  "magicItems": [],
+  "attacks": [
+    "SPELLS: To cast a Priest spell, roll 1d20+0 vs a DC equal to 10 + the spell's tier."
+  ],
+  "ledger": [
+    {
+      "goldChange": 40,
+      "silverChange": 0,
+      "copperChange": 0,
+      "desc": "Starting gold",
+      "notes": ""
+    },
+    {
+      "goldChange": -2,
+      "silverChange": 0,
+      "copperChange": 0,
+      "desc": "Buy Backpack",
+      "notes": ""
+    },
+    {
+      "goldChange": 0,
+      "silverChange": -5,
+      "copperChange": 0,
+      "desc": "Buy Flint and steel",
+      "notes": ""
+    },
+    {
+      "goldChange": 0,
+      "silverChange": -5,
+      "copperChange": 0,
+      "desc": "Buy Torch",
+      "notes": ""
+    },
+    {
+      "goldChange": 0,
+      "silverChange": -5,
+      "copperChange": 0,
+      "desc": "Buy Torch",
+      "notes": ""
+    },
+    {
+      "goldChange": 0,
+      "silverChange": -5,
+      "copperChange": 0,
+      "desc": "Buy Rations",
+      "notes": ""
+    },
+    {
+      "goldChange": -1,
+      "silverChange": 0,
+      "copperChange": 0,
+      "desc": "Buy Iron spikes",
+      "notes": ""
+    },
+    {
+      "goldChange": -1,
+      "silverChange": 0,
+      "copperChange": 0,
+      "desc": "Buy Grappling hook",
+      "notes": ""
+    },
+    {
+      "goldChange": -1,
+      "silverChange": 0,
+      "copperChange": 0,
+      "desc": "Buy Rope, 60'",
+      "notes": ""
+    }
+  ],
+  "spellsKnown": "Light, Protection from Evil, Turn Undead",
+  "languages": "Common, Diabolic, Elvish, Sylvan",
+  "creationMethod": "Design",
+  "coreRulesOnly": true,
+  "activeSources": [
+    "SD",
+    "SG",
+    "CS1",
+    "CS2",
+    "CS3",
+    "CS4"
+  ],
+  "edits": []
+}

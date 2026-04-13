@@ -1,0 +1,183 @@
+"use client";
+
+import Link from "next/link";
+import { SERVER_KEY_TURN_LIMIT } from "@/lib/config";
+import { authClient } from "@/lib/auth/client";
+
+export function HowToPlayContent() {
+  const { data: session } = authClient.useSession();
+
+  return (
+    <div className="space-y-7 text-sm text-stone-300 leading-relaxed">
+
+      <section>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">
+          This Is a Chat Game
+        </h2>
+        <p className="mb-3">
+          <strong>By Bitter Flame</strong> is a <span className="text-stone-200">freeform text adventure</span> — not a
+          choose-your-own-adventure with buttons to click. There are no menus, no pre-written options,
+          no right answers. You type what your character does, and the <strong>Game Master (GM)</strong> responds.
+        </p>
+        <p>
+          That means you can do <span className="text-stone-200">anything</span>:{" "}
+          <em>&ldquo;I try to bluff my way past the guard,&rdquo;</em>{" "}
+          <em>&ldquo;I search the room for a hidden door,&rdquo;</em>{" "}
+          <em>&ldquo;I run.&rdquo;</em>{" "}
+          The GM will handle the rules, roll the dice, and tell you what happens next.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">
+          The Game Master
+        </h2>
+        <p>
+          The AI Game Master runs the game rules on your behalf. It
+          generates the world, plays every NPC and monster, and adjudicates outcomes — exactly
+          as a human GM would at a table. You don&apos;t need to know the rules; the GM handles
+          all of that behind the scenes.
+        </p>
+        <p className="mt-3">
+          NPCs you meet — in town, on the road, or deep in a dungeon — can be persuaded, hired,
+          or rescued into joining your party as{" "}
+          <span className="text-stone-200">persistent companions</span> with their own stats,
+          personalities, and loyalties.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">
+          Dice &amp; Fate
+        </h2>
+        <p className="mb-3">
+          The GM rolls dice constantly. Monster attacks, trap triggers, NPC reactions, random
+          encounters — all resolved by the game rules. Some rolls the GM will narrate
+          openly: <span className="text-stone-400 italic">"The orc swings and rolls a 14 — it connects."</span> Others
+          tumble away into the impenetrable mists, their outcomes known only through what happens
+          next in the story.
+        </p>
+        <p>
+          When <span className="text-stone-200">you</span> need to roll — an attack, a stat check,
+          a saving throw — the GM will tell you exactly what to roll and what number you&apos;re
+          aiming for. At that point you have two options:
+        </p>
+        <ul className="mt-2 ml-4 list-disc space-y-1 text-stone-400">
+          <li>Reach for your <span className="text-stone-200">real dice</span> and report your result to the GM</li>
+          <li>Use the <span className="text-stone-200">in-game Dice Roller</span></li>
+        </ul>
+        <p className="mt-2 text-stone-400">
+          Either way, tell the GM what you rolled and the story continues.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">
+          Your Choices Are Always Yours
+        </h2>
+        <p>
+          The GM describes the world and the consequences of your actions, but{" "}
+          <span className="text-stone-200">what you do is entirely up to you</span>. The GM will
+          never present you with a list of options or decide your actions for you. Just say what
+          you do — <em>&ldquo;I attack&rdquo;</em> works just as well as a paragraph of vivid
+          description. If the GM ever offers numbered choices, you can ignore them entirely and
+          do something else.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">
+          Out of Character Prompts
+        </h2>
+        <p className="mb-3">
+          At any point you can step outside the fiction and give the GM a direct instruction
+          using <span className="text-stone-200">square brackets</span>. These are called{" "}
+          <span className="text-stone-200">OOC (Out of Character)</span> prompts. The GM will
+          acknowledge and adjust immediately — no in-game justification required.
+        </p>
+        <div className="rounded border border-stone-700 bg-stone-900 px-4 py-3 space-y-1.5 font-mono text-xs text-stone-400">
+          <p>[OOC please leave more decisions up to me]</p>
+          <p>[OOC don&apos;t offer me choices, let me direct my own actions]</p>
+          <p>[OOC be more descriptive]</p>
+          <p>[OOC be less descriptive, shorter responses]</p>
+          <p>[OOC I&apos;d like to avoid combat right now]</p>
+          <p>[OOC remind me what I can see in this room]</p>
+          <p>[OOC summarize what&apos;s happened so far]</p>
+          <p>[OOC I want to end the session here]</p>
+        </div>
+        <p className="mt-2 text-stone-400">
+          Use OOC prompts freely whenever you want to adjust the pacing, tone, or style of play.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">
+          A Few More Things
+        </h2>
+        <ul className="ml-4 list-disc space-y-2 text-stone-400">
+          <li>
+            <span className="text-stone-200">Sessions persist.</span> Your character and world
+            state are saved automatically after every GM response. Come back days later and
+            pick up exactly where you left off.
+          </li>
+          <li>
+            <span className="text-stone-200">Torch &amp; time.</span> By Bitter Flame uses real-time
+            torches — your light burns down in actual minutes. The torch timer in the sidebar
+            tracks this. Don&apos;t get caught in the dark.
+          </li>
+          <li>
+            <span className="text-stone-200">The character sheet</span> in the left panel updates
+            live as the GM tracks your HP, inventory, and XP.
+          </li>
+          <li>
+            <span className="text-stone-200">Death is real.</span> If your character
+            dies, you may have options — but there are no guaranteed saves.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">
+          Cost &amp; API Keys
+        </h2>
+        <p className="mb-3">
+          <strong>By Bitter Flame</strong> uses the{" "}
+          <span className="text-stone-200">Anthropic API</span> to power the GM. Your first{" "}
+          <span className="text-stone-200">{SERVER_KEY_TURN_LIMIT} turns</span> are free to
+          start — no setup required. After that, you&apos;ll need to bring your own Anthropic API key.
+        </p>
+        <p className="mb-3">
+          API keys are free to create at{" "}
+          <a
+            href="https://console.anthropic.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-stone-300 underline hover:text-white transition-colors"
+          >
+            console.anthropic.com
+          </a>
+          . Each GM response costs roughly 5–7 cents, so a 20-turn session runs about $1.{" "}
+          {session ? (
+            <>Add your key in <Link href="/account" className="text-stone-300 underline hover:text-white transition-colors">Account Settings</Link> and it will be used for all future turns.</>
+          ) : (
+            <>Add your key in Account Settings (sign in to access) and it will be used for all future turns.</>
+          )}
+        </p>
+        <p className="text-stone-400 text-xs">
+          Usage is billed <span className="text-stone-300">directly by Anthropic</span> to your
+          Anthropic account — not by By Bitter Flame. Your key is stored encrypted and only ever used to
+          make requests on your behalf.
+        </p>
+      </section>
+
+      <p className="text-xs text-stone-600">
+        Need a refresher mid-adventure? This guide is always available at{" "}
+        <Link href="/how-to-play" className="text-stone-400 hover:text-stone-300 transition-colors underline">
+          /how-to-play
+        </Link>
+        .
+      </p>
+
+    </div>
+  );
+}
