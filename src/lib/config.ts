@@ -12,7 +12,7 @@ export const NPC_CAP = 10;
 export const GM_NOTES_MAX_CHARS = 1500;
 
 /** Model IDs — centralized so they aren't scattered across files. */
-export const MODEL_SONNET = "claude-sonnet-4-20250514";
+export const MODEL_SONNET = "claude-sonnet-4-6";
 export const MODEL_HAIKU = "claude-haiku-4-5-20251001";
 
 /**
