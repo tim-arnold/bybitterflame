@@ -12,17 +12,17 @@ export const NPC_CAP = 10;
 export const GM_NOTES_MAX_CHARS = 1500;
 
 /** Model IDs — centralized so they aren't scattered across files. */
-export const MODEL_SONNET = "claude-sonnet-4-6";
+export const MODEL_SONNET = "claude-sonnet-5";
 export const MODEL_HAIKU = "claude-haiku-4-5-20251001";
 
 /**
- * Approximate Anthropic pricing for claude-sonnet-4-* models (per token).
+ * Approximate Anthropic pricing for claude-sonnet-5 (per token).
  * Verify current rates at console.anthropic.com/settings/plans — these may change.
  */
-export const ANTHROPIC_INPUT_COST_PER_TOKEN = 3.0 / 1_000_000;        // $3.00 per MTok (base input)
-export const ANTHROPIC_OUTPUT_COST_PER_TOKEN = 15.0 / 1_000_000;      // $15.00 per MTok
-export const ANTHROPIC_CACHE_WRITE_COST_PER_TOKEN = 3.75 / 1_000_000; // $3.75 per MTok (1.25x base, one-time)
-export const ANTHROPIC_CACHE_READ_COST_PER_TOKEN = 0.30 / 1_000_000;  // $0.30 per MTok (0.1x base, per hit)
+export const ANTHROPIC_INPUT_COST_PER_TOKEN = 2.0 / 1_000_000;        // $2.00 per MTok (base input)
+export const ANTHROPIC_OUTPUT_COST_PER_TOKEN = 10.0 / 1_000_000;      // $10.00 per MTok
+export const ANTHROPIC_CACHE_WRITE_COST_PER_TOKEN = 2.5 / 1_000_000;  // $2.50 per MTok (1.25x base, one-time)
+export const ANTHROPIC_CACHE_READ_COST_PER_TOKEN = 0.20 / 1_000_000;  // $0.20 per MTok (0.1x base, per hit)
 
 /** Haiku 4.5 pricing (per token). */
 export const HAIKU_INPUT_COST_PER_TOKEN = 1.0 / 1_000_000;            // $1.00 per MTok

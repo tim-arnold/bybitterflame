@@ -34,6 +34,9 @@ function getAtmosphericError(error: unknown): string {
 }
 
 const MAX_TOKENS = 4096;
+// Sonnet 5 runs adaptive thinking, which counts against max_tokens, and its
+// tokenizer produces ~30% more tokens than Sonnet 4.6 — so it needs headroom.
+const SONNET_MAX_TOKENS = 8192;
 
 /** A cacheable system content block. */
 export type SystemBlock = { type: "text"; text: string; cache_control?: { type: "ephemeral" } };
@@ -63,10 +66,14 @@ export async function streamChat(
 ): Promise<StreamResult> {
   const anthropic = new Anthropic({ apiKey: apiKey ?? process.env.ANTHROPIC_API_KEY });
   let fullText = "";
+  const isSonnet = model === MODEL_SONNET;
 
   const stream = anthropic.messages.stream({
     model,
-    max_tokens: MAX_TOKENS,
+    max_tokens: isSonnet ? SONNET_MAX_TOKENS : MAX_TOKENS,
+    // Low effort keeps latency and cost near Sonnet 4.6's thinking-off baseline.
+    // Haiku 4.5 rejects effort, so this only applies to Sonnet.
+    ...(isSonnet && { thinking: { type: "adaptive" as const }, output_config: { effort: "low" as const } }),
     system,
     messages: messages.map((m) => ({
       role: m.role,

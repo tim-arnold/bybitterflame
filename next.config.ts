@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Don't auto-generate AGENTS.md when next dev detects an AI coding agent
+  agentRules: false,
   // Bundle .md files as raw strings so they work in Cloudflare Workers
   // (Workers have no filesystem; readFileSync with process.cwd() fails at runtime)
   webpack(config) {
