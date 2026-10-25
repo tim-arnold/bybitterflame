@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import type { Character, Companion, Spell } from "@/lib/game/types";
+import type { Character, Spell } from "@/lib/game/types";
 import {
   shouldLevelUp,
   getHitDie,

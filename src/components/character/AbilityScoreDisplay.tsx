@@ -8,7 +8,7 @@ interface AbilityScoreDisplayProps {
   abbreviated: string;
 }
 
-export function AbilityScoreDisplay({ label, value, abbreviated }: AbilityScoreDisplayProps) {
+export function AbilityScoreDisplay({ value, abbreviated }: AbilityScoreDisplayProps) {
   const mod = getModifier(value);
   const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
 

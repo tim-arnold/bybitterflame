@@ -53,7 +53,7 @@ export function HowToPlayContent() {
         <p className="mb-3">
           The GM rolls dice constantly. Monster attacks, trap triggers, NPC reactions, random
           encounters — all resolved by the game rules. Some rolls the GM will narrate
-          openly: <span className="text-stone-400 italic">"The orc swings and rolls a 14 — it connects."</span> Others
+          openly: <span className="text-stone-400 italic">&ldquo;The orc swings and rolls a 14 — it connects.&rdquo;</span> Others
           tumble away into the impenetrable mists, their outcomes known only through what happens
           next in the story.
         </p>

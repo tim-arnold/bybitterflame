@@ -227,7 +227,7 @@ export default function CharacterDetailPage() {
             {/* Flavor narrative */}
             <div className="rounded-lg border border-stone-800 bg-stone-950/90 px-6 py-5">
               <p className="font-serif text-stone-300 text-sm leading-relaxed italic">
-                "{flavorNarrative(character, campaigns)}"
+                &ldquo;{flavorNarrative(character, campaigns)}&rdquo;
               </p>
             </div>
 

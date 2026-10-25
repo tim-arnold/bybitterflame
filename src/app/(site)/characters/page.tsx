@@ -53,9 +53,9 @@ export default function CharactersPage() {
             <h1 className="font-uncial mb-1 text-4xl tracking-tight text-[var(--color-gold)]">
               Your Characters
             </h1>
-            <a href="/" className="text-sm text-stone-400 hover:text-stone-300 transition-colors">
+            <Link href="/" className="text-sm text-stone-400 hover:text-stone-300 transition-colors">
               ← Back to Home
-            </a>
+            </Link>
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { HowToPlayContent } from "@/components/HowToPlayContent";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -19,9 +20,9 @@ export default function HowToPlayPage() {
             <h1 className="font-uncial mb-1 text-4xl tracking-tight text-[var(--color-gold)]">
               How to Play
             </h1>
-            <a href="/" className="text-sm text-stone-400 hover:text-stone-300 transition-colors">
+            <Link href="/" className="text-sm text-stone-400 hover:text-stone-300 transition-colors">
               ← Back to Home
-            </a>
+            </Link>
           </div>
         </div>
 
