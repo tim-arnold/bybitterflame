@@ -6,8 +6,10 @@ import { getAuth } from "@/lib/auth/index";
 import { isAdmin } from "@/lib/auth/admin";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  // Read headers first so Next opts out of prerendering before getAuth() touches the Cloudflare context
+  const reqHeaders = await headers();
   const auth = await getAuth();
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await auth.api.getSession({ headers: reqHeaders });
   const adminUser = isAdmin(session);
 
   return (

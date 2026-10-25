@@ -452,7 +452,7 @@ export function SettingsContent() {
           </button>
         </div>
         {emailError && <p id="email-error" role="alert" className="mt-3 rounded border border-red-900 bg-red-950/50 px-3 py-2 text-xs text-red-400">{emailError}</p>}
-        {emailSuccess && <p role="status" className="mt-3 text-xs text-green-500">Check your new inbox for a verification link.</p>}
+        {emailSuccess && <p role="status" className="mt-3 text-xs text-green-500">Check your current inbox to approve the change.</p>}
       </div>
 
       {/* Password */}

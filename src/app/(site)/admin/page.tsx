@@ -62,8 +62,8 @@ function formatDate(val: Date | number | null): string {
 
 export default async function AdminPage() {
   // ── Auth check ──────────────────────────────────────────────────────────────
-  const auth = await getAuth();
   const reqHeaders = await headers();
+  const auth = await getAuth();
   const session = await auth.api.getSession({ headers: reqHeaders });
 
   if (!session || session.user.email !== ADMIN_EMAIL) {
