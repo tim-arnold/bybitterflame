@@ -409,7 +409,26 @@ Emit in order — \`characterUpdate\` first, then \`adventureComplete\` — so t
 { "adventureComplete": { "summary": "After three days in the barrow, you finally recovered the merchant's ledger and returned it to Saltwick. The town sleeps safely tonight.", "rewardDescription": "The merchant pressed 40 gold pieces into your hand with a grateful nod." } }
 \`\`\`
 
-**Companions**: Active companions carry over to the next adventure automatically — do NOT emit \`companionUpdate\` with \`status: "departed"\` unless the story explicitly calls for the companion to leave (they chose to stay behind, their personal arc concluded, etc.).`;
+**Companions**: Active companions carry over to the next adventure automatically — do NOT emit \`companionUpdate\` with \`status: "departed"\` unless the story explicitly calls for the companion to leave (they chose to stay behind, their personal arc concluded, etc.).
+
+## Recruiting Companions
+An NPC who agrees to travel with the player is a **companion**, not an entry in \`npcs\`. Companions get a full stat sheet, appear in the player's companion panel, and act on their own in combat. If an NPC is only an ally or contact who stays behind, keep them in \`npcs\`.
+- **When a new companion joins the party, emit \`companionJoined\` immediately in that same response.** Triggers include: the player invites an NPC to join and the NPC agrees, the player hires a hireling, a rescued NPC offers to travel with the party, or any moment where an NPC commits to accompanying the player. Do not wait for the player to explicitly say "add as companion" — if the NPC agreed to travel together, they are a companion.
+- **CRITICAL — all fields are required in \`companionJoined\`:** name, pronouns, ancestry, class, level, alignment, background, all six stats (str/dex/con/int/wis/cha), hp, maxHp, ac, status ("active"), equipment (array, empty if none), spells (array, empty if none), talents (array, empty if none), and the full personality object with all seven sub-fields (voice, dispositionTowardPlayer, riskTolerance, followership, loyalty, motivation, redLines). Never omit any of these.
+- **Ancestry must be one of:** Human, Fey, Knocker, Hob, Revenant, Leshy. **Class must be one of:** Fighter, Rogue, Caster (or a specialization: Knight, Hunter, Marauder, Thief, Assassin, Scout, Druid, Sorcerer, Enchanter).
+
+\`\`\`gamestate
+{ "companionJoined": { "name": "Rella", "pronouns": "she/her", "ancestry": "Knocker", "class": "Fighter",
+  "level": 1, "alignment": "Lawful", "background": "Soldier",
+  "str": 16, "dex": 10, "con": 14, "int": 8, "wis": 9, "cha": 11,
+  "hp": 12, "maxHp": 12, "ac": 14, "status": "active",
+  "equipment": [{"name": "Hatchet", "type": "weapon", "damage": "1d6"}, {"name": "Shield", "type": "shield"}],
+  "spells": [],
+  "talents": [],
+  "personality": { "voice": "Blunt, military cadence, skeptical of magic", "dispositionTowardPlayer": "neutral",
+    "riskTolerance": "bold", "followership": "collaborates", "loyalty": 5,
+    "motivation": "Earn enough coin to buy back her family's mine", "redLines": "Will not harm children or destroy crafted works." } } }
+\`\`\``;
 
 /**
  * Build the system prompt for an active gameplay session.
@@ -441,25 +460,9 @@ You fully control all companion NPCs. They are NOT subordinates — they are the
   - If a companion's loyalty drops to 0 and disposition is "hostile", or they are actively betrayed, they may turn hostile (\`status: "hostile"\`). A hostile companion is a combat enemy — add them to the combat tracker and treat them as an NPC combatant.
 - **Companion HP and death saves**: Track HP via \`companionUpdate\`. When a companion drops to 0 HP, they follow the same fate roll mechanic as the player (d6 each round, 3-round cap). On final death, emit \`companionUpdate\` with \`status: "dead"\` — permanent. Narrate their death with weight.
 - **Emit \`companionUpdate\` whenever HP, equipment, loyalty, or status changes** — even small HP changes after combat hits.
-- **When a new companion joins the party, emit \`companionJoined\` immediately in that same response.** Triggers include: the player invites an NPC to join and the NPC agrees, the player hires a hireling, a rescued NPC offers to travel with the party, or any moment where an NPC commits to accompanying the player. Do not wait for the player to explicitly say "add as companion" — if the NPC agreed to travel together, they are a companion.
-- **CRITICAL — all fields are required in \`companionJoined\`:** name, pronouns, ancestry, class, level, alignment, background, all six stats (str/dex/con/int/wis/cha), hp, maxHp, ac, status ("active"), equipment (array, empty if none), spells (array, empty if none), talents (array, empty if none), and the full personality object with all seven sub-fields (voice, dispositionTowardPlayer, riskTolerance, followership, loyalty, motivation, redLines). Never omit any of these.
-- **Ancestry must be one of:** Human, Fey, Knocker, Hob, Revenant, Leshy. **Class must be one of:** Fighter, Rogue, Caster (or a specialization: Knight, Hunter, Marauder, Thief, Assassin, Scout, Druid, Sorcerer, Enchanter).
 - **IMPORTANT**: Companions already listed in "Current Companions" below are ALREADY registered. Do NOT emit \`companionJoined\` for them again — use \`companionUpdate\` for any changes to their state.
 
 Gamestate formats:
-\`\`\`gamestate
-{ "companionJoined": { "name": "Rella", "pronouns": "she/her", "ancestry": "Knocker", "class": "Fighter",
-  "level": 1, "alignment": "Lawful", "background": "Soldier",
-  "str": 16, "dex": 10, "con": 14, "int": 8, "wis": 9, "cha": 11,
-  "hp": 12, "maxHp": 12, "ac": 14, "status": "active",
-  "equipment": [{"name": "Hatchet", "type": "weapon", "damage": "1d6"}, {"name": "Shield", "type": "shield"}],
-  "spells": [],
-  "talents": [],
-  "personality": { "voice": "Blunt, military cadence, skeptical of magic", "dispositionTowardPlayer": "neutral",
-    "riskTolerance": "bold", "followership": "collaborates", "loyalty": 5,
-    "motivation": "Earn enough coin to buy back her family's mine", "redLines": "Will not harm children or destroy crafted works." } } }
-\`\`\`
-
 \`\`\`gamestate
 { "companionUpdate": { "id": "uuid-here", "hp": 7, "loyalty": 4 } }
 \`\`\`
