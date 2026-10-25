@@ -80,12 +80,7 @@ export async function streamChat(
   });
 
   const finalMessage = await stream.finalMessage();
-  const usage = finalMessage.usage as {
-    input_tokens: number;
-    output_tokens: number;
-    cache_creation_input_tokens?: number;
-    cache_read_input_tokens?: number;
-  };
+  const { usage } = finalMessage;
 
   return {
     text: fullText,

@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
 import { apiError } from "@/lib/api/errors";
 import { eq } from "drizzle-orm";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { getDb } from "@/lib/db/client";
 import { users } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
-import { SERVER_KEY_TURN_LIMIT } from "@/lib/config";
+import { MODEL_HAIKU, SERVER_KEY_TURN_LIMIT } from "@/lib/config";
 import { encryptApiKey, decryptApiKey, getEncryptionSecret } from "@/lib/crypto";
 
 export const runtime = "nodejs";
@@ -109,24 +110,17 @@ export async function POST(request: Request) {
   // Verify the key actually works before saving
   if (rawKey) {
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": rawKey,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 1,
-          messages: [{ role: "user", content: "hi" }],
-        }),
+      const anthropic = new Anthropic({ apiKey: rawKey, maxRetries: 0 });
+      await anthropic.messages.create({
+        model: MODEL_HAIKU,
+        max_tokens: 1,
+        messages: [{ role: "user", content: "hi" }],
       });
-      if (res.status === 401 || res.status === 403) {
+    } catch (error) {
+      if (error instanceof Anthropic.AuthenticationError || error instanceof Anthropic.PermissionDeniedError) {
         return apiError("That API key was rejected by Anthropic. Please check that it's correct and active.", 400);
       }
-    } catch {
-      // Network error — let it through rather than blocking the save
+      // Network error, rate limit, or outage — let it through rather than blocking the save
     }
   }
 
