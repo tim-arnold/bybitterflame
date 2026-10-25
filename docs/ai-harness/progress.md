@@ -19,7 +19,7 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **API key validation** — `POST /api/user/api-key` makes a lightweight test call to Anthropic before saving; 401/403 returns user-friendly error instead of silently storing a broken key
 - **Token usage DB fix** — `onComplete` callback now `await`ed before `controller.close()` so DB write completes before Cloudflare Workers execution context is killed (was silently dropped on every turn)
 - **Spell fix (BTORCH-5)** — `enrichSpell()` strips parenthetical suffixes before lookup; `applyCharacterUpdates()` normalizes spells via `enrichSpell`; raw JSON gamestate fallback when AI omits fences; initializer/adventure-create prompts have CRITICAL sections forbidding D&D 5e names and wrong spell syntax
-- **App is rebranded to "By Bitter Flame"** — logo image (`logo-bybitterflame-400.webp`) used across all pages; all UI copy, email sender (`gm@bybitterflame.com`), page title updated; domain bybitterflame.com purchased (DNS not yet switched; prod still at dark.tim52.io)
+- **App is rebranded to "By Bitter Flame"** — logo image (`logo-bybitterflame-400.webp`) used across all pages; all UI copy, email sender (`gm@bybitterflame.com`), page title updated; served at bybitterflame.com
 - **GA4 analytics** — G-285WWGVN6Z; `trackEvent()` utility wired to 10 events across the funnel (request_access, adventure_started, character_created, api_key_added, free_turns_exhausted, session_paused, adventure_completed, character_died, soul_transferred, companion_joined); guide at `docs/guides/ga4-events.md`
 - **schema.sql** — single unified DB schema replacing drizzle/ and migrations/ directories; use `wrangler d1 execute bitterflame --remote --file=schema.sql` to restore prod
 - **Lifetime token usage tracking** — `total_input_tokens` / `total_output_tokens` on users table; shown in /account
@@ -43,12 +43,19 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **Torch timer** — 60-minute paused countdown; UI owns the clock; GM signals intent only; darkness enforced when no torch lit; AI notified on burnout
 - **Cloudflare deployment** — `wrangler deploy` → Workers runtime; D1 binding confirmed
 - **Adventure modules** — Shots in the Dark #1 (18 oneshots); /adventures browser; adventure brief in session prompt; mapReveal → Map tab; GM character creation mode; pending DB migration for production
-- **Auth** — BetterAuth v1.4.19 with D1 adapter; email+password sign up/in; session cookie; middleware (proxy.ts) redirects unauthenticated users; campaigns scoped to userId; UserNav pill in header; lazy singleton pattern for D1 binding
+- **Auth** — BetterAuth v1.4.19 with D1 adapter; email+password sign up/in; session cookie; middleware (`src/middleware.ts`) redirects unauthenticated users; campaigns scoped to userId; UserNav pill in header; lazy singleton pattern for D1 binding
 - **Token optimization** — companion rules block gated on companions.length > 0 (~1.5KB/turn); exploration.md split into light-and-darkness.md (always) + exploration-mechanics.md (conditional); spellcasting.md split into core + per-tier files T1–T5, only tiers ≤ character's max loaded (~10KB saved for low-level casters)
 - **Session summarization** — "Pause Session" fires hidden GM summary message + background Haiku call that writes compact summary to `sessions.summary`; campaign GET fixed to order by sessionNumber DESC and return `sessionSummaries[]` from past sessions (last 5 with summaries); `sessionSummaries` passed to `/api/chat` and injected into system prompt via `buildSummaryBlock()`; `gmNotes` column added to campaigns table; `gmNotesUpdate` gamestate type parsed and persisted; `gmNotes` injected as GM-only section in session prompt; "Return Home" button appears after AI finishes responding to pause request; DB migration: `migrations/0008_session_summarization.sql`
 
-**What doesn't work yet:**
-- Nothing known — all planned features complete
+- **Models** — gameplay on `claude-sonnet-5` (adaptive thinking, effort low, max_tokens 8192); creation, shopping, economy mode, summaries, and key validation on `claude-haiku-4-5-20251001`. IDs and UI display names live in `src/lib/config.ts`
+- **Tooling** — Next 16.4, `@anthropic-ai/sdk` 1.3 (API version 2026-10-21), ESLint flat config (`npm run lint`), deploy CI on Node 24
+
+**What doesn't work yet / open items:**
+- Email change flow untested since better-auth 1.7 (now emails the *current* address to approve, then verifies the new one)
+- Mid-adventure companion recruiting fix (Session 32) not yet verified in play
+- `src/middleware.ts` triggers a Next 16 deprecation warning; renaming to `proxy.ts` needs a `build:cf` test (OpenNext support for Node-runtime proxy unconfirmed)
+- 12 lint warnings: 8 React 19 hook-rule sites (`set-state-in-effect`, `refs`) downgraded to warnings, need refactor + playtest
+- Admin/lifetime cost estimates price all historical Sonnet tokens at Sonnet 5 rates (accepted for now)
 
 **BTORCH-13 status:** Done (carousing + level-up flow fully implemented and verified)
 
@@ -67,6 +74,19 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - Live URL: https://bybitterflame.com (also https://bitterflame.tim-arnold.workers.dev)
 
 ## Recent Work
+
+### Session 32 (2026-10-25)
+
+**Dependency refresh, Sonnet 5, companion recruiting fix** (branch `chore-deps-update`, merged to `prod`):
+
+- **Build fix**: in-range `npm update` (Next 16.4, React 19.3, better-auth 1.7, wrangler 4.152, zod 4.6, Tailwind 4.3). `getAuth()` refactored around `createAuth()` so its return type isn't nullable. better-auth 1.7 replaced `sendChangeEmailVerification` with `sendChangeEmailConfirmation` (emails the current address). `(site)` layout and admin page call `headers()` before `getAuth()` so Next skips prerendering instead of starting Miniflare per worker (`SQLITE_BUSY`)
+- **Lint**: `next lint` is gone in Next 16; added `eslint.config.mjs` (core-web-vitals + typescript), lint script is `eslint .`. Fixed mechanical errors; `react-hooks/set-state-in-effect` and `react-hooks/refs` downgraded to warnings
+- **SDK**: `@anthropic-ai/sdk` 0.78 → 1.3. API version 2026-10-21 removes temperature/top_p/top_k (unused here). API key validation route now uses the SDK with typed `AuthenticationError`/`PermissionDeniedError`. `@cloudflare/workers-types` 4 → 5 (wrangler peer dependency)
+- **Sonnet 5**: `MODEL_SONNET` → `claude-sonnet-5` with adaptive thinking at effort low and max_tokens 8192 (Sonnet only; Haiku rejects effort). Pricing constants $2/$10, cache $2.50/$0.20. Cost tooltip reads `MODEL_SONNET_NAME`/`MODEL_HAIKU_NAME`. Playtested: fast, model routing correct
+- **`agentRules: false`** in `next.config.ts` stops `next dev` from writing AGENTS.md
+- **Companion bug**: `companionJoined` instructions were inside the block gated on `companions.length > 0`, so with no companions the GM couldn't register one (logged the NPC in `npcs` instead). Moved recruiting rules into a new "Recruiting Companions" section of `STATIC_GM_FRAME`
+- **CI**: deploy workflow (triggers on push to `prod`) moved Node 20 → 24; wrangler/miniflare require Node ≥ 22
+- **Build: clean** (`build`, `build:cf`, lint 0 errors)
 
 ### Session 31 (2026-03-14)
 

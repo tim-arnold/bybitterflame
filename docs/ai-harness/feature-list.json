@@ -34,7 +34,7 @@
       "id": "cloudflare-deployment",
       "name": "Cloudflare Workers production deployment",
       "status": "done",
-      "notes": "Live at https://dark.tim52.io. All DB routes use runtime=nodejs (not edge) — Edge Runtime bundler is incompatible with drizzle-orm CJS. CI/CD via GitHub Actions (.github/workflows/deploy.yml) on push to main. account_id in wrangler.toml for non-interactive deploy.",
+      "notes": "Live at https://bybitterflame.com. All DB routes use runtime=nodejs (not edge) — Edge Runtime bundler is incompatible with drizzle-orm CJS. CI/CD via GitHub Actions (.github/workflows/deploy.yml) on push to prod, Node 24 (wrangler 4.152+ needs Node >= 22). account_id in wrangler.toml for non-interactive deploy.",
       "tests": [
         { "name": "npx @opennextjs/cloudflare build succeeds", "pass": true },
         { "name": "wrangler deploy uploads and deploys worker", "pass": true },
@@ -42,7 +42,7 @@
         { "name": "ANTHROPIC_API_KEY secret available to worker", "pass": true },
         { "name": "Site loads at production URL", "pass": true },
         { "name": "Character creation → play redirect works end-to-end in production", "pass": true },
-        { "name": "GitHub Actions deploys on push to main", "pass": true }
+        { "name": "GitHub Actions deploys on push to prod (Node 24, after Session 32 dependency refresh)", "pass": false }
       ]
     },
     {
@@ -146,7 +146,8 @@
         { "name": "companionJoined gamestate parsed and companion added to state", "pass": true },
         { "name": "CompanionPanel renders in right sidebar when companions present", "pass": true },
         { "name": "companionUpdate merges HP/loyalty/status correctly", "pass": true },
-        { "name": "Companions persist across page reload from worldState", "pass": true }
+        { "name": "Companions persist across page reload from worldState", "pass": true },
+        { "name": "NPC recruited mid-adventure with no prior companions is registered via companionJoined (recruiting rules always in static GM frame)", "pass": false }
       ]
     },
     {
@@ -252,7 +253,8 @@
         { "name": "Character creation uses Haiku (create, adventure-create, gm-create)", "pass": true },
         { "name": "Gameplay uses Sonnet (mode: play)", "pass": true },
         { "name": "Haiku talent object normalization prevents React crash", "pass": true },
-        { "name": "Summarize route uses shared MODEL_HAIKU constant", "pass": true }
+        { "name": "Summarize route uses shared MODEL_HAIKU constant", "pass": true },
+        { "name": "Gameplay on claude-sonnet-5 with adaptive thinking (effort low), Haiku routing unchanged", "pass": true }
       ]
     },
     {
@@ -329,7 +331,8 @@
         { "name": "Sign up / sign in with email+password", "pass": true },
         { "name": "Session cookie persists across reloads", "pass": true },
         { "name": "Campaigns scoped to authenticated user", "pass": true },
-        { "name": "Unauthenticated access redirected to login", "pass": true }
+        { "name": "Unauthenticated access redirected to login", "pass": true },
+        { "name": "Email change sends approval to current address, then verifies new address (better-auth 1.7)", "pass": false }
       ]
     },
     {
@@ -400,7 +403,7 @@
       "id": "persistence",
       "name": "End-to-end data persistence",
       "status": "done",
-      "notes": "Verified in production at dark.tim52.io. Character creation → D1 insert → redirect → play → autosave all confirmed working.",
+      "notes": "Verified in production (bybitterflame.com). Character creation → D1 insert → redirect → play → autosave all confirmed working.",
       "tests": [
         { "name": "Character saved to D1 after creation", "pass": true },
         { "name": "Campaign created and linked to character", "pass": true },
@@ -427,6 +430,18 @@
         { "name": "Death screen deferred until player reads final narrative", "pass": true },
         { "name": "Stat scores and modifiers shown on talent roll stat choice buttons", "pass": true },
         { "name": "Character delete handles FK constraints (sessions → campaigns → character)", "pass": true }
+      ]
+    },
+    {
+      "id": "dev-tooling",
+      "name": "Build, lint, and dependency hygiene",
+      "status": "done",
+      "notes": "Session 32. Next 16.4, @anthropic-ai/sdk 1.3, workers-types 5. ESLint flat config (eslint.config.mjs); react-hooks set-state-in-effect and refs downgraded to warnings pending refactor. agentRules: false stops AGENTS.md generation.",
+      "tests": [
+        { "name": "npm run build clean", "pass": true },
+        { "name": "npm run build:cf clean", "pass": true },
+        { "name": "npm run lint reports 0 errors", "pass": true },
+        { "name": "next dev does not create AGENTS.md", "pass": true }
       ]
     }
   ]
