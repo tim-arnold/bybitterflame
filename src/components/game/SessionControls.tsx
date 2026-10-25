@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { calcMixedCost, SERVER_KEY_TURN_LIMIT } from "@/lib/config";
+import { calcMixedCost, MODEL_HAIKU_NAME, MODEL_SONNET_NAME, SERVER_KEY_TURN_LIMIT } from "@/lib/config";
 
 interface SessionControlsProps {
   onEndSession: () => void;
@@ -198,7 +198,7 @@ export function SessionControls({
                 />
               </svg>
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-56 rounded bg-stone-800 border border-stone-600 px-2.5 py-2 text-xs text-stone-300 leading-relaxed shadow-lg z-50 pointer-events-none">
-                Based on Anthropic list pricing (Sonnet 4 and Haiku 4.5). Actual charges may differ slightly due to rounding or pricing updates. Check{" "}
+                Based on Anthropic list pricing ({MODEL_SONNET_NAME} and {MODEL_HAIKU_NAME}). Actual charges may differ slightly due to rounding or pricing updates. Check{" "}
                 <span className="text-stone-400">console.anthropic.com</span>{" "}
                 for exact usage.
                 <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-600" />

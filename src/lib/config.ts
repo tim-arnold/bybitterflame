@@ -14,6 +14,9 @@ export const GM_NOTES_MAX_CHARS = 1500;
 /** Model IDs — centralized so they aren't scattered across files. */
 export const MODEL_SONNET = "claude-sonnet-5";
 export const MODEL_HAIKU = "claude-haiku-4-5-20251001";
+/** Display names shown in the UI — keep in sync with the IDs above. */
+export const MODEL_SONNET_NAME = "Sonnet 5";
+export const MODEL_HAIKU_NAME = "Haiku 4.5";
 
 /**
  * Approximate Anthropic pricing for claude-sonnet-5 (per token).
