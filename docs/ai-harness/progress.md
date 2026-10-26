@@ -52,7 +52,7 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 
 **What doesn't work yet / open items:**
 - workers.dev URL still serves the app; consider redirecting to bybitterflame.com or disabling it
-- `src/middleware.ts` triggers a Next 16 deprecation warning; renaming to `proxy.ts` needs a `build:cf` test (OpenNext support for Node-runtime proxy unconfirmed)
+- `src/middleware.ts` triggers a Next 16 deprecation warning. Rename to `proxy.ts` is parked on branch `try-proxy`: it works in local Workers preview, but proxy is Node-runtime only and OpenNext flags Node middleware on Cloudflare as experimental/unmaintained. Revisit when OpenNext supports it officially or Next removes `middleware.ts`
 - 12 lint warnings: 8 React 19 hook-rule sites (`set-state-in-effect`, `refs`) downgraded to warnings, need refactor + playtest
 - Admin/lifetime cost estimates price all historical Sonnet tokens at Sonnet 5 rates (accepted for now)
 
