@@ -54,19 +54,21 @@ export async function POST(request: Request) {
     return apiError("Failed to create account. Please contact support.");
   }
 
-  // Copy any pre-assigned beta key/mode to the new user row
-  if (req.betaApiKey) {
-    const [newUser] = await db
-      .select({ id: users.id })
-      .from(users)
-      .where(eq(users.email, req.email))
-      .limit(1);
-    if (newUser) {
-      await db
-        .update(users)
-        .set({ betaApiKey: req.betaApiKey, betaKeyMode: req.betaKeyMode })
-        .where(eq(users.id, newUser.id));
-    }
+  // The setup link was emailed to req.email, so reaching this point proves
+  // ownership: mark the address verified. Also copy any pre-assigned beta key/mode.
+  const [newUser] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, req.email))
+    .limit(1);
+  if (newUser) {
+    await db
+      .update(users)
+      .set({
+        emailVerified: true,
+        ...(req.betaApiKey && { betaApiKey: req.betaApiKey, betaKeyMode: req.betaKeyMode }),
+      })
+      .where(eq(users.id, newUser.id));
   }
 
   await db
