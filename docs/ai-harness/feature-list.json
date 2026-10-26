@@ -42,7 +42,7 @@
         { "name": "ANTHROPIC_API_KEY secret available to worker", "pass": true },
         { "name": "Site loads at production URL", "pass": true },
         { "name": "Character creation → play redirect works end-to-end in production", "pass": true },
-        { "name": "GitHub Actions deploys on push to prod (Node 24, after Session 32 dependency refresh)", "pass": false }
+        { "name": "GitHub Actions deploys on push to prod (Node 24, after Session 32 dependency refresh)", "pass": true }
       ]
     },
     {
