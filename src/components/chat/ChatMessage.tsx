@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect, memo } from "react";
+import { useMemo, useState, useCallback, memo } from "react";
 import ReactMarkdown from "react-markdown";
 import { DiceRollDisplay } from "./DiceRollDisplay";
 import { GAMESTATE_REGEX } from "@/lib/game/state-parser";
@@ -90,7 +90,7 @@ const narrativeBaseClass =
 
 export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
   const [diceComplete, setDiceComplete] = useState(false);
-  const [revealed, setRevealed] = useState(false);
+  const [revealedByUser, setRevealed] = useState(false);
   const onDiceComplete = useCallback(() => setDiceComplete(true), []);
   const onReveal = useCallback(() => setRevealed(true), []);
 
@@ -118,11 +118,7 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
 
   // Auto-reveal part2 when a death event is present — the death notification
   // panel has its own Continue button so the intermediate one is redundant.
-  useEffect(() => {
-    if (hasDeathEvent && diceComplete && !revealed) {
-      setRevealed(true);
-    }
-  }, [hasDeathEvent, diceComplete, revealed]);
+  const revealed = revealedByUser || (hasDeathEvent && diceComplete);
 
   if (role === "user") {
     return (

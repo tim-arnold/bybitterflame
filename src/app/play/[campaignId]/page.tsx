@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ChatWindow, type Message } from "@/components/chat/ChatWindow";
 import { CharacterSheet } from "@/components/character/CharacterSheet";
@@ -493,10 +493,13 @@ export default function PlayPage() {
         setIsLoading(false);
       }
     },
-    [messages, character, campaign, companions, campaignId, sessionNumber, isGmCreateMode, tokens, combat, adventureModule, journal, death, doSave]
+    [messages, character, campaign, companions, sessionNumber, sessionSummaries, isGmCreateMode, tokens, combat, adventureModule, journal, death, doSave]
   );
-  // Keep the ref current so useDeathFlow and useTorchHandlers always call the latest sendMessage
-  sendMessageRef.current = sendMessage;
+  // Keep the ref current so useDeathFlow and useTorchHandlers always call the latest sendMessage.
+  // Layout effects run before regular effects, so the ref is fresh before anything reads it.
+  useLayoutEffect(() => {
+    sendMessageRef.current = sendMessage;
+  }, [sendMessage]);
 
   const torch = useTorchHandlers({
     campaignId,

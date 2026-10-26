@@ -6,7 +6,7 @@ import { UserNav } from "@/components/UserNav";
 import { HowToPlayModal } from "@/components/HowToPlayModal";
 import { SettingsModal } from "@/components/SettingsModal";
 import { BugReportModal } from "@/components/BugReportModal";
-import { authClient } from "@/lib/auth/client";
+import { authClient, signOutAndRedirect } from "@/lib/auth/client";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -57,8 +57,7 @@ function MobileMenu({ onHowToPlay, onSettings, onBugReport, onFeatureRequest }: 
 
   async function handleSignOut() {
     setOpen(false);
-    await authClient.signOut();
-    window.location.href = "/login";
+    await signOutAndRedirect();
   }
 
   return (

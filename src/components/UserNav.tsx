@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { authClient } from "@/lib/auth/client";
+import { authClient, signOutAndRedirect } from "@/lib/auth/client";
 import { BugReportModal } from "@/components/BugReportModal";
 
 interface UserNavProps {
@@ -108,8 +108,7 @@ export function UserNav({ section, middleSlot, isAdmin = false, onHowToPlay, onS
   }
 
   async function handleSignOut() {
-    await authClient.signOut();
-    window.location.href = "/login";
+    await signOutAndRedirect();
   }
 
   const settingsEl = onSettings ? (

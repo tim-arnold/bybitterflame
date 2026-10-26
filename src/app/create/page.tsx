@@ -25,7 +25,7 @@ function CreateCharacterPageInner() {
   const [hasStarted, setHasStarted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  async function saveCharacter(char: Partial<Character>, camp: Partial<Campaign>) {
+  const saveCharacter = useCallback(async (char: Partial<Character>, camp: Partial<Campaign>) => {
     setIsSaving(true);
     try {
       // Read companions stored by the adventure detail page (Roll Your Own path)
@@ -63,7 +63,7 @@ function CreateCharacterPageInner() {
       console.error("Failed to save character:", saveError);
       setIsSaving(false);
     }
-  }
+  }, [adventureId, collectionId, router]);
 
   // True when all required fields are present for a valid character
   const isCharacterComplete =
@@ -151,7 +151,7 @@ function CreateCharacterPageInner() {
         setIsLoading(false);
       }
     },
-    [messages, character, campaign, router]
+    [messages, character, campaign, saveCharacter]
   );
 
   // Auto-start the conversation

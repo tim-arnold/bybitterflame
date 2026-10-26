@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { authClient } from "@/lib/auth/client";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
@@ -9,26 +9,20 @@ export function BugReportModal({ onClose, mode = "bug" }: { onClose: () => void;
   const dialogRef = useRef<HTMLDivElement>(null);
   useFocusTrap(dialogRef, true);
   const { data: session } = authClient.useSession();
-  const [email, setEmail] = useState("");
+  const [emailInput, setEmail] = useState<string | null>(null);
+  const email = emailInput ?? session?.user?.email ?? "";
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error" | "rate_limited">("idle");
   const [issueKey, setIssueKey] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<Record<string, string>>({});
+  // The modal only renders on the client (portal), so window is available here.
+  const [debugInfo] = useState<Record<string, string>>(() => ({
+    URL: window.location.href,
+    Browser: navigator.userAgent,
+    Viewport: `${window.innerWidth}×${window.innerHeight}`,
+    Timestamp: new Date().toISOString(),
+  }));
 
   const isBug = mode === "bug";
-
-  useEffect(() => {
-    if (session?.user?.email) setEmail(session.user.email);
-  }, [session]);
-
-  useEffect(() => {
-    setDebugInfo({
-      URL: window.location.href,
-      Browser: navigator.userAgent,
-      Viewport: `${window.innerWidth}×${window.innerHeight}`,
-      Timestamp: new Date().toISOString(),
-    });
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

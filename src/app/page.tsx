@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth/client";
+import { authClient, signOutAndRedirect } from "@/lib/auth/client";
 import { SiteFooter } from "@/components/SiteFooter";
 
 interface CampaignSummary {
@@ -35,7 +35,10 @@ interface CharacterSummary {
 }
 
 
-export default function Home() {
+type Tab = "adventures" | "characters";
+
+export default function Home({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const { tab: tabParam } = use(searchParams);
   const router = useRouter();
   const { data: session, isPending: sessionPending } = authClient.useSession();
   const [campaigns, setCampaigns] = useState<CampaignSummary[]>([]);
@@ -45,7 +48,7 @@ export default function Home() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [deleteCharacterChecked, setDeleteCharacterChecked] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState<"adventures" | "characters">("adventures");
+  const [chosenTab, setActiveTab] = useState<Tab | null>(null);
   const isReady = !sessionPending && campaignsLoaded && charactersLoaded;
 
   // First-visit intro animation — runs once ever per user (persisted in localStorage)
@@ -54,6 +57,9 @@ export default function Home() {
     const seen = localStorage.getItem("bbf-intro");
     if (!seen) {
       localStorage.setItem("bbf-intro", "1");
+      // localStorage only exists after hydration; reading it during render would
+      // mismatch the server HTML, so this one-time sync stays in an effect.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsFirstVisit(true);
     }
   }, []);
@@ -105,17 +111,14 @@ export default function Home() {
       .finally(() => setCharactersLoaded(true));
   }, []);
 
-  // Set initial tab from ?tab= query param, or default to characters if no campaigns
-  useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get("tab");
-    if (param === "characters" || param === "adventures") {
-      setActiveTab(param);
-      return;
-    }
-    if (campaignsLoaded && campaigns.length === 0 && characters.length > 0) {
-      setActiveTab("characters");
-    }
-  }, [campaignsLoaded, campaigns.length, characters.length]);
+  // Tab: the user's click, else ?tab= query param, else characters if there are no campaigns
+  const activeTab: Tab =
+    chosenTab ??
+    (tabParam === "characters" || tabParam === "adventures"
+      ? tabParam
+      : campaignsLoaded && campaigns.length === 0 && characters.length > 0
+        ? "characters"
+        : "adventures");
 
   // Fade from black immediately on first visit
   useEffect(() => {
@@ -458,7 +461,7 @@ export default function Home() {
           <Link href="/how-to-play" className="text-[var(--color-gold-dim)] hover:text-[var(--color-gold)] transition-colors">How to Play</Link>
           <Link href="/account" className="text-[var(--color-gold-dim)] hover:text-[var(--color-gold)] transition-colors">Settings</Link>
           <button
-            onClick={async () => { await authClient.signOut(); window.location.href = "/login"; }}
+            onClick={signOutAndRedirect}
             className="text-[var(--color-gold-dim)] hover:text-[var(--color-gold)] transition-colors cursor-pointer"
           >
             Sign out

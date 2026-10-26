@@ -31,7 +31,7 @@ export function SettingsContent() {
   const [loading, setLoading] = useState(true);
 
   // Name
-  const [nameValue, setNameValue] = useState("");
+  const [nameInput, setNameValue] = useState<string | null>(null);
   const [nameSaving, setNameSaving] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [nameSuccess, setNameSuccess] = useState(false);
@@ -81,9 +81,7 @@ export function SettingsContent() {
       .catch(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    if (session?.user.name) setNameValue(session.user.name);
-  }, [session]);
+  const nameValue = nameInput ?? session?.user.name ?? "";
 
   async function handleSave() {
     setError(null);
