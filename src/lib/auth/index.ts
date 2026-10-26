@@ -53,7 +53,7 @@ function createAuth(db: ReturnType<typeof getDb>) {
           "Verify your By Bitter Flame email",
           emailHtml(`
             ${emailP("Click below to verify this email address for your By Bitter Flame account.")}
-            ${emailButton("Verify Email Address", withCallbackURL(url, "/account"))}
+            ${emailButton("Verify Email Address", withCallbackURL(url, "/api/account/email-changed"))}
             ${emailP("This link expires in 1 hour. If you didn't request this, you can safely ignore it.", { muted: true, small: true, spaceBelow: "0" })}
           `),
         );

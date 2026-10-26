@@ -39,7 +39,7 @@ export default async function EmailChangeConfirmedPage({
               <p className="text-sm text-stone-400">
                 One more step: check the inbox for your <span className="text-stone-200">new</span>{" "}
                 email address and click the verification link. Your email won&apos;t change until
-                you do.
+                you do, and you&apos;ll then log in with the new address.
               </p>
             </>
           )}

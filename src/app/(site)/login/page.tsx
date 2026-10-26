@@ -11,6 +11,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") ?? "/";
   const wasReset = searchParams.get("reset") === "1";
+  const emailChanged = searchParams.get("emailChanged") === "1";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,6 +38,11 @@ function LoginForm() {
       {wasReset && (
         <p className="mb-5 rounded border border-green-900 bg-green-950/50 px-3 py-2 text-sm text-green-400">
           Password reset! Sign in with your new password.
+        </p>
+      )}
+      {emailChanged && (
+        <p className="mb-5 rounded border border-green-900 bg-green-950/50 px-3 py-2 text-sm text-green-400">
+          Success, your email address has been changed. Please log in using your changed email.
         </p>
       )}
 
