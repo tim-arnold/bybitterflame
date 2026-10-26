@@ -22,6 +22,17 @@ async function sendAuthEmail(to: string, subject: string, html: string) {
   if (error) console.error(`[auth email] "${subject}" to ${to} failed:`, error);
 }
 
+/**
+ * Point a better-auth email link's post-click redirect at a specific page.
+ * better-auth reuses the approval link's callbackURL for the follow-up
+ * verification link, so each email sets its own.
+ */
+function withCallbackURL(url: string, callbackURL: string): string {
+  const u = new URL(url);
+  u.searchParams.set("callbackURL", callbackURL);
+  return u.toString();
+}
+
 function createAuth(db: ReturnType<typeof getDb>) {
   return betterAuth({
     trustedOrigins: ["http://localhost:3000", "http://localhost:3001", "https://bybitterflame.com"],
@@ -42,7 +53,7 @@ function createAuth(db: ReturnType<typeof getDb>) {
           "Verify your By Bitter Flame email",
           emailHtml(`
             ${emailP("Click below to verify this email address for your By Bitter Flame account.")}
-            ${emailButton("Verify Email Address", url)}
+            ${emailButton("Verify Email Address", withCallbackURL(url, "/account"))}
             ${emailP("This link expires in 1 hour. If you didn't request this, you can safely ignore it.", { muted: true, small: true, spaceBelow: "0" })}
           `),
         );
@@ -60,7 +71,7 @@ function createAuth(db: ReturnType<typeof getDb>) {
             "Confirm your By Bitter Flame email change",
             emailHtml(`
               ${emailP(`You requested to change your By Bitter Flame account email to ${newEmail}. Click below to approve the change. A verification link will then go to the new address.`)}
-              ${emailButton("Approve Email Change", url)}
+              ${emailButton("Approve Email Change", withCallbackURL(url, "/email-change-confirmed"))}
               ${emailP("This link expires in 1 hour. If you didn't request this, you can safely ignore it.", { muted: true, small: true, spaceBelow: "0" })}
             `),
           );
