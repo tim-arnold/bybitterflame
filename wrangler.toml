@@ -19,6 +19,12 @@ binding = "DB"
 database_name = "bitterflame"
 database_id = "df68ca79-806e-4a2f-b089-9fdc770bf32c"
 
+[observability]
+enabled = true
+# Strip query strings from logged URLs: verification, email-change, and
+# account-setup links carry tokens in ?token=
+redact_query_string = true
+
 [observability.logs]
 enabled = true
 invocation_logs = true
