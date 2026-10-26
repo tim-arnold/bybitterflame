@@ -147,7 +147,7 @@
         { "name": "CompanionPanel renders in right sidebar when companions present", "pass": true },
         { "name": "companionUpdate merges HP/loyalty/status correctly", "pass": true },
         { "name": "Companions persist across page reload from worldState", "pass": true },
-        { "name": "NPC recruited mid-adventure with no prior companions is registered via companionJoined (recruiting rules always in static GM frame)", "pass": false }
+        { "name": "NPC recruited mid-adventure with no prior companions is registered via companionJoined (recruiting rules always in static GM frame)", "pass": true }
       ]
     },
     {

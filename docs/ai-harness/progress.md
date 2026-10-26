@@ -51,7 +51,7 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **Tooling** — Next 16.4, `@anthropic-ai/sdk` 1.3 (API version 2026-10-21), ESLint flat config (`npm run lint`), deploy CI on Node 24
 
 **What doesn't work yet / open items:**
-- Mid-adventure companion recruiting fix (Session 32) not yet verified in play
+- workers.dev URL still serves the app; consider redirecting to bybitterflame.com or disabling it
 - `src/middleware.ts` triggers a Next 16 deprecation warning; renaming to `proxy.ts` needs a `build:cf` test (OpenNext support for Node-runtime proxy unconfirmed)
 - 12 lint warnings: 8 React 19 hook-rule sites (`set-state-in-effect`, `refs`) downgraded to warnings, need refactor + playtest
 - Admin/lifetime cost estimates price all historical Sonnet tokens at Sonnet 5 rates (accepted for now)
