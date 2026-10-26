@@ -332,7 +332,9 @@
         { "name": "Session cookie persists across reloads", "pass": true },
         { "name": "Campaigns scoped to authenticated user", "pass": true },
         { "name": "Unauthenticated access redirected to login", "pass": true },
-        { "name": "Email change sends approval to current address, then verifies new address (better-auth 1.7)", "pass": false }
+        { "name": "Email change sends approval to current address, then verifies new address (better-auth 1.7)", "pass": true },
+        { "name": "Email change: approval lands on /email-change-confirmed; verification signs out all sessions and shows login notice", "pass": true },
+        { "name": "Public POST /api/auth/sign-up/email returns 404 (invite-only)", "pass": true }
       ]
     },
     {

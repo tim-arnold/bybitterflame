@@ -51,7 +51,6 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **Tooling** — Next 16.4, `@anthropic-ai/sdk` 1.3 (API version 2026-10-21), ESLint flat config (`npm run lint`), deploy CI on Node 24
 
 **What doesn't work yet / open items:**
-- Email change flow: fix deployed in Session 32 follow-up (`fix-auth-emails`), retest pending. Approval goes to the *current* address only when `email_verified` is true
 - Mid-adventure companion recruiting fix (Session 32) not yet verified in play
 - `src/middleware.ts` triggers a Next 16 deprecation warning; renaming to `proxy.ts` needs a `build:cf` test (OpenNext support for Node-runtime proxy unconfirmed)
 - 12 lint warnings: 8 React 19 hook-rule sites (`set-state-in-effect`, `refs`) downgraded to warnings, need refactor + playtest
@@ -87,6 +86,8 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **Companion bug**: `companionJoined` instructions were inside the block gated on `companions.length > 0`, so with no companions the GM couldn't register one (logged the NPC in `npcs` instead). Moved recruiting rules into a new "Recruiting Companions" section of `STATIC_GM_FRAME`
 - **CI**: deploy workflow (triggers on push to `prod`) moved Node 20 → 24; wrangler/miniflare require Node ≥ 22
 - **Auth emails** (follow-up): no change-email approval arrived. Invite-created accounts never set `email_verified`, so better-auth skipped the approval and sent a verification to the new address. `set-password` now marks the email verified; `migrations/0020_verify_approved_emails.sql` backfilled prod (8 verified, 1 not). All auth emails (verification, change-email, password reset) were `void` fire-and-forget sends that Workers could cut off; now awaited through `sendAuthEmail()` with Resend error logging. BetterAuth's public `POST /api/auth/sign-up/email` was open (invite flow bypass); now returns 404
+- **`BETTER_AUTH_URL`** secret was still the workers.dev URL, so every emailed link (auth, invite approval, create-password, bonus turns) pointed there. Set to `https://bybitterflame.com`; stray `BETTER_AUTH_UR` secret deleted
+- **Email change UX**: approval link lands on `/email-change-confirmed` ("check your new inbox", with an error state). Verification link redirects through `GET /api/account/email-changed`, which revokes all sessions and sends the user to `/login?emailChanged=1` (email is the login username). Verified on prod
 - **Build: clean** (`build`, `build:cf`, lint 0 errors)
 
 ### Session 31 (2026-03-14)
