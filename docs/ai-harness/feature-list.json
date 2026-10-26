@@ -438,11 +438,12 @@
       "id": "dev-tooling",
       "name": "Build, lint, and dependency hygiene",
       "status": "done",
-      "notes": "Session 32. Next 16.4, @anthropic-ai/sdk 1.3, workers-types 5. ESLint flat config (eslint.config.mjs); react-hooks set-state-in-effect and refs downgraded to warnings pending refactor. agentRules: false stops AGENTS.md generation.",
+      "notes": "Session 32. Next 16.4, @anthropic-ai/sdk 1.3, workers-types 5. ESLint flat config (eslint.config.mjs) with React 19 hook rules at error severity. agentRules: false stops AGENTS.md generation. middleware.ts -> proxy.ts rename parked on branch try-proxy (OpenNext Node middleware is experimental).",
       "tests": [
         { "name": "npm run build clean", "pass": true },
         { "name": "npm run build:cf clean", "pass": true },
-        { "name": "npm run lint reports 0 errors", "pass": true },
+        { "name": "npm run lint reports 0 errors and 0 warnings", "pass": true },
+        { "name": "Gameplay, character creation, homepage tabs, bug report, settings, and sign-out work after hook refactors", "pass": true },
         { "name": "next dev does not create AGENTS.md", "pass": true }
       ]
     }

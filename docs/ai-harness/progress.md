@@ -53,7 +53,6 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 **What doesn't work yet / open items:**
 - workers.dev URL still serves the app; consider redirecting to bybitterflame.com or disabling it
 - `src/middleware.ts` triggers a Next 16 deprecation warning. Rename to `proxy.ts` is parked on branch `try-proxy`: it works in local Workers preview, but proxy is Node-runtime only and OpenNext flags Node middleware on Cloudflare as experimental/unmaintained. Revisit when OpenNext supports it officially or Next removes `middleware.ts`
-- 12 lint warnings: 8 React 19 hook-rule sites (`set-state-in-effect`, `refs`) downgraded to warnings, need refactor + playtest
 - Admin/lifetime cost estimates price all historical Sonnet tokens at Sonnet 5 rates (accepted for now)
 
 **BTORCH-13 status:** Done (carousing + level-up flow fully implemented and verified)
@@ -87,6 +86,7 @@ Full end-to-end persistence is working. Character creation, gameplay loop, autos
 - **CI**: deploy workflow (triggers on push to `prod`) moved Node 20 → 24; wrangler/miniflare require Node ≥ 22
 - **Auth emails** (follow-up): no change-email approval arrived. Invite-created accounts never set `email_verified`, so better-auth skipped the approval and sent a verification to the new address. `set-password` now marks the email verified; `migrations/0020_verify_approved_emails.sql` backfilled prod (8 verified, 1 not). All auth emails (verification, change-email, password reset) were `void` fire-and-forget sends that Workers could cut off; now awaited through `sendAuthEmail()` with Resend error logging. BetterAuth's public `POST /api/auth/sign-up/email` was open (invite flow bypass); now returns 404
 - **`BETTER_AUTH_URL`** secret was still the workers.dev URL, so every emailed link (auth, invite approval, create-password, bonus turns) pointed there. Set to `https://bybitterflame.com`; stray `BETTER_AUTH_UR` secret deleted
+- **Lint warnings resolved** (follow-up): all 12 warnings fixed; `react-hooks/set-state-in-effect` and `react-hooks/refs` back to error. Derived state replaces effect-synced state in ChatMessage, BugReportModal, SettingsContent, and the homepage tab (now read from the `searchParams` prop, so `/` is dynamic). Play page `sendMessage` gained the missing `sessionSummaries` dep; `sendMessageRef` set in a layout effect. Create page `saveCharacter` is a stable `useCallback`. New `signOutAndRedirect()` helper replaces three sign-out copies. Two documented exceptions: first-visit intro localStorage effect, full-page sign-out navigation. Playtested locally
 - **Email change UX**: approval link lands on `/email-change-confirmed` ("check your new inbox", with an error state). Verification link redirects through `GET /api/account/email-changed`, which revokes all sessions and sends the user to `/login?emailChanged=1` (email is the login username). Verified on prod
 - **Build: clean** (`build`, `build:cf`, lint 0 errors)
 
